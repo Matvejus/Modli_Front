@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { InfoCircledIcon } from '@radix-ui/react-icons'
+import { useRouter } from 'next/navigation'
+import VariablesAndSourcesModal from '@/components/modals/variables_sources'
 
 type Gown = {
   id: number
@@ -29,6 +31,7 @@ export default function CircularProcurementTool() {
   const [gownsPerDay, setGownsPerDay] = useState('50')
   const [laundryPickups, setLaundryPickups] = useState('2')
   const [daysUntilReturn, setDaysUntilReturn] = useState('2')
+  const [lostGowns, setLostGowns] = useState('1')
   const [healthcareLocation, setHealthcareLocation] = useState({
     city: 'Amsterdam',
     postcode: '1012 AB',
@@ -65,11 +68,14 @@ export default function CircularProcurementTool() {
      fetch ('http://localhost:3000/')
   }
 
+  const router = useRouter()
+
   const handleOptimizePortfolio = () => {
-    console.log('Optimizing portfolio')
+    router.push('/dashboard')
   }
 
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>
+  if (loading) 
+    // return <div className="flex justify-center items-center h-screen">Loading...</div>
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
@@ -81,9 +87,7 @@ export default function CircularProcurementTool() {
           <p className="text-center text-gray-600 mb-4">
             Compare the economic, social, and environmental impact of different isolation gowns.
           </p>
-          <Button variant="outline" className="w-full">
-            <InfoCircledIcon className="mr-2 h-4 w-4" /> View variables and sources
-          </Button>
+          <VariablesAndSourcesModal />
         </CardContent>
       </Card>
 
@@ -174,45 +178,59 @@ export default function CircularProcurementTool() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Days until return</label>
                   <Input type="number" value={daysUntilReturn} onChange={(e) => setDaysUntilReturn(e.target.value)} />
                 </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Healthcare Organization Location</h3>
-                <div className="space-y-2">
-                  <Input 
-                    placeholder="City" 
-                    value={healthcareLocation.city} 
-                    onChange={(e) => setHealthcareLocation({...healthcareLocation, city: e.target.value})} 
-                  />
-                  <Input 
-                    placeholder="Postcode" 
-                    value={healthcareLocation.postcode} 
-                    onChange={(e) => setHealthcareLocation({...healthcareLocation, postcode: e.target.value})} 
-                  />
-                  <Input 
-                    placeholder="Street, house number" 
-                    value={healthcareLocation.street} 
-                    onChange={(e) => setHealthcareLocation({...healthcareLocation, street: e.target.value})} 
-                  />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">% of Gowns lost</label>
+                  <Input type="number" value={lostGowns} onChange={(e) => setLostGowns(e.target.value)} />
                 </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Laundry Location</h3>
-                <div className="space-y-2">
-                  <Input 
-                    placeholder="City" 
-                    value={laundryLocation.city} 
-                    onChange={(e) => setLaundryLocation({...laundryLocation, city: e.target.value})} 
-                  />
-                  <Input 
-                    placeholder="Postcode" 
-                    value={laundryLocation.postcode} 
-                    onChange={(e) => setLaundryLocation({...laundryLocation, postcode: e.target.value})} 
-                  />
-                  <Input 
-                    placeholder="Street, house number" 
-                    value={laundryLocation.street} 
-                    onChange={(e) => setLaundryLocation({...laundryLocation, street: e.target.value})} 
-                  />
+              <div className="w-full max-w-4xl mx-auto ">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Healthcare Organization Location</h3>
+                    <div className="space-y-2">
+                      <Input 
+                        placeholder="City" 
+                        value={healthcareLocation.city} 
+                        onChange={(e) => setHealthcareLocation({...healthcareLocation, city: e.target.value})} 
+                        aria-label="Healthcare Organization City"
+                      />
+                      <Input 
+                        placeholder="Postcode" 
+                        value={healthcareLocation.postcode} 
+                        onChange={(e) => setHealthcareLocation({...healthcareLocation, postcode: e.target.value})} 
+                        aria-label="Healthcare Organization Postcode"
+                      />
+                      <Input 
+                        placeholder="Street, house number" 
+                        value={healthcareLocation.street} 
+                        onChange={(e) => setHealthcareLocation({...healthcareLocation, street: e.target.value})} 
+                        aria-label="Healthcare Organization Street and House Number"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Laundry Location</h3>
+                    <div className="space-y-2">
+                      <Input 
+                        placeholder="City" 
+                        value={laundryLocation.city} 
+                        onChange={(e) => setLaundryLocation({...laundryLocation, city: e.target.value})} 
+                        aria-label="Laundry City"
+                      />
+                      <Input 
+                        placeholder="Postcode" 
+                        value={laundryLocation.postcode} 
+                        onChange={(e) => setLaundryLocation({...laundryLocation, postcode: e.target.value})} 
+                        aria-label="Laundry Postcode"
+                      />
+                      <Input 
+                        placeholder="Street, house number" 
+                        value={laundryLocation.street} 
+                        onChange={(e) => setLaundryLocation({...laundryLocation, street: e.target.value})} 
+                        aria-label="Laundry Street and House Number"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               <div>

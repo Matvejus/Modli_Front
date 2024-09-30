@@ -13,6 +13,7 @@ type Gown = {
   washes: number
   comfort: number
   hygine: number
+  certificates: string[]
 }
 
 type Emission = {
@@ -72,7 +73,7 @@ export default function GownDetail({ params }: GownDetailProps) {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold text-center mb-6">{gown.name}</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardHeader>
             <CardTitle>Reusable</CardTitle>
@@ -112,6 +113,24 @@ export default function GownDetail({ params }: GownDetailProps) {
           </CardHeader>
           <CardContent>
             <Input type="number" value={gown.hygine} onChange={() => {}} min={0} max={5} />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Certificates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableBody>
+                {gown.certificates.map((certificate, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="text-sm font-medium text-left">
+                      {certificate}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
