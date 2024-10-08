@@ -34,7 +34,7 @@ export default function VariablesAndSourcesModal() {
             <h2 className="text-lg font-bold mb-4 text-black">1. Gown Comparison:</h2>
             <p className="mb-4 text-gray-800">
               To compare the gowns, please mark the checkboxes of gowns that you would like based on sustainable
-              parameters. Click the "Edit" button to adjust the cost, wash durability, and select certifications for
+              parameters. Click the &quot;Edit&quot; button to adjust the cost, wash durability, and select certifications for
               each gown.
             </p>
           </div>

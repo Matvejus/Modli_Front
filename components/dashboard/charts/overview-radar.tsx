@@ -3,11 +3,11 @@
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend } from "recharts"
 
 const data = [
-  { name: "Jan", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
-  { name: "Feb", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
-  { name: "Mar", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
-  { name: "Apr", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
-  { name: "May", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
+  { name: "Manufactoring", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
+  { name: "Spinning", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
+  { name: "Finishing", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
+  { name: "Transport", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
+  { name: "Use", dataset1: Math.floor(Math.random() * 100), dataset2: Math.floor(Math.random() * 100) },
 ]
 
 export function OverviewRadar() {

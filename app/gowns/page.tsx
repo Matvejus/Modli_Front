@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { InfoCircledIcon } from '@radix-ui/react-icons'
 import { useRouter } from 'next/navigation'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
 
@@ -46,15 +45,42 @@ export default function CircularProcurementTool() {
 
   useEffect(() => {
     const fetchGowns = async () => {
-      const response = await fetch('http://127.0.0.1:8000/emissions/gowns/')
-      const data = await response.json()
-      setReusableGowns(data.filter((gown: Gown) => gown.reusable))
-      setSingleUseGowns(data.filter((gown: Gown) => !gown.reusable))
-      setLoading(false)
-    }
-
-    fetchGowns()
-  }, [])
+      try {
+        const response = await fetch('http://127.0.0.1:8000/emissions/gowns/');
+        if (!response.ok) throw new Error('Failed to fetch data');
+        
+        const data = await response.json();
+        setReusableGowns(data.filter((gown: Gown) => gown.reusable));
+        setSingleUseGowns(data.filter((gown: Gown) => !gown.reusable));
+      } catch (error) {
+        // API is down or there's an error - provide mock data
+        console.error("API error: ", error);
+  
+        const mockReusableGown: Gown = {
+          id: 1,
+          name: 'Reusable Mock Gown',
+          cost: 25,
+          washes: 50,
+          reusable: true,
+        };
+        
+        const mockSingleUseGown: Gown = {
+          id: 2,
+          name: 'Single-use Mock Gown',
+          cost: 5,
+          reusable: false,
+        };
+        
+        setReusableGowns([mockReusableGown]);
+        setSingleUseGowns([mockSingleUseGown]);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchGowns();
+  }, []);
+  
 
   const handleGownSelection = (gownId: number) => {
     setSelectedGowns(prev => 
@@ -75,7 +101,10 @@ export default function CircularProcurementTool() {
   }
 
   if (loading) 
-    // return <div className="flex justify-center items-center h-screen">Loading...</div>
+     return <div className="flex justify-center items-center h-screen">Loading...</div>
+    // Switch on/off for api on vercel without django (make dummy 2) - host django
+
+
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
