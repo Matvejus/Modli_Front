@@ -63,7 +63,7 @@ export function Overview() {
         {/* Second dataset */}
         <Bar
           dataKey="revenue"
-          fill="#82ca9d" // Different color for second dataset
+          fill="hsl(var(--chart-2))" // Different color for second dataset
           radius={[4, 4, 0, 0]}
         />
       </BarChart>

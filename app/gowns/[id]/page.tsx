@@ -13,6 +13,7 @@ type Gown = {
   washes: number
   comfort: number
   hygine: number
+  certificates: string[]
 }
 
 type Emission = {
@@ -53,26 +54,73 @@ export default function GownDetail({ params }: GownDetailProps) {
   useEffect(() => {
     if (id) {
       const fetchGownDetails = async () => {
-        const gownRes = await fetch(`http://127.0.0.1:8000/emissions/gowns/${id}/`)
-        const gownData = await gownRes.json()
-        setGown(gownData)
+        try {
+          // Fetch gown details
+          const gownRes = await fetch(`http://127.0.0.1:8000/emissions/gowns/${id}/`);
+          if (!gownRes.ok) throw new Error('Failed to fetch gown details');
+          const gownData = await gownRes.json();
+          setGown(gownData);
+  
+          // Fetch emissions data
+          const emissionsRes = await fetch(`http://127.0.0.1:8000/emissions/gowns/${id}/emissions/`);
+          if (!emissionsRes.ok) throw new Error('Failed to fetch emissions data');
+          const emissionsData = await emissionsRes.json();
+          setEmissions(emissionsData);
+        } catch (error) {
+          console.error("API error: ", error);
+  
+          // Fallback mock data for gown details and emissions
+          const mockGown = {
+            id: id,
+            name: id === '1' ? 'Cotton' : 'Polyester',
+            cost: id === '1' ? 25 : 5,
+            washes: id === '1' ? 50 : 0,  // Provide a default value (e.g., 0) for undefined cases
+            reusable: id === '1',
+            comfort: id === '1' ? 4 : 3,
+            hygine: id === '1' ? 5 : 4,
+            certificates: id === '1' ? ['ISO 14001', 'Oeko-Tex Standard 100'] : ['CE Certified', 'ISO 9001'],
+          };
+          const fallbackEmissions: Emission[] = [
+            {
+              emission_stage: 'CO2',
+              fibers: id === '1' ? 10 : 30,
+              yarn_production: id === '1' ? 5 : 15,
+              fabric_production: id === '1' ? 3 : 8,
+              finishing: id === '1' ? 2 : 6,
+              manufacturing: id === '1' ? 1 : 4,
+              packaging: id === '1' ? 0.5 : 2,
+              transport: id === '1' ? 0.2 : 1,
+              use: id === '1' ? 0.1 : 0.5,
+              total: id === '1' ? 21.8 : 66.5,
+            },
+          ];
+          setEmissions(fallbackEmissions);
 
-        const emissionsRes = await fetch(`http://127.0.0.1:8000/emissions/gowns/${id}/emissions/`)
-        const emissionsData = await emissionsRes.json()
-        setEmissions(emissionsData)
-        setLoading(false)
-      }
+          // const handleReusableToggle = () => {
+          //   setGown((prevGown) => ({
+          //     ...prevGown,
+          //     reusable: !prevGown.reusable,  // Toggle reusable state
+          //   }));
+          // };
 
-      fetchGownDetails()
+  
+          setGown(mockGown);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchGownDetails();
     }
-  }, [id])
+  }, [id]);
+  
 
   if (loading || !gown) return <div className="flex justify-center items-center h-screen">Loading...</div>
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold text-center mb-6">{gown.name}</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardHeader>
             <CardTitle>Reusable</CardTitle>
@@ -114,6 +162,24 @@ export default function GownDetail({ params }: GownDetailProps) {
             <Input type="number" value={gown.hygine} onChange={() => {}} min={0} max={5} />
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Certificates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableBody>
+                {gown.certificates.map((certificate, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="text-sm font-medium text-left">
+                      {certificate}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
 
       <h2 className="text-2xl font-semibold mb-4">Emissions</h2>
@@ -136,7 +202,7 @@ export default function GownDetail({ params }: GownDetailProps) {
           <TableBody>
             {emissions.map((emission, index) => (
               <TableRow key={index}>
-                <TableCell>{emission.emission_stage}</TableCell>
+                <TableCell>{emission.emission_stage} KG</TableCell>
                 <TableCell>{emission.fibers}</TableCell>
                 <TableCell>{emission.yarn_production}</TableCell>
                 <TableCell>{emission.fabric_production}</TableCell>
