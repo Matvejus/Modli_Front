@@ -4,12 +4,28 @@ import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-export default async function OptimizationPage() {
+export default function OptimizationPage() {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState(null)
   const [error, setError] = useState(null)
+  const [specifications, setSpecifications] = useState({
+    usage_per_week: 1000,
+    pickups_per_week: 2,
+    optimizer: ["WATER"],
+    loss_percentage: 0.001
+  })
+
+  const handleSpecificationChange = (key, value) => {
+    setSpecifications(prev => ({
+      ...prev,
+      [key]: key === 'loss_percentage' ? parseFloat(value) : parseInt(value, 10)
+    }))
+  }
 
   const startOptimization = async () => {
     setLoading(true)
@@ -62,27 +78,12 @@ export default async function OptimizationPage() {
             ]
           }
         },
-        {
-          "name": "Silk",
-          "reusable": 1,
-          "impacts": {
-            "envpars": ["CO2EQ", "WATER", "ENERGY", "MONEY"],
-            "stages": ["NEWARRIVALS", "LAUNDRY", "LOST", "EOL", "ARRIVALMOM"],
-            "params": [
-              [15, 8, 38, 7],
-              [0.9, 1.1, 0.6, 0.28],
-              [1, 1, 1, 0],
-              [3.5, 0, -9, -0.09],
-              [87, 0, 77, 400]
-            ]
-          }
-        }
       ],
       "specifications": {
-        "usage_per_week": 1000,
-        "pickups_per_week": 2,
-        "optimizer": ["ENERGY"],
-        "loss_percentage": 0.001
+        "usage_per_week": specifications.usage_per_week,
+        "pickups_per_week": specifications.pickups_per_week,
+        "optimizer": specifications.optimizer,
+        "loss_percentage": specifications.loss_percentage
       }
     }
 
@@ -229,6 +230,61 @@ export default async function OptimizationPage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Optimization Results</h1>
+
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Optimization Specifications</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="usage_per_week">Usage per week</Label>
+              <Input
+                id="usage_per_week"
+                type="number"
+                value={specifications.usage_per_week}
+                onChange={(e) => handleSpecificationChange('usage_per_week', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="pickups_per_week">Pickups per week</Label>
+              <Input
+                id="pickups_per_week"
+                type="number"
+                value={specifications.pickups_per_week}
+                onChange={(e) => handleSpecificationChange('pickups_per_week', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="optimizer">Optimizer</Label>
+              <Select 
+                value={specifications.optimizer} 
+                onValueChange={(value) => handleSpecificationChange('optimizer', value)}
+              >
+                <SelectTrigger id="optimizer">
+                  <SelectValue placeholder="Select optimizer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="WATER">WATER</SelectItem>
+                  <SelectItem value="CO2EQ">CO2EQ</SelectItem>
+                  <SelectItem value="ENERGY">ENERGY</SelectItem>
+                  <SelectItem value="MONEY">MONEY</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="loss_percentage">Loss percentage</Label>
+              <Input
+                id="loss_percentage"
+                type="number"
+                step="0.001"
+                value={specifications.loss_percentage}
+                onChange={(e) => handleSpecificationChange('loss_percentage', e.target.value)}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Button
         onClick={startOptimization}

@@ -20,7 +20,7 @@ type Gown = {
   reusable: boolean
 }
 
-export default function CircularProcurementTool() {
+export default function GownsPage() {
   const [reusableGowns, setReusableGowns] = useState<Gown[]>([])
   const [singleUseGowns, setSingleUseGowns] = useState<Gown[]>([])
   const [selectedGowns, setSelectedGowns] = useState<number[]>([])
@@ -96,9 +96,60 @@ export default function CircularProcurementTool() {
 
   const router = useRouter()
 
-  const handleOptimizePortfolio = () => {
-    router.push('/dashboard')
-  }
+
+  const handleOptimizePortfolio = async () => {
+    try {
+      const optimizationData = {
+        gowns: [
+          {
+            name: "Cotton",
+            reusable: 0,
+            impacts: {
+              envpars: ["CO2EQ", "WATER", "ENERGY", "MONEY"],
+              stages: ["NEWARRIVALS", "LAUNDRY", "LOST", "EOL", "ARRIVALMOM"],
+              params: [
+                [8, 3, 15, 0.7],
+                [0, 0, 0, 0],
+                [1, 1, 1, 0],
+                [3, 0, -8, -0.08],
+                [90, 0, 95, 9]
+              ]
+            }
+          },
+          // Add the other gown data here...
+        ],
+        specifications: {
+          usage_per_week: parseInt(gownsPerWeek),
+          pickups_per_week: parseInt(laundryPickups),
+          optimizer: ["MONEY"],
+          loss_percentage: parseInt(lostGowns)
+        }
+      };
+  
+      const response = await fetch('/api/optimize-portfolio', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(optimizationData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to start optimization');
+      }
+  
+      const result = await response.json();
+      console.log('Optimization started:', result);
+  
+      // Redirect to the results page with query params
+      router.push({
+        pathname: '/optimization-results',
+        query: { data: JSON.stringify(result) },
+      }, undefined, { shallow: true });
+    } catch (error) {
+      console.error('Error starting optimization:', error);
+    }
+  };
 
   if (loading) 
      return <div className="flex justify-center items-center h-screen">Loading...</div>
