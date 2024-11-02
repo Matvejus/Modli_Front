@@ -11,6 +11,7 @@ import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from 'next/navigation'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
+import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
 
 type Gown = {
   id: number
@@ -25,23 +26,20 @@ export default function GownsPage() {
   const [singleUseGowns, setSingleUseGowns] = useState<Gown[]>([])
   const [selectedGowns, setSelectedGowns] = useState<number[]>([])
   const [loading, setLoading] = useState(true)
-  const [planningPeriod, setPlanningPeriod] = useState('3 months')
-  const [gownsPerWeek, setGownsPerWeek] = useState('350')
-  const [gownsPerDay, setGownsPerDay] = useState('50')
-  const [laundryPickups, setLaundryPickups] = useState('2')
-  const [daysUntilReturn, setDaysUntilReturn] = useState('2')
-  const [lostGowns, setLostGowns] = useState('1')
-  const [healthcareLocation, setHealthcareLocation] = useState({
-    city: 'Amsterdam',
-    postcode: '1012 AB',
-    street: 'Stationsplein'
+  const [specifications, setSpecifications] = useState({
+    usage_per_week: 1000,
+    pickups_per_week: 2,
+    optimizer: ["WATER"], // Keep it as an array
+    loss_percentage: 0.001
   })
-  const [laundryLocation, setLaundryLocation] = useState({
-    city: 'Amsterdam',
-    postcode: '1012 AB',
-    street: 'Stationsplein'
-  })
-  const [reusablePercentage, setReusablePercentage] = useState(50)
+
+  const handleSpecificationChange = (key, value) => {
+    setSpecifications(prev => ({
+      ...prev,
+      [key]: key === 'loss_percentage' ? parseFloat(value) : parseInt(value, 10),
+      optimizer: key === 'optimizer' ? [value] : prev.optimizer // Ensure optimizer is always an array with one value
+    }))
+  }
 
   useEffect(() => {
     const fetchGowns = async () => {
@@ -228,105 +226,10 @@ export default function GownsPage() {
         <TabsContent value="optimize">
           <Card>
             <CardContent className="pt-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Planning period</label>
-                  <Select onValueChange={setPlanningPeriod} defaultValue={planningPeriod}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select planning period" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="3 months">3 months</SelectItem>
-                      <SelectItem value="6 months">6 months</SelectItem>
-                      <SelectItem value="12 months">12 months</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gowns per week</label>
-                  <Input type="number" value={gownsPerWeek} onChange={(e) => setGownsPerWeek(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gowns per day</label>
-                  <Input type="number" value={gownsPerDay} onChange={(e) => setGownsPerDay(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Laundry pick-ups</label>
-                  <Input type="number" value={laundryPickups} onChange={(e) => setLaundryPickups(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Days until return</label>
-                  <Input type="number" value={daysUntilReturn} onChange={(e) => setDaysUntilReturn(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">% of Gowns lost</label>
-                  <Input type="number" value={lostGowns} onChange={(e) => setLostGowns(e.target.value)} />
-                </div>
-              </div>
-              <div className="w-full max-w-4xl mx-auto ">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Healthcare Organization Location</h3>
-                    <div className="space-y-2">
-                      <Input 
-                        placeholder="City" 
-                        value={healthcareLocation.city} 
-                        onChange={(e) => setHealthcareLocation({...healthcareLocation, city: e.target.value})} 
-                        aria-label="Healthcare Organization City"
-                      />
-                      <Input 
-                        placeholder="Postcode" 
-                        value={healthcareLocation.postcode} 
-                        onChange={(e) => setHealthcareLocation({...healthcareLocation, postcode: e.target.value})} 
-                        aria-label="Healthcare Organization Postcode"
-                      />
-                      <Input 
-                        placeholder="Street, house number" 
-                        value={healthcareLocation.street} 
-                        onChange={(e) => setHealthcareLocation({...healthcareLocation, street: e.target.value})} 
-                        aria-label="Healthcare Organization Street and House Number"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Laundry Location</h3>
-                    <div className="space-y-2">
-                      <Input 
-                        placeholder="City" 
-                        value={laundryLocation.city} 
-                        onChange={(e) => setLaundryLocation({...laundryLocation, city: e.target.value})} 
-                        aria-label="Laundry City"
-                      />
-                      <Input 
-                        placeholder="Postcode" 
-                        value={laundryLocation.postcode} 
-                        onChange={(e) => setLaundryLocation({...laundryLocation, postcode: e.target.value})} 
-                        aria-label="Laundry Postcode"
-                      />
-                      <Input 
-                        placeholder="Street, house number" 
-                        value={laundryLocation.street} 
-                        onChange={(e) => setLaundryLocation({...laundryLocation, street: e.target.value})} 
-                        aria-label="Laundry Street and House Number"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Reusable gowns in portfolio</label>
-                <Slider
-                  defaultValue={[reusablePercentage]}
-                  max={100}
-                  step={1}
-                  onValueChange={(value) => setReusablePercentage(value[0])}
-                />
-                <div className="flex justify-between text-sm text-gray-500 mt-1">
-                  <span>0%</span>
-                  <span>{reusablePercentage}%</span>
-                  <span>100%</span>
-                </div>
-              </div>
+                <OptimizationSpecifications 
+                specifications={specifications} 
+                handleSpecificationChange={handleSpecificationChange} 
+              />
               <Button onClick={handleOptimizePortfolio} className="w-full">Optimize Portfolio</Button>
             </CardContent>
           </Card>
