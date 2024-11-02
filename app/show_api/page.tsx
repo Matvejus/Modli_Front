@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,7 @@ import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
 import UsageChart from '@/components/dashboard/Api/GownUsage'
 import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import OptimizationSpecifications from '../../components/dashboard/Api/OptimizationSpecifications' // Import the new component
+import { useEffect } from 'react' // Import useEffect for side effects
 
 
 
@@ -21,6 +22,9 @@ export default function OptimizationPage() {
     optimizer: ["WATER"], // Keep it as an array
     loss_percentage: 0.001
   })
+
+  // Add a new state to hold the API response
+  const [apiResponse, setApiResponse] = useState(null);
 
   const handleSpecificationChange = (key, value) => {
     setSpecifications(prev => ({
@@ -90,9 +94,6 @@ export default function OptimizationPage() {
       }
     }
 
-    // Log the optimization data to the terminal
-    console.log("Sending optimization data:", JSON.stringify(optimizationData, null, 2));
-
     try {
       const response = await fetch('/api/start-optimization', {
         method: 'POST',
@@ -106,6 +107,7 @@ export default function OptimizationPage() {
 
       if (response.ok) {
         setResults(data.results)
+        setApiResponse(data); // Store the entire API response
       } else {
         setError(data.error || 'An error occurred during optimization')
       }
@@ -116,58 +118,10 @@ export default function OptimizationPage() {
     }
   }
 
-  const prepareChartData = (results) => {
-    const impactCategories = ['CO2EQ', 'WATER', 'ENERGY', 'MONEY']
-    return impactCategories.map(category => {
-      const dataPoint = { name: category }
-      Object.entries(results.results).forEach(([gownName, gownData]) => {
-        // Correctly access the total_impact from the new structure
-        dataPoint[gownName] = Number(gownData.Impacts.total_impact[category].toFixed(2))
-      })
-      return dataPoint
-    })
-  }
-
-  const prepareUsageData = (results) => {
-    const gownNames = Object.keys(results.results)
-    const maxLength = Math.max(...gownNames.map(name => results.results[name].usage_values.length))
-    
-    return Array.from({ length: maxLength }, (_, index) => {
-      const dataPoint = { week: index + 1 }
-      gownNames.forEach(name => {
-        dataPoint[name] = results.results[name].usage_values[index] || 0
-      })
-      return dataPoint
-    })
-  }
-
-  const prepareStackedData = (results) => {
-    // Prepare the data structure for the stacked bar chart
-    return Object.entries(results.results).reduce((acc, [gownName, gownData]) => {
-      acc[gownName] = gownData.Impacts.stages; // Assuming stages are directly available in the gownData
-      return acc;
-    }, {});
-  }
-
-  const renderClusteredBarChart = (chartData) => {
-    return <ClusteredBarChart chartData={chartData} />
-  }
-  const renderUsageChart = (usageData) => {
-    return <UsageChart usageData={usageData} />
-  }
-
-
-
-
-  
-
-
-
+  // Render the API response if it exists
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Optimization Results</h1>
-
-      <Card className="mb-6">
+    <div>
+            <Card className="mb-6">
         <CardHeader>
           <CardTitle>Optimization Specifications</CardTitle>
         </CardHeader>
@@ -186,15 +140,10 @@ export default function OptimizationPage() {
       >
         {loading ? 'Optimizing...' : 'Start Optimization'}
       </Button>
-
-      {error && <p className="text-red-500 mb-4" role="alert">{error}</p>}
-
-      {results && (
+      {apiResponse && (
         <div>
-          <h2 className="text-2xl font-semibold mb-4">Results</h2>
-          {renderClusteredBarChart(prepareChartData(results))}
-          {renderUsageChart(prepareUsageData(results))}
-          <GownImpactsStacked stackedData={prepareStackedData(results)} />
+          <h2>API Response:</h2>
+          <pre>{JSON.stringify(apiResponse, null, 2)}</pre> {/* Display the API response */}
         </div>
       )}
     </div>
