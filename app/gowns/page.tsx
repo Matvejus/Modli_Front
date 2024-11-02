@@ -12,14 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from 'next/navigation'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
 import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
+import GownList from '@/components/dashboard/Api/GownList'
 
-type Gown = {
-  id: number
-  name: string
-  cost: number
-  washes?: number
-  reusable: boolean
-}
+
 
 export default function GownsPage() {
   const [reusableGowns, setReusableGowns] = useState<Gown[]>([])
@@ -155,86 +150,55 @@ export default function GownsPage() {
 
 
 
-  return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center">Circular Procurement Tool</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-gray-600 mb-4">
-            Compare the economic, social, and environmental impact of different isolation gowns.
-          </p>
-          <VariablesAndSourcesModal />
-        </CardContent>
-      </Card>
-
-      <Tabs defaultValue="compare" className="mb-8">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="compare">Compare Gowns</TabsTrigger>
-          <TabsTrigger value="optimize">Optimize Portfolio</TabsTrigger>
-        </TabsList>
-        <TabsContent value="compare">
+    return (
+      <div className="container mx-auto p-4 max-w-7xl">
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-center">Circular Procurement Tool</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-gray-600 mb-4">
+              Compare the economic, social, and environmental impact of different isolation gowns.
+            </p>
+            <VariablesAndSourcesModal />
+          </CardContent>
+        </Card>
+  
+        <div className="grid md:grid-cols-2 gap-8">
           <Card>
-            <CardContent className="pt-6">
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Reusable Gowns</h3>
-                {reusableGowns.map((gown) => (
-                  <div key={gown.id} className="flex items-center justify-between mb-2 p-2 bg-gray-50 rounded">
-                    <div className="flex items-center">
-                      <Checkbox
-                        id={`gown-${gown.id}`}
-                        checked={selectedGowns.includes(gown.id)}
-                        onCheckedChange={() => handleGownSelection(gown.id)}
-                        className="mr-2"
-                      />
-                      <label htmlFor={`gown-${gown.id}`} className="text-sm">
-                        {gown.name} - €{gown.cost} per p. - {gown.washes} washes
-                      </label>
-                    </div>
-                    <Link href={`/gowns/${gown.id}`} className="text-blue-600 hover:underline text-sm">
-                      Edit
-                    </Link>
-                  </div>
-                ))}
-              </div>
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Single-use Gowns</h3>
-                {singleUseGowns.map((gown) => (
-                  <div key={gown.id} className="flex items-center justify-between mb-2 p-2 bg-gray-50 rounded">
-                    <div className="flex items-center">
-                      <Checkbox
-                        id={`gown-${gown.id}`}
-                        checked={selectedGowns.includes(gown.id)}
-                        onCheckedChange={() => handleGownSelection(gown.id)}
-                        className="mr-2"
-                      />
-                      <label htmlFor={`gown-${gown.id}`} className="text-sm">
-                        {gown.name} - €{gown.cost} per p.
-                      </label>
-                    </div>
-                    <Link href={`/gowns/${gown.id}`} className="text-blue-600 hover:underline text-sm">
-                      Edit
-                    </Link>
-                  </div>
-                ))}
-              </div>
-              <Button onClick={handleCompareGowns} className="w-full">Compare Selected Gowns</Button>
+            <CardHeader>
+              <CardTitle>Gowns List</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <GownList 
+                title="Reusable Gowns"
+                gowns={reusableGowns} 
+                selectedGowns={selectedGowns} 
+                onGownSelection={handleGownSelection} 
+              />
+              <GownList 
+                title="Single-use Gowns"
+                gowns={singleUseGowns} 
+                selectedGowns={selectedGowns} 
+                onGownSelection={handleGownSelection} 
+              />
+              <Button onClick={handleCompareGowns} className="w-full mt-4">Compare Selected Gowns</Button>
             </CardContent>
           </Card>
-        </TabsContent>
-        <TabsContent value="optimize">
+  
           <Card>
-            <CardContent className="pt-6 space-y-4">
-                <OptimizationSpecifications 
+            <CardHeader>
+              <CardTitle>Optimization Specifications</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <OptimizationSpecifications 
                 specifications={specifications} 
                 handleSpecificationChange={handleSpecificationChange} 
               />
-              <Button onClick={handleOptimizePortfolio} className="w-full">Optimize Portfolio</Button>
+              <Button onClick={handleOptimizePortfolio} className="w-full mt-4">Optimize Portfolio</Button>
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
+        </div>
+      </div>
+    )
 }
