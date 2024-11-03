@@ -51,87 +51,66 @@ export default function GownsPage() {
   }, [])
 
   const startOptimization = async () => {
-    setLoading(true)
-    setError(null)
-
-    const optimizationData = {
-      gowns: [
-        {
-          name: "Cotton",
-          reusable: 0,
-          impacts: {
-            envpars: ["CO2EQ", "WATER", "ENERGY", "MONEY"],
-            stages: ["NEWARRIVALS", "LAUNDRY", "LOST", "EOL", "ARRIVALMOM"],
-            params: [
-              [8, 3, 15, 0.7],
-              [0, 0, 0, 0],
-              [1, 1, 1, 0],
-              [3, 0, -8, -0.08],
-              [90, 0, 95, 9]
-            ]
-          }
-        },
-        {
-          name: "PET",
-          reusable: 1,
-          impacts: {
-            envpars: ["CO2EQ", "WATER", "ENERGY", "MONEY"],
-            stages: ["NEWARRIVALS", "LAUNDRY", "LOST", "EOL", "ARRIVALMOM"],
-            params: [
-              [25, 80, 18, 18],
-              [0.8, 0.9, 1.1, 0.35],
-              [1, 1, 1, 0],
-              [-8, -35, -9, -0.9],
-              [95, 0, 98, 9.5]
-            ]
-          }
-        },
-        {
-          name: "Polyester",
-          reusable: 1,
-          impacts: {
-            envpars: ["CO2EQ", "WATER", "ENERGY", "MONEY"],
-            stages: ["NEWARRIVALS", "LAUNDRY", "LOST", "EOL", "ARRIVALMOM"],
-            params: [
-              [35, 18, 28, 9],
-              [0.9, 1.1, 0.6, 0.28],
-              [1, 1, 1, 0],
-              [3.5, 0, -9, -0.09],
-              [98, 0, 97, 9.8]
-            ]
-          }
-        },
-      ],
-      specifications: {
-        usage_per_week: specifications.usage_per_week,
-        pickups_per_week: specifications.pickups_per_week,
-        optimizer: specifications.optimizer,
-        loss_percentage: specifications.loss_percentage
-      }
-    }
-
+    setLoading(true);
+    setError(null);
+  
+    // Fetch emissions data for selected gowns
     try {
+      const emissionsResponse = await fetch(`http://127.0.0.1:8000/emissions/gown_emissions/`);
+      if (!emissionsResponse.ok) throw new Error("Failed to fetch emissions data");
+      const emissionsData = await emissionsResponse.json();
+  
+      // Filter only selected gowns and format for optimization
+      const optimizationData = {
+        gowns: selectedGowns.map(gownId => {
+          const gownData = emissionsData.find(g => g.gown === gownId);
+  
+          return {
+            name: gownData.gown,
+            reusable: gownData.reusable ? 1 : 0,
+            impacts: {
+              envpars: ["CO2EQ", "WATER", "ENERGY", "MONEY"],
+              stages: ["NEWARRIVALS", "LAUNDRY", "LOST", "EOL", "ARRIVALMOM"],
+              params: [
+                [gownData.emissions.CO2, gownData.emissions.Water, gownData.emissions.Energy, gownData.emissions.Cost],  // NEWARRIVALS
+                gownData.reusable ? [1, 1, 0.5, 0.3] : [0, 0, 0, 0],  // LAUNDRY, depends on reusability
+                [1, 1, 1, 0],  // Static LOST
+                [4, 0, -10, -0.1],  // Static EOL
+                [100, 0, 100, 10]  // Static ARRIVALMOM
+              ]
+            }
+          };
+        }),
+        specifications: {
+          usage_per_week: specifications.usage_per_week,
+          pickups_per_week: specifications.pickups_per_week,
+          optimizer: specifications.optimizer,
+          loss_percentage: specifications.loss_percentage
+        }
+      };
+  
+      // Start the optimization with the structured data
       const response = await fetch('/api/start-optimization', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(optimizationData),
-      })
-
-      const data = await response.json()
-
+      });
+  
+      const data = await response.json();
+  
       if (response.ok) {
-        setResults(data.results)
+        setResults(data.results);
       } else {
-        setError(data.error || 'An error occurred during optimization')
+        setError(data.error || 'An error occurred during optimization');
       }
     } catch (error) {
-      setError('An unexpected error occurred: ' + (error instanceof Error ? error.message : String(error)))
+      setError('An unexpected error occurred: ' + (error instanceof Error ? error.message : String(error)));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const prepareChartData = (results) => {
     const impactCategories = ['CO2EQ', 'WATER', 'ENERGY', 'MONEY']
