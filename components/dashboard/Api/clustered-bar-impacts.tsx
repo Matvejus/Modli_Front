@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 const ClusteredBarChart = ({ chartData }) => {
-  const colors = ['#8884d8', '#82ca9d', '#ffc658']
+  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#4da6ff', '#e6d8c3', '#6b7280', '#3b82f6']
   const gownNames = Object.keys(chartData[0]).filter(key => key !== 'name')
 
   return (

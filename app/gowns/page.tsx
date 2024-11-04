@@ -66,7 +66,7 @@ export default function GownsPage() {
           const gownData = emissionsData.find(g => g.gown === gownId);
   
           return {
-            name: gownData.gown,
+            name: gownData.name,
             reusable: gownData.reusable ? 1 : 0,
             impacts: {
               envpars: ["CO2EQ", "WATER", "ENERGY", "MONEY"],
