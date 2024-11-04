@@ -50,7 +50,7 @@ export default function OptimizationSpecifications({ specifications, handleSpeci
         <Slider
           id="loss_percentage"
           min={0}
-          max={100}
+          max={1}
           step={0.1}
           value={[parseFloat(specifications.loss_percentage)]}
           onValueChange={(value) => handleSpecificationChange('loss_percentage', value[0].toString())}
@@ -58,7 +58,7 @@ export default function OptimizationSpecifications({ specifications, handleSpeci
         <div className="flex justify-between text-sm text-muted-foreground">
           <span>0%</span>
           <span>{specifications.loss_percentage}%</span>
-          <span>100%</span>
+          <span>1%</span>
         </div>
       </div>
     </div>

@@ -47,7 +47,7 @@ export default function GownImpactsStacked({ stackedData }) {
                   { label: stage, color: colors[index % colors.length] },
                 ])
               )}
-              className="h-[250px]"
+              className="h-[250px] flex justify-center"
             >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={transformedData}>

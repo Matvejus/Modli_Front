@@ -138,9 +138,12 @@ export default function GownsPage() {
 
   const prepareStackedData = (results) => {
     return Object.entries(results.results).reduce((acc, [gownName, gownData]) => {
-      acc[gownName] = gownData.Impacts.stages
-      return acc
-    }, {})
+      acc[gownName] = {
+        Impacts: gownData.Impacts,
+        stages: gownData.Impacts.stages
+      };
+      return acc;
+    }, {});
   }
 
   return (
