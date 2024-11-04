@@ -29,6 +29,9 @@ export default function GownImpactsStacked({ stackedData }) {
       });
     });
     return transformedGown;
+  }).filter(gown => {
+    // Check if all impacts are zero
+    return stages.some(stage => impactTypes.some(impact => gown[`${stage}_${impact}`] > 0));
   });
 
   return (
