@@ -196,7 +196,7 @@ export default function GownsPage() {
       <div className="grid md:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
-            <CardTitle>Gowns List</CardTitle>
+            <CardTitle>Gowns</CardTitle>
           </CardHeader>
           <CardContent>
             <GownList 

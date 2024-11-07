@@ -230,15 +230,15 @@ export default function GownDetail({ params }: GownDetailProps) {
             {emissions.map((emission, index) => (
               <TableRow key={index}>
                 <TableCell>{emission.emission_stage} KG</TableCell>
-                <TableCell>{emission.fibers}</TableCell>
-                <TableCell>{emission.yarn_production}</TableCell>
-                <TableCell>{emission.fabric_production}</TableCell>
-                <TableCell>{emission.finishing}</TableCell>
-                <TableCell>{emission.manufacturing}</TableCell>
-                {/* <TableCell>{emission.packaging}</TableCell> */}
-                <TableCell>{emission.transport}</TableCell>
-                <TableCell>{emission.use}</TableCell>
-                <TableCell>{emission.total}</TableCell>
+                <TableCell>{emission.fibers.toFixed(2)}</TableCell>
+                <TableCell>{emission.yarn_production.toFixed(2)}</TableCell>
+                <TableCell>{emission.fabric_production.toFixed(2)}</TableCell>
+                <TableCell>{emission.finishing.toFixed(2)}</TableCell>
+                <TableCell>{emission.manufacturing.toFixed(2)}</TableCell>
+                {/* <TableCell>{emission.packaging.toFixed(2)}</TableCell> */}
+                <TableCell>{emission.transport.toFixed(2)}</TableCell>
+                <TableCell>{emission.use.toFixed(2)}</TableCell>
+                <TableCell>{emission.total.toFixed(2)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
