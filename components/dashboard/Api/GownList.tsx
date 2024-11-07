@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react'
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import GownEmissionChart from './gown-emission-chart'
+import GownEmissionChart from './GownRadar'
 
 interface Gown {
   id: string
   name: string
   cost: number
   washes?: number
-  emissionImpacts: {
+  emission_impacts: {
     production: number
     transportation: number
     washing: number
@@ -30,10 +30,15 @@ export default function GownList({ title, gowns, selectedGowns, onGownSelection 
   const [selectedGownData, setSelectedGownData] = useState<Gown[]>([])
 
   useEffect(() => {
-    if (gowns) {
-      setSelectedGownData(gowns.filter(gown => selectedGowns.includes(gown.id)))
+    if (selectedGowns.length > 0) {
+      fetch(`http://127.0.0.1:8000/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
+        .then(response => response.json())
+        .then(data => setSelectedGownData(data))
+        .catch(error => console.error('Error fetching selected gowns data:', error))
+    } else {
+      setSelectedGownData([])
     }
-  }, [selectedGowns, gowns])
+  }, [selectedGowns])
 
   return (
     <div className="mb-6">
@@ -57,33 +62,6 @@ export default function GownList({ title, gowns, selectedGowns, onGownSelection 
           </Link>
         </div>
       ))}
-      {selectedGownData.length > 0 && (
-  <div className="mt-6">
-    <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4>
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Cost (€)</TableHead>
-          <TableHead>Washes</TableHead>
-          <TableHead>Cost per Wash (€)</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {selectedGownData.map((gown) => (
-          <TableRow key={gown.id}>
-            <TableCell>{gown.name}</TableCell>
-            <TableCell>{gown.cost.toFixed(2)}</TableCell>
-            <TableCell>{gown.washes || 'N/A'}</TableCell>
-            <TableCell>
-              {gown.washes ? (gown.cost / gown.washes).toFixed(2) : 'N/A'}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  </div>
-)}
     </div>
   )
 }

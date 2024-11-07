@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import GownList from '@/components/dashboard/Api/GownList'
+import GownEmissionChart from '@/components/dashboard/Api/GownRadar'
 import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
 import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
 import UsageChart from '@/components/dashboard/Api/GownUsage'
@@ -11,10 +12,24 @@ import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
 import Arrivals from '@/components/dashboard/Api/GownArrivals'
 
+interface Gown {
+  id: string
+  name: string
+  cost: number
+  washes?: number
+  emission_impacts: {
+    CO2: number
+    Energy: number
+    Water: number
+    Cost: number
+  }
+}
+
 export default function GownsPage() {
-  const [reusableGowns, setReusableGowns] = useState([])
-  const [singleUseGowns, setSingleUseGowns] = useState([])
-  const [selectedGowns, setSelectedGowns] = useState([])
+  const [reusableGowns, setReusableGowns] = useState<Gown[]>([])
+  const [singleUseGowns, setSingleUseGowns] = useState<Gown[]>([])
+  const [selectedGowns, setSelectedGowns] = useState<string[]>([])
+  const [selectedGownData, setSelectedGownData] = useState<Gown[]>([])
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState(null)
   const [error, setError] = useState(null)
@@ -51,6 +66,23 @@ export default function GownsPage() {
     fetchGowns()
   }, [])
 
+  useEffect(() => {
+    if (selectedGowns.length > 0) {
+      fetch(`http://127.0.0.1:8000/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
+        .then(response => response.json())
+        .then(data => setSelectedGownData(data))
+        .catch(error => console.error('Error fetching selected gowns data:', error))
+    } else {
+      setSelectedGownData([])
+    }
+  }, [selectedGowns])
+
+  const handleGownSelection = (gownId: string) => {
+    setSelectedGowns(prev => 
+      prev.includes(gownId) ? prev.filter(id => id !== gownId) : [...prev, gownId]
+    )
+  }
+
   const startOptimization = async () => {
     setLoading(true);
     setError(null);
@@ -76,8 +108,8 @@ export default function GownsPage() {
                 [gownData.emissions.CO2, gownData.emissions.Water, gownData.emissions.Energy, gownData.emissions.Cost],  // NEWARRIVALS
                 gownData.reusable ? [1, 1, 0.5, 0.3] : [0, 0, 0, 0],  // LAUNDRY, depends on reusability
                 [1, 1, 1, 0],  // Static LOST
-                [3,0,-8,-0.08],  // Static EOL
-                [90,0,95,9]  // Static ARRIVALMOM
+                [4, 0, -10, -0.1],  // Static EOL
+                [100, 0, 100, 10]  // Static ARRIVALMOM
               ]
             }
           };
@@ -147,7 +179,6 @@ export default function GownsPage() {
     }, {});
   }
 
-
   return (
     <div className="container mx-auto p-4 max-w-7xl">
       <Card className="mb-8">
@@ -172,14 +203,20 @@ export default function GownsPage() {
               title="Reusable Gowns"
               gowns={reusableGowns} 
               selectedGowns={selectedGowns} 
-              onGownSelection={gownId => setSelectedGowns(prev => prev.includes(gownId) ? prev.filter(id => id !== gownId) : [...prev, gownId])} 
+              onGownSelection={handleGownSelection} 
             />
             <GownList 
               title="Single-use Gowns"
               gowns={singleUseGowns} 
               selectedGowns={selectedGowns} 
-              onGownSelection={gownId => setSelectedGowns(prev => prev.includes(gownId) ? prev.filter(id => id !== gownId) : [...prev, gownId])} 
+              onGownSelection={handleGownSelection} 
             />
+            {selectedGownData.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4>
+                <GownEmissionChart gowns={selectedGownData} />
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -211,7 +248,6 @@ export default function GownsPage() {
           <ClusteredBarChart chartData={prepareChartData(results)} />
           <GownImpactsStacked stackedData={prepareStackedData(results)} />
           <UsageChart usageData={prepareUsageData(results)} />
-         
         </div>
       )}
     </div>

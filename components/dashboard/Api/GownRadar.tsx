@@ -9,11 +9,11 @@ interface Gown {
   name: string
   cost: number
   washes?: number
-  emissionImpacts: {
-    production: number
-    transportation: number
-    washing: number
-    disposal: number
+  emission_impacts: {
+    CO2: number
+    Energy: number
+    Water: number
+    Cost: number
   }
 }
 
@@ -23,15 +23,24 @@ interface GownEmissionChartProps {
 
 export default function GownEmissionChart({ gowns }: GownEmissionChartProps) {
   const emissionData = [
-    { category: 'Production', fullMark: 150 },
-    { category: 'Transportation', fullMark: 150 },
-    { category: 'Washing', fullMark: 150 },
-    { category: 'Disposal', fullMark: 150 },
+    { category: 'CO2', fullMark: 100 },
+    { category: 'Energy', fullMark: 100 },
+    { category: 'Water', fullMark: 100 },
+    { category: 'Cost', fullMark: 100 },
   ]
+
+  const maxValues = {
+    CO2: Math.max(...gowns.map(gown => gown.emission_impacts.CO2)),
+    Energy: Math.max(...gowns.map(gown => gown.emission_impacts.Energy)),
+    Water: Math.max(...gowns.map(gown => gown.emission_impacts.Water)),
+    Cost: Math.max(...gowns.map(gown => gown.emission_impacts.Cost)),
+  }
 
   gowns.forEach((gown) => {
     emissionData.forEach((data) => {
-      data[gown.name] = gown.emissionImpacts[data.category.toLowerCase() as keyof typeof gown.emissionImpacts]
+      const value = gown.emission_impacts[data.category as keyof typeof gown.emission_impacts]
+      const maxValue = maxValues[data.category as keyof typeof maxValues]
+      data[gown.name] = (value / maxValue) * 100 // Normalize to percentage
     })
   })
 
@@ -40,8 +49,7 @@ export default function GownEmissionChart({ gowns }: GownEmissionChartProps) {
   return (
     <Card className="w-full max-w-3xl">
       <CardHeader>
-        <CardTitle>Gown Emission Impact Comparison</CardTitle>
-        <CardDescription>Radar chart comparing emission impacts across different categories</CardDescription>
+        <CardTitle>Gown Comparison</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer
@@ -51,13 +59,12 @@ export default function GownEmissionChart({ gowns }: GownEmissionChartProps) {
               { label: gown.name, color: colors[index % colors.length] }
             ]))
           }}
-          className="h-[400px]"
+          className="h-[max]"
         >
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart cx="50%" cy="50%" outerRadius="80%" data={emissionData}>
               <PolarGrid />
               <PolarAngleAxis dataKey="category" />
-              <PolarRadiusAxis angle={30} domain={[0, 150]} />
               {gowns.map((gown, index) => (
                 <Radar
                   key={gown.id}
