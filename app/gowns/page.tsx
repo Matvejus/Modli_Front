@@ -10,7 +10,7 @@ import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
 import UsageChart from '@/components/dashboard/Api/GownUsage'
 import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
-import Arrivals from '@/components/dashboard/Api/GownArrivals'
+import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
 
 interface Gown {
   id: string
@@ -245,6 +245,7 @@ export default function GownsPage() {
       {results && (
         <div className="mt-8">
           <h2 className="text-2xl font-semibold mb-4">Results</h2>
+          <GownTotalUsage results={results.results} />
           <ClusteredBarChart chartData={prepareChartData(results)} />
           <GownImpactsStacked stackedData={prepareStackedData(results)} />
           <UsageChart usageData={prepareUsageData(results)} />

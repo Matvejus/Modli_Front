@@ -12,7 +12,7 @@ const ClusteredBarChart = ({ chartData }) => {
   const gownNames = Object.keys(filteredChartData[0] || {}).filter(key => key !== 'name')
 
   return (
-    <Card className="mb-6">
+    <Card className="py-3">
       <CardHeader>
         <CardTitle>Total Impact Comparison</CardTitle>
       </CardHeader>
