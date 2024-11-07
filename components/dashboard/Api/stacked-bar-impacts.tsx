@@ -2,7 +2,7 @@ import { Bar, BarChart, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } fro
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 
-const colors = ["#e57373", "#81c784", "#64b5f6", "#ffd54f", "#ba68c8", "#ffb74d", "#64ffda"];
+const colors = ["#2980B9", "#3498DB", "#1ABC9C", "#16A085", "#ECF0g1", "#BDC3C7", "#2C3E50"];
 
 export default function GownImpactsStacked({ stackedData }) {
   // Check if stackedData is available and has at least one gown
@@ -40,7 +40,7 @@ export default function GownImpactsStacked({ stackedData }) {
         <Card key={impact} className="w-full">
           <CardHeader>
             <CardTitle>{impact} Impact</CardTitle>
-            <CardDescription>Stacked by stages for each gown</CardDescription>
+            <CardDescription></CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -50,13 +50,13 @@ export default function GownImpactsStacked({ stackedData }) {
                   { label: stage, color: colors[index % colors.length] },
                 ])
               )}
-              className="h-[250px] flex justify-center"
+              className="flex justify-center"
             >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={transformedData}>
                   <XAxis dataKey="name" />
                   <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Tooltip />
                   <Legend />
                   {stages.map((stage, index) => (
                     <Bar

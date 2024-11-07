@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 const UsageChart = ({ usageData }) => {
-  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#4da6ff', '#e6d8c3', '#6b7280', '#3b82f6']
+  const colors = ['#627aad', '#69a480', '#d1b45b', '#338ed1', '#d2c6b1', '#4b5563', '#2c6cdc'];
+
   const gownNames = Object.keys(usageData[0]).filter(key => key !== 'week')
 
   return (

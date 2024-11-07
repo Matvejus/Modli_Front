@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Your App Name',
+  title: 'MODLI',
   description: 'Description of your app',
 }
 
@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="flex h-screen overflow-hidden">
-          <main className="flex-1 overflow-y-auto p-8">
+          <main className="bg-gray-10 flex-1 overflow-y-auto p-8">
             {children}
           </main>
         </div>

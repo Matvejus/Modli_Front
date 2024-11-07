@@ -9,6 +9,7 @@ import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
 import UsageChart from '@/components/dashboard/Api/GownUsage'
 import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
+import Arrivals from '@/components/dashboard/Api/GownArrivals'
 
 export default function GownsPage() {
   const [reusableGowns, setReusableGowns] = useState([])
@@ -75,8 +76,8 @@ export default function GownsPage() {
                 [gownData.emissions.CO2, gownData.emissions.Water, gownData.emissions.Energy, gownData.emissions.Cost],  // NEWARRIVALS
                 gownData.reusable ? [1, 1, 0.5, 0.3] : [0, 0, 0, 0],  // LAUNDRY, depends on reusability
                 [1, 1, 1, 0],  // Static LOST
-                [4, 0, -10, -0.1],  // Static EOL
-                [100, 0, 100, 10]  // Static ARRIVALMOM
+                [3,0,-8,-0.08],  // Static EOL
+                [90,0,95,9]  // Static ARRIVALMOM
               ]
             }
           };
@@ -146,6 +147,7 @@ export default function GownsPage() {
     }, {});
   }
 
+
   return (
     <div className="container mx-auto p-4 max-w-7xl">
       <Card className="mb-8">
@@ -207,8 +209,9 @@ export default function GownsPage() {
         <div className="mt-8">
           <h2 className="text-2xl font-semibold mb-4">Results</h2>
           <ClusteredBarChart chartData={prepareChartData(results)} />
-          <UsageChart usageData={prepareUsageData(results)} />
           <GownImpactsStacked stackedData={prepareStackedData(results)} />
+          <UsageChart usageData={prepareUsageData(results)} />
+         
         </div>
       )}
     </div>
