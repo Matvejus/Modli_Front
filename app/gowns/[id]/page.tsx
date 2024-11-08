@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import * as SwitchPrimitive from '@radix-ui/react-switch'
 import { useRouter } from 'next/navigation'
+import EmissionsInfoModal from '@/components/modals/gown_detail'
 
 type Gown = {
   id: string
@@ -118,7 +119,10 @@ export default function GownDetail({ params }: GownDetailProps) {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">{gown.name}</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">{gown.name}</h1>
+        <EmissionsInfoModal className="ml-4" />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardHeader>

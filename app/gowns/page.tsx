@@ -11,6 +11,7 @@ import UsageChart from '@/components/dashboard/Api/GownUsage'
 import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
 import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
+import GownComparisonTable from '@/components/dashboard/Api/emissions_table'
 
 interface Gown {
   id: string
@@ -236,6 +237,12 @@ export default function GownsPage() {
             >
               {loading ? 'Optimizing...' : 'Start Optimization'}
             </Button>
+            {selectedGownData.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4>
+                <GownComparisonTable gowns={selectedGownData} />
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
