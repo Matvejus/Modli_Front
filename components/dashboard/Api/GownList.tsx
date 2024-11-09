@@ -31,7 +31,7 @@ export default function GownList({ title, gowns, selectedGowns, onGownSelection 
 
   useEffect(() => {
     if (selectedGowns.length > 0) {
-      fetch(`http://127.0.0.1:8000/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
+      fetch(`http://159.65.192.81/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
         .then(response => response.json())
         .then(data => setSelectedGownData(data))
         .catch(error => console.error('Error fetching selected gowns data:', error))
