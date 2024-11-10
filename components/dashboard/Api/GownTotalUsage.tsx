@@ -11,15 +11,15 @@ interface Results {
 }
 
 interface GownTotalUsageProps {
-  results: Results
+  totalUsage: Results
 }
 
-export default function GownTotalUsage({ results }: GownTotalUsageProps) {
+export default function GownTotalUsage({ totalUsage }: GownTotalUsageProps) {
   const calculateTotalUsage = (gownData: GownData) => {
-    return gownData.new_arrivals.reduce((total, [_, amount]) => total + amount, 0)
+    return gownData.new_arrivals.reduce((total, [amount]) => total + amount, 0)
   }
 
-  const gownTotals = Object.entries(results)
+  const gownTotals = Object.entries(totalUsage)
     .map(([gownName, gownData]) => ({
       name: gownName,
       total: calculateTotalUsage(gownData)

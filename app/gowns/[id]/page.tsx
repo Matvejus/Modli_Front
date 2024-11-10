@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -57,13 +57,7 @@ export default function GownDetail({ params }: GownDetailProps) {
   const { id } = params
   const router = useRouter()
 
-  useEffect(() => {
-    if (id) {
-      fetchGownDetails()
-    }
-  }, [id])
-
-  const fetchGownDetails = async () => {
+  const fetchGownDetails = useCallback(async () => {
     try {
       // Fetch gown details
       const gownRes = await fetch(`http://159.65.192.81/emissions/gowns/${id}/`)
@@ -82,7 +76,13 @@ export default function GownDetail({ params }: GownDetailProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id])
+
+  useEffect(() => {
+    if (id) {
+      fetchGownDetails()
+    }
+  }, [id, fetchGownDetails])
 
   const handleInputChange = (field: keyof Gown, value: string | number | boolean) => {
     if (gown) {
@@ -121,7 +121,7 @@ export default function GownDetail({ params }: GownDetailProps) {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{gown.name}</h1>
-        <EmissionsInfoModal className="ml-4" />
+        <EmissionsInfoModal />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Card>

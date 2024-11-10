@@ -1,12 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-const ClusteredBarChart = ({ chartData }) => {
+interface ChartData {
+  name: string; // e.g., 'CO2EQ', 'WATER', etc.
+  [gownName: string]: number | string; // Dynamic gown names as keys with numeric impact values
+}
+
+
+const ClusteredBarChart = ({ chartData }: {chartData: ChartData[]}) => {
   const colors = ["#2C3E50", "#2980B9", "#3498DB", "#1ABC9C", "#16A085", "#ECF0F1", "#BDC3C7"];
   
   // Filter out gowns with 0 impacts across all envpars
   const filteredChartData = chartData.filter(dataPoint => 
-    Object.values(dataPoint).some(value => value > 0)
+    Object.values(dataPoint).some(value => typeof value === 'number' && value > 0)
   );
 
   const gownNames = Object.keys(filteredChartData[0] || {}).filter(key => key !== 'name')

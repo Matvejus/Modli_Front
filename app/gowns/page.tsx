@@ -10,20 +10,43 @@ import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
 import UsageChart from '@/components/dashboard/Api/GownUsage'
 import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
-import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
+// import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
 import GownComparisonTable from '@/components/dashboard/Api/emissions_table'
 
+// Define the Gown interface
 interface Gown {
-  id: string
-  name: string
-  cost: number
-  washes?: number
+  id: string; // Unique identifier for the gown
+  name: string; // Name of the gown
+  cost: number; // Cost of the gown
+  reusable: boolean; // Indicates if the gown is reusable
+  washes?: number; // Optional number of washes
   emission_impacts: {
-    CO2: number
-    Energy: number
-    Water: number
-    Cost: number
-  }
+    CO2: number; // CO2 emissions
+    Energy: number; // Energy consumption
+    Water: number; // Water usage
+    Cost: number; // Cost impact
+    production: number; // Production impact
+    transportation: number; // Transportation impact
+    washing: number; // Washing impact
+    disposal: number; // Disposal impact
+  };
+}
+
+interface GownData {
+  Impacts: {
+    total_impact: {
+      [key: string]: number;
+    };
+    stages:string;
+    new_arrivals: [number, number][];
+  };
+  usage_values: number[];
+}
+
+interface Results {
+  results: {
+    [gownName: string]: GownData;
+  };
 }
 
 export default function GownsPage() {
@@ -32,8 +55,8 @@ export default function GownsPage() {
   const [selectedGowns, setSelectedGowns] = useState<string[]>([])
   const [selectedGownData, setSelectedGownData] = useState<Gown[]>([])
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState(null)
-  const [error, setError] = useState(null)
+  const [results, setResults] = useState<Results | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [specifications, setSpecifications] = useState({
     usage_per_week: 1000,
     pickups_per_week: 2,
@@ -41,27 +64,34 @@ export default function GownsPage() {
     loss_percentage: 0.001
   })
 
-  const handleSpecificationChange = (key, value) => {
+  const handleSpecificationChange = (key: keyof typeof specifications, value: string | number) => {
     setSpecifications(prev => ({
       ...prev,
-      [key]: key === 'loss_percentage' ? parseFloat(value) : parseInt(value, 10),
-      optimizer: key === 'optimizer' ? [value] : prev.optimizer
+      [key]: key === 'loss_percentage' ? parseFloat(value as string) : parseInt(value as string, 10),
+      optimizer: key === 'optimizer' ? [value as string] : prev.optimizer
     }))
   }
 
-  const fetchGowns = async () => {
-    try {
-      const response = await fetch('http://159.65.192.81/emissions/gowns/')
-      if (!response.ok) throw new Error('Failed to fetch data')
-      const data = await response.json()
-      setReusableGowns(data.filter(gown => gown.reusable))
-      setSingleUseGowns(data.filter(gown => !gown.reusable))
-    } catch (error) {
-      console.error("API error: ", error)
-    } finally {
-      setLoading(false)
-    }
+const fetchGowns = async () => {
+  try {
+    const response = await fetch('http://159.65.192.81/emissions/gowns/');
+    if (!response.ok) throw new Error('Failed to fetch data');
+    const data = await response.json();
+
+    // Map data to match the Gown structure and include emission_impacts directly
+    const formattedData: Gown[] = data.map((gown: Gown) => ({
+      ...gown,
+      emission_impacts: gown.emission_impacts, // Keep the structure as-is
+    }));
+
+    setReusableGowns(formattedData.filter((gown) => gown.reusable));
+    setSingleUseGowns(formattedData.filter((gown) => !gown.reusable));
+  } catch (error) {
+    console.error("API error: ", error);
+  } finally {
+    setLoading(false);
   }
+};
 
   useEffect(() => {
     fetchGowns()
@@ -97,7 +127,7 @@ export default function GownsPage() {
       // Filter only selected gowns and format for optimization
       const optimizationData = {
         gowns: selectedGowns.map(gownId => {
-          const gownData = emissionsData.find(g => g.gown === gownId);
+          const gownData = emissionsData.find((g: Gown) => g.id === gownId);
   
           return {
             name: gownData.name,
@@ -135,7 +165,7 @@ export default function GownsPage() {
       const data = await response.json();
   
       if (response.ok) {
-        setResults(data.results);
+        setResults({results: data.results});
       } else {
         setError(data.error || 'An error occurred during optimization');
       }
@@ -146,10 +176,10 @@ export default function GownsPage() {
     }
   };
 
-  const prepareChartData = (results) => {
+  const prepareChartData = (results: Results) => {
     const impactCategories = ['CO2EQ', 'WATER', 'ENERGY', 'MONEY']
     return impactCategories.map(category => {
-      const dataPoint = { name: category }
+      const dataPoint: { name: string; [key: string]: number | string } = { name: category }
       Object.entries(results.results).forEach(([gownName, gownData]) => {
         dataPoint[gownName] = Number(gownData.Impacts.total_impact[category].toFixed(2))
       })
@@ -157,12 +187,12 @@ export default function GownsPage() {
     })
   }
 
-  const prepareUsageData = (results) => {
+  const prepareUsageData = (results: Results) => {
     const gownNames = Object.keys(results.results)
     const maxLength = Math.max(...gownNames.map(name => results.results[name].usage_values.length))
     
     return Array.from({ length: maxLength }, (_, index) => {
-      const dataPoint = { week: index + 1 }
+      const dataPoint: { week: number; [key: string]: number } = { week: index + 1 }
       gownNames.forEach(name => {
         dataPoint[name] = results.results[name].usage_values[index] || 0
       })
@@ -170,10 +200,10 @@ export default function GownsPage() {
     })
   }
 
-  const prepareStackedData = (results) => {
-    return Object.entries(results.results).reduce((acc, [gownName, gownData]) => {
+  const prepareStackedData = (results: Results) => {
+    return Object.entries(results.results).reduce<{ [key: string]: { Impacts: { [key: string]: number }; stages: string } }>((acc, [gownName, gownData]) => {
       acc[gownName] = {
-        Impacts: gownData.Impacts,
+        Impacts: gownData.Impacts.total_impact, // Accessing total_impact as it contains numbers
         stages: gownData.Impacts.stages
       };
       return acc;
@@ -252,7 +282,7 @@ export default function GownsPage() {
       {results && (
         <div className="mt-8">
           <h2 className="text-2xl font-semibold mb-4">Results</h2>
-          <GownTotalUsage results={results.results} />
+          {/* <GownTotalUsage totalUsage={results.results} /> */}
           <ClusteredBarChart chartData={prepareChartData(results)} />
           <GownImpactsStacked stackedData={prepareStackedData(results)} />
           <UsageChart usageData={prepareUsageData(results)} />

@@ -1,10 +1,25 @@
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-export default function OptimizationSpecifications({ specifications, handleSpecificationChange }) {
-  const optimizers = ["WATER", "CO2EQ", "ENERGY", "MONEY"]
+interface Specifications {
+  usage_per_week: number;
+  pickups_per_week: number;
+  optimizer: string[];
+  loss_percentage: number;
+}
+
+interface OptimizationSpecificationsProps {
+  specifications: Specifications;
+  handleSpecificationChange: (key: keyof Specifications, value: string | number) => void;
+}
+
+export default function OptimizationSpecifications({
+  specifications,
+  handleSpecificationChange,
+}: OptimizationSpecificationsProps) {
+  const optimizers = ["WATER", "CO2EQ", "ENERGY", "MONEY"];
 
   return (
     <div className="space-y-6">
@@ -15,7 +30,7 @@ export default function OptimizationSpecifications({ specifications, handleSpeci
             id="usage_per_week"
             type="number"
             value={specifications.usage_per_week}
-            onChange={(e) => handleSpecificationChange('usage_per_week', e.target.value)}
+            onChange={(e) => handleSpecificationChange('usage_per_week', parseInt(e.target.value))}
           />
         </div>
         <div>
@@ -24,7 +39,7 @@ export default function OptimizationSpecifications({ specifications, handleSpeci
             id="pickups_per_week"
             type="number"
             value={specifications.pickups_per_week}
-            onChange={(e) => handleSpecificationChange('pickups_per_week', e.target.value)}
+            onChange={(e) => handleSpecificationChange('pickups_per_week', parseInt(e.target.value))}
           />
         </div>
       </div>
@@ -52,8 +67,8 @@ export default function OptimizationSpecifications({ specifications, handleSpeci
           min={0}
           max={1}
           step={0.1}
-          value={[parseFloat(specifications.loss_percentage)]}
-          onValueChange={(value) => handleSpecificationChange('loss_percentage', value[0].toString())}
+          value={[specifications.loss_percentage]}
+          onValueChange={(value) => handleSpecificationChange('loss_percentage', value[0])}
         />
         <div className="flex justify-between text-sm text-muted-foreground">
           <span>0%</span>
@@ -62,5 +77,5 @@ export default function OptimizationSpecifications({ specifications, handleSpeci
         </div>
       </div>
     </div>
-  )
+  );
 }

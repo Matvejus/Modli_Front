@@ -1,7 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const Arrivals = ({ gownName, gownData }) => {
+interface GownData {
+  new_arrivals: [number, number][];
+}
+
+
+const Arrivals = ({ gownName, gownData }: { gownName: string; gownData: GownData }) => {
   return (
     <Card key={gownName} className="mb-6">
       <CardHeader>

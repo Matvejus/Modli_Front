@@ -1,8 +1,8 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts'
+import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend } from 'recharts'
 
 interface Gown {
   id: string
@@ -21,30 +21,36 @@ interface GownEmissionChartProps {
   gowns: Gown[]
 }
 
+interface EmissionData {
+  category: string;
+  fullMark: number;
+  [gownName: string]: number | string; // Allow dynamic gown names
+}
+
 export default function GownEmissionChart({ gowns }: GownEmissionChartProps) {
-  const emissionData = [
+  const emissionData: EmissionData[] = [
     { category: 'CO2', fullMark: 100 },
     { category: 'Energy', fullMark: 100 },
     { category: 'Water', fullMark: 100 },
     { category: 'Cost', fullMark: 100 },
-  ]
+  ];
 
   const maxValues = {
     CO2: Math.max(...gowns.map(gown => gown.emission_impacts.CO2)),
     Energy: Math.max(...gowns.map(gown => gown.emission_impacts.Energy)),
     Water: Math.max(...gowns.map(gown => gown.emission_impacts.Water)),
     Cost: Math.max(...gowns.map(gown => gown.emission_impacts.Cost)),
-  }
+  };
 
   gowns.forEach((gown) => {
     emissionData.forEach((data) => {
-      const value = gown.emission_impacts[data.category as keyof typeof gown.emission_impacts]
-      const maxValue = maxValues[data.category as keyof typeof maxValues]
-      data[gown.name] = (value / maxValue) * 100 // Normalize to percentage
-    })
-  })
+      const value = gown.emission_impacts[data.category as keyof typeof gown.emission_impacts];
+      const maxValue = maxValues[data.category as keyof typeof maxValues];
+      data[gown.name] = (value / maxValue) * 100; // Normalize to percentage
+    });
+  });
 
-  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300']
+  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300'];
 
   return (
     <Card className="w-full max-w-3xl">
@@ -82,5 +88,5 @@ export default function GownEmissionChart({ gowns }: GownEmissionChartProps) {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

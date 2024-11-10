@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react'
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import GownEmissionChart from './GownRadar'
 
 interface Gown {
   id: string
@@ -16,6 +14,10 @@ interface Gown {
     transportation: number
     washing: number
     disposal: number
+    CO2:number,
+    Energy: number, 
+    Water: number,
+    Cost: number,
   }
 }
 
