@@ -33,6 +33,7 @@ interface Gown {
 }
 
 interface GownData {
+  name: string;
   Impacts: {
     total_impact: {
       [key: string]: number;
@@ -152,6 +153,7 @@ const fetchGowns = async () => {
           loss_percentage: specifications.loss_percentage
         }
       };
+      console.log(optimizationData)
   
       // Start the optimization with the structured data
       const response = await fetch('/api/start-optimization', {
