@@ -45,6 +45,14 @@ export default function GownList({ title, gowns, selectedGowns, onGownSelection 
   return (
     <div className="mb-6">
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      {/* {selectedGownData.length > 0 && (
+        <div>
+          <h4>Selected Gowns:</h4>
+          {selectedGownData.map(gown => (
+            <div key={gown.id}>{gown.name}</div>
+          ))}
+        </div>
+      )} */}
       {gowns && gowns.map((gown) => (
         <div key={gown.id} className="flex items-center justify-between mb-2 p-2 bg-gray-50 rounded">
           <div className="flex items-center">

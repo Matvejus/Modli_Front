@@ -4,7 +4,7 @@ export async function POST(req: Request) {
   try {
     const optimizationData = await req.json()
 
-    const djangoRes = await fetch('http://159.65.192.81/emissions/api/opt/', {
+    const djangoRes = await fetch('http://127.0.0.1:8000/emissions/api/opt/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

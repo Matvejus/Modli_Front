@@ -37,7 +37,7 @@ interface GownData {
   name: string;
   Impacts: {
     total_impact: {
-      [key: string]: number;
+      [gown: string]: number;
     };
     stages:string;
     new_arrivals: [number, number][];
@@ -76,7 +76,7 @@ export default function GownsPage() {
 
 const fetchGowns = async () => {
   try {
-    const response = await fetch('http://159.65.192.81/emissions/gowns/');
+    const response = await fetch('http://127.0.0.1:8000/emissions/gowns/');
     if (!response.ok) throw new Error('Failed to fetch data');
     const data = await response.json();
 
@@ -101,7 +101,7 @@ const fetchGowns = async () => {
 
   useEffect(() => {
     if (selectedGowns.length > 0) {
-      fetch(`http://159.65.192.81/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
+      fetch(`http://127.0.0.1:8000/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
         .then(response => response.json())
         .then(data => setSelectedGownData(data))
         .catch(error => console.error('Error fetching selected gowns data:', error))
@@ -122,7 +122,7 @@ const fetchGowns = async () => {
   
     // Fetch emissions data for selected gowns
     try {
-      const emissionsResponse = await fetch(`http://159.65.192.81/emissions/gown_emissions/`);
+      const emissionsResponse = await fetch(`http://127.0.0.1:8000/emissions/gown_emissions/`);
       if (!emissionsResponse.ok) throw new Error("Failed to fetch emissions data");
       const emissionsData = await emissionsResponse.json();
   
@@ -154,7 +154,6 @@ const fetchGowns = async () => {
           loss_percentage: specifications.loss_percentage
         }
       };
-      console.log(optimizationData)
   
       // Start the optimization with the structured data
       const response = await fetch('/api/start-optimization', {
@@ -166,10 +165,9 @@ const fetchGowns = async () => {
       });
   
       const data = await response.json();
-  
+
       if (response.ok) {
         setResults({results: data.results});
-        console.log(results)
       } else {
         setError(data.error || 'An error occurred during optimization');
       }
@@ -181,11 +179,17 @@ const fetchGowns = async () => {
   };
 
   const prepareChartData = (results: Results) => {
+    console.log(results)
     const impactCategories = ['CO2EQ', 'WATER', 'ENERGY', 'MONEY']
     return impactCategories.map(category => {
       const dataPoint: { name: string; [key: string]: number | string } = { name: category }
-      Object.entries(results.results).forEach(([gownName, gownData]) => {
-        dataPoint[gownName] = Number(gownData.Impacts.total_impact[category].toFixed(2))
+      Object.entries(results).forEach(([gownName, gownData]) => {
+        if (gownData.Impacts && gownData.Impacts.total_impact) {
+          const impact = gownData.Impacts.total_impact[category]
+          dataPoint[gownName] = typeof impact === 'number' ? Number(impact.toFixed(2)) : 0
+        } else {
+          dataPoint[gownName] = 0
+        }
       })
       return dataPoint
     })
@@ -193,7 +197,7 @@ const fetchGowns = async () => {
 
   const prepareUsageData = (results: Results) => {
     const gownNames = Object.keys(results.results)
-    const maxLength = Math.max(...gownNames.map(name => results.results[name].usage_values.length))
+    const maxLength = Math.max(...gownNames.map(name => results.results[name].usage_values?.length || 0))
     
     return Array.from({ length: maxLength }, (_, index) => {
       const dataPoint: { week: number; [key: string]: number } = { week: index + 1 }
@@ -206,10 +210,12 @@ const fetchGowns = async () => {
 
   const prepareStackedData = (results: Results) => {
     return Object.entries(results.results).reduce<{ [key: string]: { Impacts: { [key: string]: number }; stages: string } }>((acc, [gownName, gownData]) => {
-      acc[gownName] = {
-        Impacts: gownData.Impacts.total_impact, // Accessing total_impact as it contains numbers
-        stages: gownData.Impacts.stages
-      };
+      if (gownData.Impacts) {
+        acc[gownName] = {
+          Impacts: gownData.Impacts.total_impact, // Accessing total_impact as it contains numbers
+          stages: gownData.Impacts.stages
+        };
+      }
       return acc;
     }, {});
   }

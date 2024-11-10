@@ -23,7 +23,7 @@ export interface Gown {
 const UsageChart = ({ usageData }: { usageData: Array<{ week: number; [key: string]: number }> }) => {
   const colors = ['#627aad', '#69a480', '#d1b45b', '#338ed1', '#d2c6b1', '#4b5563', '#2c6cdc'];
 
-  const gownNames = Object.keys(usageData[0]).filter(key => key !== 'week')
+  const gownNames = usageData.length > 0 ? Object.keys(usageData[0]).filter(key => key !== 'week') : [];
 
   return (
     <Card className="mb-6">
