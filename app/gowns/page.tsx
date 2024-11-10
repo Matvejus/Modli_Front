@@ -15,6 +15,7 @@ import GownComparisonTable from '@/components/dashboard/Api/emissions_table'
 
 // Define the Gown interface
 interface Gown {
+  gown: string;
   id: string; // Unique identifier for the gown
   name: string; // Name of the gown
   cost: number; // Cost of the gown
@@ -128,7 +129,7 @@ const fetchGowns = async () => {
       // Filter only selected gowns and format for optimization
       const optimizationData = {
         gowns: selectedGowns.map(gownId => {
-          const gownData = emissionsData.find((g: Gown) => g.id === gownId);
+          const gownData = emissionsData.find((g: Gown) => g.gown === gownId);
   
           return {
             name: gownData.name,
@@ -168,6 +169,7 @@ const fetchGowns = async () => {
   
       if (response.ok) {
         setResults({results: data.results});
+        console.log(results)
       } else {
         setError(data.error || 'An error occurred during optimization');
       }
