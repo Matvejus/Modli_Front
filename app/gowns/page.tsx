@@ -76,7 +76,7 @@ export default function GownsPage() {
 
 const fetchGowns = async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/emissions/gowns/');
+    const response = await fetch('http://http://159.65.192.81/emissions/gowns/');
     if (!response.ok) throw new Error('Failed to fetch data');
     const data = await response.json();
 
@@ -101,7 +101,7 @@ const fetchGowns = async () => {
 
   useEffect(() => {
     if (selectedGowns.length > 0) {
-      fetch(`http://127.0.0.1:8000/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
+      fetch(`http://http://159.65.192.81/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
         .then(response => response.json())
         .then(data => setSelectedGownData(data))
         .catch(error => console.error('Error fetching selected gowns data:', error))
@@ -122,7 +122,7 @@ const fetchGowns = async () => {
   
     // Fetch emissions data for selected gowns
     try {
-      const emissionsResponse = await fetch(`http://127.0.0.1:8000/emissions/gown_emissions/`);
+      const emissionsResponse = await fetch(`http://http://159.65.192.81/emissions/gown_emissions/`);
       if (!emissionsResponse.ok) throw new Error("Failed to fetch emissions data");
       const emissionsData = await emissionsResponse.json();
   
