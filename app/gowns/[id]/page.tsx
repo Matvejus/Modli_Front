@@ -56,17 +56,18 @@ export default function GownDetail({ params }: GownDetailProps) {
   const [hasChanges, setHasChanges] = useState(false)
   const { id } = params
   const router = useRouter()
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api'
 
   const fetchGownDetails = useCallback(async () => {
     try {
       // Fetch gown details
-      const gownRes = await fetch(`http://159.65.192.81/emissions/gowns/${id}/`)
+      const gownRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`)
       if (!gownRes.ok) throw new Error('Failed to fetch gown details')
       const gownData = await gownRes.json()
       setGown(gownData)
 
       // Fetch emissions data
-      const emissionsRes = await fetch(`http://159.65.192.81/emissions/gowns/${id}/emissions/`)
+      const emissionsRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/emissions/`)
       if (!emissionsRes.ok) throw new Error('Failed to fetch emissions data')
       const emissionsData = await emissionsRes.json()
       setEmissions(emissionsData)
@@ -95,7 +96,7 @@ export default function GownDetail({ params }: GownDetailProps) {
     if (!gown) return
 
     try {
-      const response = await fetch(`http://159.65.192.81/emissions/gowns/${id}/`, {
+      const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

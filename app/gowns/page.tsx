@@ -66,6 +66,8 @@ export default function GownsPage() {
     loss_percentage: 0.001
   })
 
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api'
+
   const handleSpecificationChange = (key: keyof typeof specifications, value: string | number) => {
     setSpecifications(prev => ({
       ...prev,
@@ -76,7 +78,7 @@ export default function GownsPage() {
 
 const fetchGowns = async () => {
   try {
-    const response = await fetch('http://159.65.192.81/emissions/gowns/');
+    const response = await fetch(`${API_BASE_URL}/emissions/gowns/`);
     if (!response.ok) throw new Error('Failed to fetch data');
     const data = await response.json();
 
@@ -101,7 +103,7 @@ const fetchGowns = async () => {
 
   useEffect(() => {
     if (selectedGowns.length > 0) {
-      fetch(`http://159.65.192.81/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
+      fetch(`${API_BASE_URL}/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
         .then(response => response.json())
         .then(data => setSelectedGownData(data))
         .catch(error => console.error('Error fetching selected gowns data:', error))
@@ -122,7 +124,7 @@ const fetchGowns = async () => {
   
     // Fetch emissions data for selected gowns
     try {
-      const emissionsResponse = await fetch(`http://159.65.192.81/emissions/gown_emissions/`);
+      const emissionsResponse = await fetch(`${API_BASE_URL}/emissions/gown_emissions/`);
       if (!emissionsResponse.ok) throw new Error("Failed to fetch emissions data");
       const emissionsData = await emissionsResponse.json();
   
