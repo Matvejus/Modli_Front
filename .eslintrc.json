@@ -10,7 +10,8 @@
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "next/core-web-vitals", 
-    "next/typescript"
+    "next/typescript",
+    "next.js"
   ],
   "rules": {
     "no-unused-vars": "off"

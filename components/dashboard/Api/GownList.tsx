@@ -29,7 +29,7 @@ interface GownListProps {
 }
 
 export default function GownList({ title, gowns, selectedGowns, onGownSelection }: GownListProps) {
-  const [selectedGownData, setSelectedGownData] = useState<Gown[]>([])
+  const [_selectedGownData, setSelectedGownData] = useState<Gown[]>([])
 
   useEffect(() => {
     if (selectedGowns.length > 0) {

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface GownData {
-  new_arrivals: [number, number][]
+  new_arrivals: { amount: number }[]
 }
 
 interface Results {
@@ -11,12 +11,12 @@ interface Results {
 }
 
 interface GownTotalUsageProps {
-  totalUsage: Results
+  totalUsage: GownData
 }
 
 export default function GownTotalUsage({ totalUsage }: GownTotalUsageProps) {
   const calculateTotalUsage = (gownData: GownData) => {
-    return gownData.new_arrivals.reduce((total, [amount]) => total + amount, 0)
+    return gownData.new_arrivals.reduce((total, item) => total + item.amount, 0)
   }
 
   const gownTotals = Object.entries(totalUsage)
