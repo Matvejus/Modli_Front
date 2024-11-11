@@ -1,12 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
 import * as SwitchPrimitive from '@radix-ui/react-switch'
+import { useRouter } from 'next/navigation'
+import EmissionsInfoModal from '@/components/modals/gown_detail'
 
 type Gown = {
+  id: string
   name: string
   reusable: boolean
   cost: number
@@ -49,77 +53,76 @@ export default function GownDetail({ params }: GownDetailProps) {
   const [gown, setGown] = useState<Gown | null>(null)
   const [emissions, setEmissions] = useState<Emission[]>([])
   const [loading, setLoading] = useState(true)
+  const [hasChanges, setHasChanges] = useState(false)
   const { id } = params
+  const router = useRouter()
+
+  const fetchGownDetails = useCallback(async () => {
+    try {
+      // Fetch gown details
+      const gownRes = await fetch(`http://159.65.192.81/emissions/gowns/${id}/`)
+      if (!gownRes.ok) throw new Error('Failed to fetch gown details')
+      const gownData = await gownRes.json()
+      setGown(gownData)
+
+      // Fetch emissions data
+      const emissionsRes = await fetch(`http://159.65.192.81/emissions/gowns/${id}/emissions/`)
+      if (!emissionsRes.ok) throw new Error('Failed to fetch emissions data')
+      const emissionsData = await emissionsRes.json()
+      setEmissions(emissionsData)
+    } catch (error) {
+      console.error("API error: ", error)
+      // Fallback to mock data if needed
+    } finally {
+      setLoading(false)
+    }
+  }, [id])
 
   useEffect(() => {
     if (id) {
-      const fetchGownDetails = async () => {
-        try {
-          // Fetch gown details
-          const gownRes = await fetch(`http://127.0.0.1:8000/emissions/gowns/${id}/`);
-          if (!gownRes.ok) throw new Error('Failed to fetch gown details');
-          const gownData = await gownRes.json();
-          setGown(gownData);
-  
-          // Fetch emissions data
-          const emissionsRes = await fetch(`http://127.0.0.1:8000/emissions/gowns/${id}/emissions/`);
-          if (!emissionsRes.ok) throw new Error('Failed to fetch emissions data');
-          const emissionsData = await emissionsRes.json();
-          setEmissions(emissionsData);
-        } catch (error) {
-          console.error("API error: ", error);
-  
-          // Fallback mock data for gown details and emissions
-          const mockGown = {
-            id: id,
-            name: id === '1' ? 'Cotton' : 'Polyester',
-            cost: id === '1' ? 25 : 5,
-            washes: id === '1' ? 50 : 0,  // Provide a default value (e.g., 0) for undefined cases
-            reusable: id === '1',
-            comfort: id === '1' ? 4 : 3,
-            hygine: id === '1' ? 5 : 4,
-            certificates: id === '1' ? ['ISO 14001', 'Oeko-Tex Standard 100'] : ['CE Certified', 'ISO 9001'],
-          };
-          const fallbackEmissions: Emission[] = [
-            {
-              emission_stage: 'CO2',
-              fibers: id === '1' ? 10 : 30,
-              yarn_production: id === '1' ? 5 : 15,
-              fabric_production: id === '1' ? 3 : 8,
-              finishing: id === '1' ? 2 : 6,
-              manufacturing: id === '1' ? 1 : 4,
-              packaging: id === '1' ? 0.5 : 2,
-              transport: id === '1' ? 0.2 : 1,
-              use: id === '1' ? 0.1 : 0.5,
-              total: id === '1' ? 21.8 : 66.5,
-            },
-          ];
-          setEmissions(fallbackEmissions);
-
-          // const handleReusableToggle = () => {
-          //   setGown((prevGown) => ({
-          //     ...prevGown,
-          //     reusable: !prevGown.reusable,  // Toggle reusable state
-          //   }));
-          // };
-
-  
-          setGown(mockGown);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchGownDetails();
+      fetchGownDetails()
     }
-  }, [id]);
-  
+  }, [id, fetchGownDetails])
+
+  const handleInputChange = (field: keyof Gown, value: string | number | boolean) => {
+    if (gown) {
+      setGown({ ...gown, [field]: value })
+      setHasChanges(true)
+    }
+  }
+
+  const handleSave = async () => {
+    if (!gown) return
+
+    try {
+      const response = await fetch(`http://159.65.192.81/emissions/gowns/${id}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gown),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save gown details')
+      }
+
+      alert('Gown details saved successfully!')
+      router.push('/gowns')
+    } catch (error) {
+      console.error('Error saving gown details:', error)
+      alert('Failed to save gown details. Please try again.')
+    }
+  }
 
   if (loading || !gown) return <div className="flex justify-center items-center h-screen">Loading...</div>
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">{gown.name}</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">{gown.name}</h1>
+        <EmissionsInfoModal />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardHeader>
@@ -127,7 +130,7 @@ export default function GownDetail({ params }: GownDetailProps) {
           </CardHeader>
           <CardContent className="flex items-center justify-between">
             <span className="text-sm font-medium">{gown.reusable ? 'Yes' : 'No'}</span>
-            <AnimatedSwitch checked={gown.reusable} onCheckedChange={() => {}} />
+            <AnimatedSwitch checked={gown.reusable} onCheckedChange={(checked) => handleInputChange('reusable', checked)} />
           </CardContent>
         </Card>
         <Card>
@@ -135,7 +138,12 @@ export default function GownDetail({ params }: GownDetailProps) {
             <CardTitle>Cost</CardTitle>
           </CardHeader>
           <CardContent>
-            <Input type="number" value={gown.cost.toFixed(2)} onChange={() => {}} prefix="$" />
+            <Input 
+              type="number" 
+              value={gown.cost.toFixed(2)} 
+              onChange={(e) => handleInputChange('cost', parseFloat(e.target.value))} 
+              prefix="$" 
+            />
           </CardContent>
         </Card>
         <Card>
@@ -143,7 +151,11 @@ export default function GownDetail({ params }: GownDetailProps) {
             <CardTitle>Washes</CardTitle>
           </CardHeader>
           <CardContent>
-            <Input type="number" value={gown.washes} onChange={() => {}} />
+            <Input 
+              type="number" 
+              value={gown.washes} 
+              onChange={(e) => handleInputChange('washes', parseInt(e.target.value))} 
+            />
           </CardContent>
         </Card>
         <Card>
@@ -151,7 +163,13 @@ export default function GownDetail({ params }: GownDetailProps) {
             <CardTitle>Comfort</CardTitle>
           </CardHeader>
           <CardContent>
-            <Input type="number" value={gown.comfort} onChange={() => {}} min={0} max={5} />
+            <Input 
+              type="number" 
+              value={gown.comfort} 
+              onChange={(e) => handleInputChange('comfort', parseInt(e.target.value))} 
+              min={0} 
+              max={5} 
+            />
           </CardContent>
         </Card>
         <Card>
@@ -159,7 +177,13 @@ export default function GownDetail({ params }: GownDetailProps) {
             <CardTitle>Hygiene</CardTitle>
           </CardHeader>
           <CardContent>
-            <Input type="number" value={gown.hygine} onChange={() => {}} min={0} max={5} />
+            <Input 
+              type="number" 
+              value={gown.hygine} 
+              onChange={(e) => handleInputChange('hygine', parseInt(e.target.value))} 
+              min={0} 
+              max={5} 
+            />
           </CardContent>
         </Card>
         <Card>
@@ -182,6 +206,13 @@ export default function GownDetail({ params }: GownDetailProps) {
         </Card>
       </div>
 
+      <Button 
+        onClick={hasChanges ? handleSave : () => router.push('/gowns')} 
+        className="mb-6"
+      >
+        {hasChanges ? 'Save Changes' : 'Back'}
+      </Button>
+
       <h2 className="text-2xl font-semibold mb-4">Emissions</h2>
       <div className="overflow-x-auto">
         <Table>
@@ -193,7 +224,7 @@ export default function GownDetail({ params }: GownDetailProps) {
               <TableHead className="whitespace-nowrap">Fabric Production</TableHead>
               <TableHead className="whitespace-nowrap">Finishing</TableHead>
               <TableHead className="whitespace-nowrap">Manufacturing</TableHead>
-              <TableHead className="whitespace-nowrap">Packaging</TableHead>
+              {/* <TableHead className="whitespace-nowrap">Packaging</TableHead> */}
               <TableHead className="whitespace-nowrap">Transport</TableHead>
               <TableHead className="whitespace-nowrap">Use</TableHead>
               <TableHead className="whitespace-nowrap">Total</TableHead>
@@ -203,15 +234,15 @@ export default function GownDetail({ params }: GownDetailProps) {
             {emissions.map((emission, index) => (
               <TableRow key={index}>
                 <TableCell>{emission.emission_stage} KG</TableCell>
-                <TableCell>{emission.fibers}</TableCell>
-                <TableCell>{emission.yarn_production}</TableCell>
-                <TableCell>{emission.fabric_production}</TableCell>
-                <TableCell>{emission.finishing}</TableCell>
-                <TableCell>{emission.manufacturing}</TableCell>
-                <TableCell>{emission.packaging}</TableCell>
-                <TableCell>{emission.transport}</TableCell>
-                <TableCell>{emission.use}</TableCell>
-                <TableCell>{emission.total}</TableCell>
+                <TableCell>{emission.fibers.toFixed(2)}</TableCell>
+                <TableCell>{emission.yarn_production.toFixed(2)}</TableCell>
+                <TableCell>{emission.fabric_production.toFixed(2)}</TableCell>
+                <TableCell>{emission.finishing.toFixed(2)}</TableCell>
+                <TableCell>{emission.manufacturing.toFixed(2)}</TableCell>
+                {/* <TableCell>{emission.packaging.toFixed(2)}</TableCell> */}
+                <TableCell>{emission.transport.toFixed(2)}</TableCell>
+                <TableCell>{emission.use.toFixed(2)}</TableCell>
+                <TableCell>{emission.total.toFixed(2)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

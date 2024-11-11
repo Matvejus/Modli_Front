@@ -1,113 +1,224 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useRouter } from 'next/navigation'
+import GownList from '@/components/dashboard/Api/GownList'
+import GownEmissionChart from '@/components/dashboard/Api/GownRadar'
+import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
+import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
+// import UsageChart from '@/components/dashboard/Api/GownUsage'
+// import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
+// import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
+import GownComparisonTable from '@/components/dashboard/Api/emissions_table'
 
-type Gown = {
-  id: number
-  name: string
-  cost: number
-  washes?: number
-  reusable: boolean
+// Define the Gown interface
+interface Gown {
+  gown: string;
+  id: string; // Unique identifier for the gown
+  name: string; // Name of the gown
+  cost: number; // Cost of the gown
+  reusable: boolean; // Indicates if the gown is reusable
+  washes?: number; // Optional number of washes
+  emission_impacts: {
+    CO2: number; // CO2 emissions
+    Energy: number; // Energy consumption
+    Water: number; // Water usage
+    Cost: number; // Cost impact
+    production: number; // Production impact
+    transportation: number; // Transportation impact
+    washing: number; // Washing impact
+    disposal: number; // Disposal impact
+  };
 }
 
-export default function CircularProcurementTool() {
+interface GownData {
+  name: string;
+  Impacts: {
+    total_impact: {
+      [gown: string]: number;
+    };
+    stages:string;
+    new_arrivals: [number, number][];
+  };
+  usage_values: number[];
+}
+
+interface Results {
+  results: {
+    [name: string]: GownData;
+  };
+}
+
+export default function GownsPage() {
   const [reusableGowns, setReusableGowns] = useState<Gown[]>([])
   const [singleUseGowns, setSingleUseGowns] = useState<Gown[]>([])
-  const [selectedGowns, setSelectedGowns] = useState<number[]>([])
-  const [loading, setLoading] = useState(true)
-  const [planningPeriod, setPlanningPeriod] = useState('3 months')
-  const [gownsPerWeek, setGownsPerWeek] = useState('350')
-  const [gownsPerDay, setGownsPerDay] = useState('50')
-  const [laundryPickups, setLaundryPickups] = useState('2')
-  const [daysUntilReturn, setDaysUntilReturn] = useState('2')
-  const [lostGowns, setLostGowns] = useState('1')
-  const [healthcareLocation, setHealthcareLocation] = useState({
-    city: 'Amsterdam',
-    postcode: '1012 AB',
-    street: 'Stationsplein'
+  const [selectedGowns, setSelectedGowns] = useState<string[]>([])
+  const [selectedGownData, setSelectedGownData] = useState<Gown[]>([])
+  const [loading, setLoading] = useState(false)
+  const [results, setResults] = useState<Results | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [specifications, setSpecifications] = useState({
+    usage_per_week: 1000,
+    pickups_per_week: 2,
+    optimizer: ["WATER"],
+    loss_percentage: 0.001
   })
-  const [laundryLocation, setLaundryLocation] = useState({
-    city: 'Amsterdam',
-    postcode: '1012 AB',
-    street: 'Stationsplein'
-  })
-  const [reusablePercentage, setReusablePercentage] = useState(50)
+
+  const handleSpecificationChange = (key: keyof typeof specifications, value: string | number) => {
+    setSpecifications(prev => ({
+      ...prev,
+      [key]: key === 'loss_percentage' ? parseFloat(value as string) : parseInt(value as string, 10),
+      optimizer: key === 'optimizer' ? [value as string] : prev.optimizer
+    }))
+  }
+
+const fetchGowns = async () => {
+  try {
+    const response = await fetch('http://http://159.65.192.81/emissions/gowns/');
+    if (!response.ok) throw new Error('Failed to fetch data');
+    const data = await response.json();
+
+    // Map data to match the Gown structure and include emission_impacts directly
+    const formattedData: Gown[] = data.map((gown: Gown) => ({
+      ...gown,
+      emission_impacts: gown.emission_impacts, // Keep the structure as-is
+    }));
+
+    setReusableGowns(formattedData.filter((gown) => gown.reusable));
+    setSingleUseGowns(formattedData.filter((gown) => !gown.reusable));
+  } catch (error) {
+    console.error("API error: ", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
-    const fetchGowns = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/emissions/gowns/');
-        if (!response.ok) throw new Error('Failed to fetch data');
-        
-        const data = await response.json();
-        setReusableGowns(data.filter((gown: Gown) => gown.reusable));
-        setSingleUseGowns(data.filter((gown: Gown) => !gown.reusable));
-      } catch (error) {
-        // API is down or there's an error - provide mock data
-        console.error("API error: ", error);
-  
-        const mockReusableGown: Gown = {
-          id: 1,
-          name: 'Reusable Mock Gown',
-          cost: 25,
-          washes: 50,
-          reusable: true,
-        };
-        
-        const mockSingleUseGown: Gown = {
-          id: 2,
-          name: 'Single-use Mock Gown',
-          cost: 5,
-          reusable: false,
-        };
-        
-        setReusableGowns([mockReusableGown]);
-        setSingleUseGowns([mockSingleUseGown]);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchGowns();
-  }, []);
-  
+    fetchGowns()
+  }, [])
 
-  const handleGownSelection = (gownId: number) => {
+  useEffect(() => {
+    if (selectedGowns.length > 0) {
+      fetch(`http://http://159.65.192.81/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
+        .then(response => response.json())
+        .then(data => setSelectedGownData(data))
+        .catch(error => console.error('Error fetching selected gowns data:', error))
+    } else {
+      setSelectedGownData([])
+    }
+  }, [selectedGowns])
+
+  const handleGownSelection = (gownId: string) => {
     setSelectedGowns(prev => 
-      prev.includes(gownId) 
-        ? prev.filter(id => id !== gownId)
-        : [...prev, gownId]
+      prev.includes(gownId) ? prev.filter(id => id !== gownId) : [...prev, gownId]
     )
   }
 
-  const handleCompareGowns = () => {
-     fetch ('http://localhost:3000/')
-  }
+  const startOptimization = async () => {
+    setLoading(true);
+    setError(null);
+  
+    // Fetch emissions data for selected gowns
+    try {
+      const emissionsResponse = await fetch(`http://http://159.65.192.81/emissions/gown_emissions/`);
+      if (!emissionsResponse.ok) throw new Error("Failed to fetch emissions data");
+      const emissionsData = await emissionsResponse.json();
+  
+      // Filter only selected gowns and format for optimization
+      const optimizationData = {
+        gowns: selectedGowns.map(gownId => {
+          const gownData = emissionsData.find((g: Gown) => g.gown === gownId);
+  
+          return {
+            name: gownData.name,
+            reusable: gownData.reusable ? 1 : 0,
+            impacts: {
+              envpars: ["CO2EQ", "WATER", "ENERGY", "MONEY"],
+              stages: ["NEWARRIVALS", "LAUNDRY", "LOST", "EOL", "ARRIVALMOM"],
+              params: [
+                [gownData.emissions.CO2, gownData.emissions.Water, gownData.emissions.Energy, gownData.emissions.Cost],  // NEWARRIVALS
+                gownData.reusable ? [1, 1, 0.5, 0.3] : [0, 0, 0, 0],  // LAUNDRY, depends on reusability
+                [1, 1, 1, 0],  // Static LOST
+                [4, 0, -10, -0.1],  // Static EOL
+                [100, 0, 100, 10]  // Static ARRIVALMOM
+              ]
+            }
+          };
+        }),
+        specifications: {
+          usage_per_week: specifications.usage_per_week,
+          pickups_per_week: specifications.pickups_per_week,
+          optimizer: specifications.optimizer,
+          loss_percentage: specifications.loss_percentage
+        }
+      };
+  
+      // Start the optimization with the structured data
+      const response = await fetch('/api/start-optimization', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(optimizationData),
+      });
+  
+      const data = await response.json();
 
-  const router = useRouter()
+      if (response.ok) {
+        setResults({results: data.results});
+      } else {
+        setError(data.error || 'An error occurred during optimization');
+      }
+    } catch (error) {
+      setError('An unexpected error occurred: ' + (error instanceof Error ? error.message : String(error)));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleOptimizePortfolio = () => {
-    router.push('/dashboard')
-  }
-
-  if (loading) 
-     return <div className="flex justify-center items-center h-screen">Loading...</div>
-    // Switch on/off for api on vercel without django (make dummy 2) - host django
-
-
+  const prepareChartData = (results: { [gownName: string]: GownData }) => {
+    console.log(results);
+    const impactCategories = ['CO2EQ', 'WATER', 'ENERGY', 'MONEY'];
+  
+    return impactCategories.map(category => {
+      const dataPoint: { name: string; [key: string]: number | string } = { name: category };
+      Object.entries(results.results).forEach(([gownName, gownData]) => {
+        const impact = gownData.Impacts?.total_impact?.[category] ?? 0; // Use fallback of 0 if undefined
+        dataPoint[gownName] = typeof impact === 'number' ? Number(impact.toFixed(2)) : 0;
+      });
+      return dataPoint;
+    });
+  };
+  
+  // const prepareUsageData = (results: Results) => {
+  //   const gownNames = Object.keys(results.results)
+  //   const maxLength = Math.max(...gownNames.map(name => results.results[name].usage_values?.length || 0))
+  
+  //   return Array.from({ length: maxLength }, (_, index) => {
+  //     const dataPoint: { week: number; [key: string]: number } = { week: index + 1 }
+  //     gownNames.forEach(name => {
+  //       dataPoint[name] = results.results[name].usage_values[index] || 0
+  //     })
+  //     return dataPoint
+  //   })
+  // };
+  
+  // const prepareStackedData = (results: Results) => {
+  //   return Object.entries(results.results).reduce<{ [key: string]: { Impacts: { [key: string]: number }; stages: string } }>((acc, [gownName, gownData]) => {
+  //     if (gownData.Impacts) {
+  //       acc[gownName] = {
+  //         Impacts: gownData.Impacts.total_impact, // Accessing total_impact as it contains numbers
+  //         stages: gownData.Impacts.stages
+  //       };
+  //     }
+  //     return acc;
+  //   }, {});
+  // };
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
+    <div className="container mx-auto p-4 max-w-7xl">
       <Card className="mb-8">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center">Circular Procurement Tool</CardTitle>
@@ -120,167 +231,69 @@ export default function CircularProcurementTool() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="compare" className="mb-8">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="compare">Compare Gowns</TabsTrigger>
-          <TabsTrigger value="optimize">Optimize Portfolio</TabsTrigger>
-        </TabsList>
-        <TabsContent value="compare">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Reusable Gowns</h3>
-                {reusableGowns.map((gown) => (
-                  <div key={gown.id} className="flex items-center justify-between mb-2 p-2 bg-gray-50 rounded">
-                    <div className="flex items-center">
-                      <Checkbox
-                        id={`gown-${gown.id}`}
-                        checked={selectedGowns.includes(gown.id)}
-                        onCheckedChange={() => handleGownSelection(gown.id)}
-                        className="mr-2"
-                      />
-                      <label htmlFor={`gown-${gown.id}`} className="text-sm">
-                        {gown.name} - €{gown.cost} per p. - {gown.washes} washes
-                      </label>
-                    </div>
-                    <Link href={`/gowns/${gown.id}`} className="text-blue-600 hover:underline text-sm">
-                      Edit
-                    </Link>
-                  </div>
-                ))}
+      <div className="grid md:grid-cols-2 gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Gowns</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <GownList 
+              title="Reusable Gowns"
+              gowns={reusableGowns} 
+              selectedGowns={selectedGowns} 
+              onGownSelection={handleGownSelection} 
+            />
+            <GownList 
+              title="Single-use Gowns"
+              gowns={singleUseGowns} 
+              selectedGowns={selectedGowns} 
+              onGownSelection={handleGownSelection} 
+            />
+            {selectedGownData.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4>
+                <GownEmissionChart gowns={selectedGownData} />
               </div>
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Single-use Gowns</h3>
-                {singleUseGowns.map((gown) => (
-                  <div key={gown.id} className="flex items-center justify-between mb-2 p-2 bg-gray-50 rounded">
-                    <div className="flex items-center">
-                      <Checkbox
-                        id={`gown-${gown.id}`}
-                        checked={selectedGowns.includes(gown.id)}
-                        onCheckedChange={() => handleGownSelection(gown.id)}
-                        className="mr-2"
-                      />
-                      <label htmlFor={`gown-${gown.id}`} className="text-sm">
-                        {gown.name} - €{gown.cost} per p.
-                      </label>
-                    </div>
-                    <Link href={`/gowns/${gown.id}`} className="text-blue-600 hover:underline text-sm">
-                      Edit
-                    </Link>
-                  </div>
-                ))}
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Optimization Specifications</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <OptimizationSpecifications 
+              specifications={specifications} 
+              handleSpecificationChange={handleSpecificationChange} 
+            />
+            <Button
+              onClick={startOptimization}
+              className="mb-6"
+              disabled={loading}
+            >
+              {loading ? 'Optimizing...' : 'Start Optimization'}
+            </Button>
+            {selectedGownData.length > 0 && (
+              <div className="mt-6">
+                <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4>
+                <GownComparisonTable gowns={selectedGownData} />
               </div>
-              <Button onClick={handleCompareGowns} className="w-full">Compare Selected Gowns</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="optimize">
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Planning period</label>
-                  <Select onValueChange={setPlanningPeriod} defaultValue={planningPeriod}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select planning period" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="3 months">3 months</SelectItem>
-                      <SelectItem value="6 months">6 months</SelectItem>
-                      <SelectItem value="12 months">12 months</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gowns per week</label>
-                  <Input type="number" value={gownsPerWeek} onChange={(e) => setGownsPerWeek(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gowns per day</label>
-                  <Input type="number" value={gownsPerDay} onChange={(e) => setGownsPerDay(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Laundry pick-ups</label>
-                  <Input type="number" value={laundryPickups} onChange={(e) => setLaundryPickups(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Days until return</label>
-                  <Input type="number" value={daysUntilReturn} onChange={(e) => setDaysUntilReturn(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">% of Gowns lost</label>
-                  <Input type="number" value={lostGowns} onChange={(e) => setLostGowns(e.target.value)} />
-                </div>
-              </div>
-              <div className="w-full max-w-4xl mx-auto ">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Healthcare Organization Location</h3>
-                    <div className="space-y-2">
-                      <Input 
-                        placeholder="City" 
-                        value={healthcareLocation.city} 
-                        onChange={(e) => setHealthcareLocation({...healthcareLocation, city: e.target.value})} 
-                        aria-label="Healthcare Organization City"
-                      />
-                      <Input 
-                        placeholder="Postcode" 
-                        value={healthcareLocation.postcode} 
-                        onChange={(e) => setHealthcareLocation({...healthcareLocation, postcode: e.target.value})} 
-                        aria-label="Healthcare Organization Postcode"
-                      />
-                      <Input 
-                        placeholder="Street, house number" 
-                        value={healthcareLocation.street} 
-                        onChange={(e) => setHealthcareLocation({...healthcareLocation, street: e.target.value})} 
-                        aria-label="Healthcare Organization Street and House Number"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Laundry Location</h3>
-                    <div className="space-y-2">
-                      <Input 
-                        placeholder="City" 
-                        value={laundryLocation.city} 
-                        onChange={(e) => setLaundryLocation({...laundryLocation, city: e.target.value})} 
-                        aria-label="Laundry City"
-                      />
-                      <Input 
-                        placeholder="Postcode" 
-                        value={laundryLocation.postcode} 
-                        onChange={(e) => setLaundryLocation({...laundryLocation, postcode: e.target.value})} 
-                        aria-label="Laundry Postcode"
-                      />
-                      <Input 
-                        placeholder="Street, house number" 
-                        value={laundryLocation.street} 
-                        onChange={(e) => setLaundryLocation({...laundryLocation, street: e.target.value})} 
-                        aria-label="Laundry Street and House Number"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Reusable gowns in portfolio</label>
-                <Slider
-                  defaultValue={[reusablePercentage]}
-                  max={100}
-                  step={1}
-                  onValueChange={(value) => setReusablePercentage(value[0])}
-                />
-                <div className="flex justify-between text-sm text-gray-500 mt-1">
-                  <span>0%</span>
-                  <span>{reusablePercentage}%</span>
-                  <span>100%</span>
-                </div>
-              </div>
-              <Button onClick={handleOptimizePortfolio} className="w-full">Optimize Portfolio</Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {error && <p className="text-red-500 mt-4">{error}</p>}
+
+      {results && (
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4">Results</h2>
+        <ClusteredBarChart chartData={prepareChartData(results.results)} />
+        {/* <GownImpactsStacked stackedData={prepareStackedData(results)} /> */}
+        {/* <UsageChart usageData={prepareUsageData(results.results)} /> */}
+      </div>
+        )}
     </div>
   )
 }
