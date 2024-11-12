@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server'
 export async function POST(req: Request) {
   try {
     const optimizationData = await req.json()
-
-    const djangoRes = await fetch('http://159.65.192.81/emissions/api/opt/', {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api'
+    const djangoRes = await fetch(`${API_BASE_URL}/emissions/api/opt/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
