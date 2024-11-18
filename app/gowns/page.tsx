@@ -39,10 +39,11 @@ interface GownData {
     total_impact: {
       [gown: string]: number;
     };
-    stages:string;
+    stages: string;
     new_arrivals: [number, number][];
   };
   usage_values: number[];
+  new_arrivals: { amount: number }[];
 }
 
 interface Results {

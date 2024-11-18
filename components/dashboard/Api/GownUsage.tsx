@@ -7,7 +7,7 @@ const UsageChart = ({ usageData }: { usageData: Array<{ week: number; [key: stri
   const gownNames = usageData.length > 0 ? Object.keys(usageData[0]).filter(key => key !== 'week') : [];
 
   return (
-    <Card className="mb-6">
+    <Card className="mt-6 mb-6">
       <CardHeader>
         <CardTitle>Gown Usage Over Time</CardTitle>
       </CardHeader>
