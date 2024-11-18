@@ -37,7 +37,8 @@ export default function GownImpactsStacked({ stackedData }: GownImpactsStackedPr
   const impactTypes = Object.keys(gownData.Impacts);
 
   // Parse stages from the string
-  const stages = gownData.stages.split(',').map(stage => stage.trim());
+  const stages = gownData.stages;
+  console.log(stages)
 
   // Flatten the data structure for chart compatibility
   const transformedData = Object.entries(stackedData).map(([gownName, gownData]) => {

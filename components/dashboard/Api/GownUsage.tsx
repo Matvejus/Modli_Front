@@ -1,25 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-
-export interface Gown {
-  id: string; // Unique identifier for the gown
-  name: string; // Name of the gown
-  cost: number; // Cost of the gown
-  washes?: number; // Optional number of washes
-  emission_impacts: {
-    CO2: number; // CO2 emissions
-    Energy: number; // Energy consumption
-    Water: number; // Water usage
-    Cost: number; // Cost impact
-    production: number; // Production impact
-    transportation: number; // Transportation impact
-    washing: number; // Washing impact
-    disposal: number; // Disposal impact
-  };
-  reusable: boolean; // Indicates if the gown is reusable
-}
-
 const UsageChart = ({ usageData }: { usageData: Array<{ week: number; [key: string]: number }> }) => {
   const colors = ['#627aad', '#69a480', '#d1b45b', '#338ed1', '#d2c6b1', '#4b5563', '#2c6cdc'];
 
