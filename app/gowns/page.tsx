@@ -214,26 +214,34 @@ const fetchGowns = async () => {
     });
   };
   
-  const prepareStackedData = (results: Results) => {
-    return Object.entries(results.results).reduce<{
-      [key: string]: {
-        Impacts: {
-          stages: { [stage: string]: { [impact: string]: number } };
-          total_impact: { [impact: string]: number };
-        };
+
+const prepareStackedData = (results: { [name: string]: GownData }) => {
+  return Object.entries(results.results).reduce<{
+    [key: string]: {
+      Impacts: {
+        stages: { [stage: string]: { [impact: string]: number } };
+        total_impact: { [impact: string]: number };
       };
-    }>((acc, [gownName, gownData]) => {
-      if (gownData.Impacts) {
-        acc[gownName] = {
-          Impacts: {
-            stages: gownData.Impacts.stages,
-            total_impact: gownData.Impacts.total_impact
-          }
-        };
-      }
-      return acc;
-    }, {});
-  };
+    };
+  }>((acc, [gownName, gownData]) => {
+    if (
+      gownData.Impacts &&
+      typeof gownData.Impacts.stages === 'object' &&
+      Object.values(gownData.Impacts.stages).every(
+        (stage) => typeof stage === 'object' && stage !== null
+      )
+    ) {
+      acc[gownName] = {
+        Impacts: {
+          stages: gownData.Impacts.stages as { [stage: string]: { [impact: string]: number } },
+          total_impact: gownData.Impacts.total_impact
+        }
+      };
+    }
+    return acc;
+  }, {});
+};
+
 
   return (
     <div className="container mx-auto p-4 max-w-7xl">
