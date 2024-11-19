@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 
 const colors = ["#2980B9", "#3498DB", "#1ABC9C", "#16A085", "#ECF0F1", "#BDC3C7", "#2C3E50"]
+
+// Hardcoded stages
 const stages = ["HOSPITAL", "LAUNDRY", "USAGE", "LOST", "EOL", "ARRIVALMOM", "NEWARRIVALS"]
 
 interface GownImpacts {
@@ -51,9 +53,9 @@ export default function Component({ stackedData }: GownImpactsStackedProps) {
   })
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
       {impactTypes.map((impact) => (
-        <Card key={impact} className="w-full">
+        <Card key={impact} className="w-full overflow-hidden">
           <CardHeader>
             <CardTitle>{impact} Impact</CardTitle>
             <CardDescription>Impact breakdown by stage</CardDescription>
@@ -66,14 +68,14 @@ export default function Component({ stackedData }: GownImpactsStackedProps) {
                   { label: stage, color: colors[index % colors.length] },
                 ])
               )}
-              className="h-[400px]"
+              className="h-[300px] px-2"
             >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={transformedData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
+              <ResponsiveContainer width="99%" height={250}>
+                <BarChart data={transformedData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="name" interval={0}  textAnchor="end" height={60} />
+                  <YAxis domain={[0, 'auto']} />
                   <ChartTooltip />
-                  <Legend />
+                  <Legend layout="horizontal" verticalAlign="bottom" align="center" />
                   {stages.map((stage, index) => (
                     <Bar
                       key={stage}
