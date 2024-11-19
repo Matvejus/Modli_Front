@@ -7,8 +7,8 @@ import GownList from '@/components/dashboard/Api/GownList'
 import GownEmissionChart from '@/components/dashboard/Api/GownRadar'
 import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
 import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
-// import UsageChart from '@/components/dashboard/Api/GownUsage'
-// import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
+import UsageChart from '@/components/dashboard/Api/GownUsage'
+import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
 // import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
 import GownComparisonTable from '@/components/dashboard/Api/emissions_table'
@@ -39,10 +39,11 @@ interface GownData {
     total_impact: {
       [gown: string]: number;
     };
-    stages:string;
+    stages: string;
     new_arrivals: [number, number][];
   };
   usage_values: number[];
+  new_arrivals: { amount: number }[];
 }
 
 interface Results {
@@ -181,7 +182,7 @@ const fetchGowns = async () => {
   };
 
   const prepareChartData = (results: { [gownName: string]: GownData }) => {
-    console.log(results);
+    
     const impactCategories = ['CO2EQ', 'WATER', 'ENERGY', 'MONEY'];
   
     return impactCategories.map(category => {
@@ -194,30 +195,53 @@ const fetchGowns = async () => {
     });
   };
   
-  // const prepareUsageData = (results: Results) => {
-  //   const gownNames = Object.keys(results.results)
-  //   const maxLength = Math.max(...gownNames.map(name => results.results[name].usage_values?.length || 0))
+  const prepareUsageData = (data: Results | { [gownNname: string]: GownData }) => {
+    const isResults = (data: any): data is Results => 'results' in data;
   
-  //   return Array.from({ length: maxLength }, (_, index) => {
-  //     const dataPoint: { week: number; [key: string]: number } = { week: index + 1 }
-  //     gownNames.forEach(name => {
-  //       dataPoint[name] = results.results[name].usage_values[index] || 0
-  //     })
-  //     return dataPoint
-  //   })
-  // };
+    const gownData = isResults(data) ? data.results : data;
+    const gownNames = Object.keys(gownData);
   
-  // const prepareStackedData = (results: Results) => {
-  //   return Object.entries(results.results).reduce<{ [key: string]: { Impacts: { [key: string]: number }; stages: string } }>((acc, [gownName, gownData]) => {
-  //     if (gownData.Impacts) {
-  //       acc[gownName] = {
-  //         Impacts: gownData.Impacts.total_impact, // Accessing total_impact as it contains numbers
-  //         stages: gownData.Impacts.stages
-  //       };
-  //     }
-  //     return acc;
-  //   }, {});
-  // };
+    const maxLength = Math.max(
+      ...gownNames.map(name => gownData[name]?.usage_values?.length || 0)
+    );
+  
+    return Array.from({ length: maxLength }, (_, index) => {
+      const dataPoint: { week: number; [key: string]: number } = { week: index + 1 };
+      gownNames.forEach(name => {
+        dataPoint[name] = gownData[name]?.usage_values?.[index] || 0;
+      });
+      return dataPoint;
+    });
+  };
+  
+
+const prepareStackedData = (results: { [name: string]: GownData }) => {
+  return Object.entries(results.results).reduce<{
+    [key: string]: {
+      Impacts: {
+        stages: { [stage: string]: { [impact: string]: number } };
+        total_impact: { [impact: string]: number };
+      };
+    };
+  }>((acc, [gownName, gownData]) => {
+    if (
+      gownData.Impacts &&
+      typeof gownData.Impacts.stages === 'object' &&
+      Object.values(gownData.Impacts.stages).every(
+        (stage) => typeof stage === 'object' && stage !== null
+      )
+    ) {
+      acc[gownName] = {
+        Impacts: {
+          stages: gownData.Impacts.stages as { [stage: string]: { [impact: string]: number } },
+          total_impact: gownData.Impacts.total_impact
+        }
+      };
+    }
+    return acc;
+  }, {});
+};
+
 
   return (
     <div className="container mx-auto p-4 max-w-7xl">
@@ -292,8 +316,8 @@ const fetchGowns = async () => {
       <div className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">Results</h2>
         <ClusteredBarChart chartData={prepareChartData(results.results)} />
-        {/* <GownImpactsStacked stackedData={prepareStackedData(results)} /> */}
-        {/* <UsageChart usageData={prepareUsageData(results.results)} /> */}
+        <GownImpactsStacked stackedData={prepareStackedData(results.results)} />
+        <UsageChart usageData={prepareUsageData(results.results)} />
       </div>
         )}
     </div>

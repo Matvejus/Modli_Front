@@ -1,63 +1,64 @@
-import { Bar, BarChart, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer } from "@/components/ui/chart";
+"use client"
 
-const colors = ["#2980B9", "#3498DB", "#1ABC9C", "#16A085", "#ECF0F1", "#BDC3C7", "#2C3E50"];
+import { Bar, BarChart, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 
-// Define types for the data structure
+const colors = ["#2980B9", "#3498DB", "#1ABC9C", "#16A085", "#ECF0F1", "#BDC3C7", "#2C3E50"]
+
+// Hardcoded stages
+const stages = ["HOSPITAL", "LAUNDRY", "USAGE", "LOST", "EOL", "ARRIVALMOM", "NEWARRIVALS"]
 
 interface GownImpacts {
   Impacts: {
-    [key: string]: number;
-  };
-  stages: string;
+    stages: {
+      [stage: string]: {
+        [impact: string]: number
+      }
+    }
+    total_impact: {
+      [impact: string]: number
+    }
+  }
 }
 
 interface StackedData {
-  [gownName: string]: GownImpacts;
+  [gownName: string]: GownImpacts
 }
 
 interface GownImpactsStackedProps {
-  stackedData: StackedData;
+  stackedData: StackedData
 }
 
-export default function GownImpactsStacked({ stackedData }: GownImpactsStackedProps) {
-  // Check if stackedData is available and has at least one gown
-  if (!stackedData || Object.keys(stackedData).length === 0) return <div>No data available</div>;
+export default function Component({ stackedData }: GownImpactsStackedProps) {
+  if (!stackedData || Object.keys(stackedData).length === 0) return <div>No data available</div>
 
-  // Get the first gown data
-  const gownData = Object.values(stackedData)[0];
+  const gownData = Object.values(stackedData)[0]
 
-  // Check if gownData and its properties exist
   if (!gownData || !gownData.Impacts) {
-    return <div>No valid gown data available</div>;
+    return <div>No valid gown data available</div>
   }
 
-  // Derive impactTypes from the gownData
-  const impactTypes = Object.keys(gownData.Impacts);
+  const impactTypes = Object.keys(gownData.Impacts.total_impact)
 
-  // Parse stages from the string
-  const stages = gownData.stages.split(',').map(stage => stage.trim());
-
-  // Flatten the data structure for chart compatibility
   const transformedData = Object.entries(stackedData).map(([gownName, gownData]) => {
-    const transformedGown: Record<string, string | number> = { name: gownName };
-    impactTypes.forEach((impact) => {
-      transformedGown[impact] = gownData.Impacts[impact] || 0;
-    });
-    return transformedGown;
-  }).filter(gown => {
-    // Check if all impacts are zero
-    return impactTypes.some(impact => (gown[impact] as number) > 0);
-  });
+    const transformedGown: Record<string, string | number> = { name: gownName }
+    stages.forEach((stage) => {
+      impactTypes.forEach((impact) => {
+        const key = `${stage}_${impact}`
+        transformedGown[key] = gownData.Impacts.stages[stage]?.[impact] || 0
+      })
+    })
+    return transformedGown
+  })
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
       {impactTypes.map((impact) => (
-        <Card key={impact} className="w-full">
+        <Card key={impact} className="w-full overflow-hidden">
           <CardHeader>
             <CardTitle>{impact} Impact</CardTitle>
-            <CardDescription></CardDescription>
+            <CardDescription>Impact breakdown by stage</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer
@@ -67,19 +68,23 @@ export default function GownImpactsStacked({ stackedData }: GownImpactsStackedPr
                   { label: stage, color: colors[index % colors.length] },
                 ])
               )}
-              className="flex justify-center h-[300px]"
+              className="h-[300px] px-2"
             >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={transformedData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar
-                    dataKey={impact}
-                    fill={colors[0]}
-                    name={impact}
-                  />
+              <ResponsiveContainer width="99%" height={250}>
+                <BarChart data={transformedData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="name" interval={0}  textAnchor="end" height={60} />
+                  <YAxis domain={[0, 'auto']} />
+                  <ChartTooltip />
+                  <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+                  {stages.map((stage, index) => (
+                    <Bar
+                      key={stage}
+                      dataKey={`${stage}_${impact}`}
+                      stackId="a"
+                      fill={colors[index % colors.length]}
+                      name={stage}
+                    />
+                  ))}
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -87,5 +92,5 @@ export default function GownImpactsStacked({ stackedData }: GownImpactsStackedPr
         </Card>
       ))}
     </div>
-  );
+  )
 }
