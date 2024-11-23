@@ -18,7 +18,7 @@ export default function EmissionsInfoModal() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">
+        <Button variant="outline" className="justify-start bg-white">
           <InfoCircledIcon className="mr-2 h-4 w-4" /> View Emissions Information
         </Button>
       </DialogTrigger>

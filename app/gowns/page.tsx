@@ -257,12 +257,13 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
         </CardContent>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-rows-2 gap-8">
         <Card>
           <CardHeader>
-            <CardTitle>Gowns</CardTitle>
+            <CardTitle>Compare Gowns</CardTitle>
           </CardHeader>
           <CardContent>
+          <div className="grid md:grid-cols-2 gap-8">
             <GownList 
               title="Reusable Gowns"
               gowns={reusableGowns} 
@@ -275,10 +276,14 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
               selectedGowns={selectedGowns} 
               onGownSelection={handleGownSelection} 
             />
+            </div>
             {selectedGownData.length > 0 && (
               <div className="mt-6">
                 <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4>
+                <div className="grid md:grid-cols-2 gap-8">
                 <GownEmissionChart gowns={selectedGownData} />
+                <GownComparisonTable gowns={selectedGownData} />
+                </div>
               </div>
             )}
           </CardContent>
@@ -286,7 +291,7 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Optimization Specifications</CardTitle>
+            <CardTitle>Gown portfolio optimization</CardTitle>
           </CardHeader>
           <CardContent>
             <OptimizationSpecifications 
@@ -300,12 +305,6 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
             >
               {loading ? 'Optimizing...' : 'Start Optimization'}
             </Button>
-            {selectedGownData.length > 0 && (
-              <div className="mt-6">
-                <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4>
-                <GownComparisonTable gowns={selectedGownData} />
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>
