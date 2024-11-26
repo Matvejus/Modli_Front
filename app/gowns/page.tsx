@@ -250,8 +250,13 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
           <CardTitle className="text-3xl font-bold text-center">Circular Procurement Tool</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-gray-600 mb-4">
-            Compare the economic, social, and environmental impact of different isolation gowns.
+          <p className="text-lg text-gray-700 text-center mb-3">
+            Please select at least two isolation gowns from the below list – this list includes 
+            commonly used materials and material combinations for (non-sterile) isolation 
+            gowns. Data for these different types of isolation gowns has been prefilled with 
+            standard data. Click the edit button to add/change (if applicable) the purchase 
+            cost, laundry cost, maximum number of washes, social certifications, hygiene, and 
+            comfort ratings. 
           </p>
           <VariablesAndSourcesModal />
         </CardContent>
@@ -277,48 +282,18 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
               onGownSelection={handleGownSelection} 
             />
             </div>
-            {selectedGownData.length > 0 && (
-              <div className="mt-6">
-                <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4>
+          </CardContent>
+        </Card>
+        {selectedGownData.length > 0 && (
+              <div className="mt-3">
+                {/* <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4> */}
                 <div className="grid md:grid-cols-2 gap-8">
                 <GownEmissionChart gowns={selectedGownData} />
                 <GownComparisonTable gowns={selectedGownData} />
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Gown portfolio optimization</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <OptimizationSpecifications 
-              specifications={specifications} 
-              handleSpecificationChange={handleSpecificationChange} 
-            />
-            <Button
-              onClick={startOptimization}
-              className="mb-6"
-              disabled={loading}
-            >
-              {loading ? 'Optimizing...' : 'Start Optimization'}
-            </Button>
-          </CardContent>
-        </Card>
       </div>
-
-      {error && <p className="text-red-500 mt-4">{error}</p>}
-
-      {results && (
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Results</h2>
-        <ClusteredBarChart chartData={prepareChartData(results.results)} />
-        <GownImpactsStacked stackedData={prepareStackedData(results.results)} />
-        <UsageChart usageData={prepareUsageData(results.results)} />
-      </div>
-        )}
     </div>
-  )
+  );
 }
