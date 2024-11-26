@@ -11,9 +11,8 @@
     "plugin:react-hooks/recommended",
     "next/core-web-vitals", 
     "next/typescript",
-    "next.js"
   ],
   "rules": {
-    "no-unused-vars": "off"
+    "no-unused-vars": "on"
   }
 }

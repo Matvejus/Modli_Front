@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-// import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import GownList from '@/components/dashboard/Api/GownList'
 import GownEmissionChart from '@/components/dashboard/Api/GownRadar'
-// import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
-// import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
-// import UsageChart from '@/components/dashboard/Api/GownUsage'
-// import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
+import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
+import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
+import UsageChart from '@/components/dashboard/Api/GownUsage'
+import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
 // import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
 import GownComparisonTable from '@/components/dashboard/Api/emissions_table'
@@ -265,7 +265,7 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
       <div className="grid md:grid-rows-2 gap-8">
         <Card>
           <CardHeader>
-            <CardTitle>Compare Gowns</CardTitle>
+            <CardTitle>Select gowns for portfolio optimization</CardTitle>
           </CardHeader>
           <CardContent>
           <div className="grid md:grid-cols-2 gap-8">
@@ -284,16 +284,37 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
             </div>
           </CardContent>
         </Card>
-        {selectedGownData.length > 0 && (
-              <div className="mt-3">
-                {/* <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4> */}
-                <div className="grid md:grid-cols-2 gap-8">
-                <GownEmissionChart gowns={selectedGownData} />
-                <GownComparisonTable gowns={selectedGownData} />
-                </div>
-              </div>
-            )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Optimization parameters</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <OptimizationSpecifications 
+              specifications={specifications} 
+              handleSpecificationChange={handleSpecificationChange} 
+            />
+            <Button
+              onClick={startOptimization}
+              className="mb-6"
+              disabled={loading}
+            >
+              {loading ? 'Optimizing...' : 'Start Optimization'}
+            </Button>
+          </CardContent>
+        </Card>
       </div>
+
+      {error && <p className="text-red-500 mt-4">{error}</p>}
+
+      {results && (
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4">Results</h2>
+        <ClusteredBarChart chartData={prepareChartData(results.results)} />
+        <GownImpactsStacked stackedData={prepareStackedData(results.results)} />
+        <UsageChart usageData={prepareUsageData(results.results)} />
+      </div>
+        )}
     </div>
-  );
+  )
 }
