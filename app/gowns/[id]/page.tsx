@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import * as SwitchPrimitive from '@radix-ui/react-switch'
 import { useRouter } from 'next/navigation'
 import EmissionsInfoModal from '@/components/modals/gown_detail'
+import { LikertScale } from '@/components/dashboard/Api/LikertScale'
 
 type Gown = {
   id: string
@@ -60,24 +61,21 @@ export default function GownDetail({ params }: GownDetailProps) {
 
   const fetchGownDetails = useCallback(async () => {
     try {
-      // Fetch gown details
       const gownRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`)
       if (!gownRes.ok) throw new Error('Failed to fetch gown details')
       const gownData = await gownRes.json()
       setGown(gownData)
 
-      // Fetch emissions data
       const emissionsRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/emissions/`)
       if (!emissionsRes.ok) throw new Error('Failed to fetch emissions data')
       const emissionsData = await emissionsRes.json()
       setEmissions(emissionsData)
     } catch (error) {
       console.error("API error: ", error)
-      // Fallback to mock data if needed
     } finally {
       setLoading(false)
     }
-  }, [id])
+  }, [id, API_BASE_URL])
 
   useEffect(() => {
     if (id) {
@@ -125,7 +123,7 @@ export default function GownDetail({ params }: GownDetailProps) {
         <EmissionsInfoModal />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Reusable</CardTitle>
           </CardHeader>
@@ -133,7 +131,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             <span className="text-sm font-medium">{gown.reusable ? 'Yes' : 'No'}</span>
             <AnimatedSwitch checked={gown.reusable} onCheckedChange={(checked) => handleInputChange('reusable', checked)} />
           </CardContent>
-        </Card>
+        </Card> */}
         <Card>
           <CardHeader>
             <CardTitle>Cost</CardTitle>
@@ -147,46 +145,20 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Washes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Input 
-              type="number" 
-              value={gown.washes} 
-              onChange={(e) => handleInputChange('washes', parseInt(e.target.value))} 
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Comfort</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Input 
-              type="number" 
-              value={gown.comfort} 
-              onChange={(e) => handleInputChange('comfort', parseInt(e.target.value))} 
-              min={0} 
-              max={5} 
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Hygiene</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Input 
-              type="number" 
-              value={gown.hygine} 
-              onChange={(e) => handleInputChange('hygine', parseInt(e.target.value))} 
-              min={0} 
-              max={5} 
-            />
-          </CardContent>
-        </Card>
+        {gown.reusable && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Washes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Input 
+                type="number" 
+                value={gown.washes} 
+                onChange={(e) => handleInputChange('washes', parseInt(e.target.value))} 
+              />
+            </CardContent>
+          </Card>
+        )}
         <Card>
           <CardHeader>
             <CardTitle>Certificates</CardTitle>
@@ -203,6 +175,30 @@ export default function GownDetail({ params }: GownDetailProps) {
                 ))}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Comfort</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LikertScale
+              value={gown.comfort}
+              onChange={(value) => handleInputChange('comfort', value)}
+              name="comfort"
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Hygiene</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LikertScale
+              value={gown.hygine}
+              onChange={(value) => handleInputChange('hygine', value)}
+              name="hygiene"
+            />
           </CardContent>
         </Card>
       </div>
@@ -225,7 +221,6 @@ export default function GownDetail({ params }: GownDetailProps) {
               <TableHead className="whitespace-nowrap">Fabric Production</TableHead>
               <TableHead className="whitespace-nowrap">Finishing</TableHead>
               <TableHead className="whitespace-nowrap">Manufacturing</TableHead>
-              {/* <TableHead className="whitespace-nowrap">Packaging</TableHead> */}
               <TableHead className="whitespace-nowrap">Transport</TableHead>
               <TableHead className="whitespace-nowrap">Use</TableHead>
               <TableHead className="whitespace-nowrap">Total</TableHead>
@@ -240,7 +235,6 @@ export default function GownDetail({ params }: GownDetailProps) {
                 <TableCell>{emission.fabric_production.toFixed(2)}</TableCell>
                 <TableCell>{emission.finishing.toFixed(2)}</TableCell>
                 <TableCell>{emission.manufacturing.toFixed(2)}</TableCell>
-                {/* <TableCell>{emission.packaging.toFixed(2)}</TableCell> */}
                 <TableCell>{emission.transport.toFixed(2)}</TableCell>
                 <TableCell>{emission.use.toFixed(2)}</TableCell>
                 <TableCell>{emission.total.toFixed(2)}</TableCell>
@@ -252,3 +246,4 @@ export default function GownDetail({ params }: GownDetailProps) {
     </div>
   )
 }
+
