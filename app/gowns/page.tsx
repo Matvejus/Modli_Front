@@ -11,25 +11,33 @@ import GownEmissionChart from '@/components/dashboard/Api/GownRadar'
 // import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
 // import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
-import GownComparisonTable from '@/components/dashboard/Api/emissions_table'
+import GownComparisonTable from '@/components/dashboard/Api/GownComparison/EmissionsTable'
+import EnviromentalImpacts from '@/components/dashboard/Api/GownComparison/EnivromentalImpacts'
+import EconomicImpacts from '@/components/dashboard/Api/GownComparison/EconomicImpacts'
+import SocialImpacts from '@/components/dashboard/Api/GownComparison/SocialImpacts'
+import GownHygieneComparison from '@/components/dashboard/Api/GownComparison/HygineComparison'
+import GownCertificatesTable from '@/components/dashboard/Api/GownComparison/CertificatesTable'
 
 // Define the Gown interface
 interface Gown {
   gown: string;
-  id: string; // Unique identifier for the gown
-  name: string; // Name of the gown
-  cost: number; // Cost of the gown
-  reusable: boolean; // Indicates if the gown is reusable
-  washes?: number; // Optional number of washes
+  id: string;
+  name: string;
+  cost: number;
+  reusable: boolean;
+  washes?: number;
+  hygine: number;
+  comfort: number;
+  certificates: string[];
   emission_impacts: {
-    CO2: number; // CO2 emissions
-    Energy: number; // Energy consumption
-    Water: number; // Water usage
-    Cost: number; // Cost impact
-    production: number; // Production impact
-    transportation: number; // Transportation impact
-    washing: number; // Washing impact
-    disposal: number; // Disposal impact
+    CO2: number;
+    Energy: number;
+    Water: number;
+    Cost: number;
+    production: number;
+    transportation: number;
+    washing: number;
+    disposal: number;
   };
 }
 
@@ -102,6 +110,7 @@ const fetchGowns = async () => {
     fetchGowns()
   }, [])
 
+
   useEffect(() => {
     if (selectedGowns.length > 0) {
       fetch(`${API_BASE_URL}/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
@@ -114,10 +123,20 @@ const fetchGowns = async () => {
   }, [selectedGowns])
 
   const handleGownSelection = (gownId: string) => {
-    setSelectedGowns(prev => 
-      prev.includes(gownId) ? prev.filter(id => id !== gownId) : [...prev, gownId]
-    )
-  }
+    setSelectedGowns(prev => {
+      if (prev.includes(gownId)) {
+        // If the gown is already selected, remove it
+        return prev.filter(id => id !== gownId);
+      } else if (prev.length < 3) {
+        // Add the gown only if the total selected is less than 3
+        return [...prev, gownId];
+      } else {
+        // If 3 gowns are already selected, prevent adding more
+        alert("You can only select up to 3 gowns.");
+        return prev;
+      }
+    });
+  };
 
   const startOptimization = async () => {
     setLoading(true);
@@ -183,7 +202,7 @@ const fetchGowns = async () => {
 
   const prepareChartData = (results: { [gownName: string]: GownData }) => {
     
-    const impactCategories = ['CO2EQ', 'WATER', 'ENERGY', 'MONEY'];
+    const impactCategories = ['CO2EQ', 'WATER', 'ENERGY', 'MONEY', 'COST'];
   
     return impactCategories.map(category => {
       const dataPoint: { name: string; [key: string]: number | string } = { name: category };
@@ -262,7 +281,7 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
         </CardContent>
       </Card>
 
-      <div className="grid md:grid-rows-2 gap-8">
+      <div className="mb-3">
         <Card>
           <CardHeader>
             <CardTitle>Compare Gowns</CardTitle>
@@ -284,16 +303,21 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
             </div>
           </CardContent>
         </Card>
+      </div>
         {selectedGownData.length > 0 && (
-              <div className="mt-3">
+              <div className="pt-3">
                 {/* <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4> */}
-                <div className="grid md:grid-cols-2 gap-8">
-                <GownEmissionChart gowns={selectedGownData} />
+                <div className="grid md:grid-cols-2 gap-6 mt-3">
+                {/* <GownEmissionChart gowns={selectedGownData} /> */}
+                <EnviromentalImpacts gowns={selectedGownData} />
                 <GownComparisonTable gowns={selectedGownData} />
+                <EconomicImpacts gowns={selectedGownData} />
+                <SocialImpacts gowns={selectedGownData} />
+                <GownHygieneComparison gowns={selectedGownData} />
+                <GownCertificatesTable gowns={selectedGownData} />
                 </div>
               </div>
             )}
       </div>
-    </div>
   );
 }

@@ -4,14 +4,11 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import GownList from '@/components/dashboard/Api/GownList'
-import GownEmissionChart from '@/components/dashboard/Api/GownRadar'
 import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
 import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
 import UsageChart from '@/components/dashboard/Api/GownUsage'
 import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
-// import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
-import GownComparisonTable from '@/components/dashboard/Api/emissions_table'
 
 // Define the Gown interface
 interface Gown {
