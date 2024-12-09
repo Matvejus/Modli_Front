@@ -134,7 +134,7 @@ export default function GownDetail({ params }: GownDetailProps) {
         </Card> */}
         <Card>
           <CardHeader>
-            <CardTitle>Cost</CardTitle>
+            <CardTitle> Purchasing Cost</CardTitle>
           </CardHeader>
           <CardContent>
             <Input 

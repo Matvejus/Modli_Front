@@ -40,7 +40,7 @@ const EnviromentalImpacts = ({ gowns }: EnviromentalImpactsProps) => {
               data={chartData}
               margin={{ top: 20, right: 30, left: 60, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              {/* <CartesianGrid strokeDasharray="3 3" /> */}
               <XAxis 
                 dataKey="name" 
                 tick={{ fontSize: 12 }}
