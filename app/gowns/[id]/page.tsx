@@ -19,6 +19,7 @@ type Gown = {
   comfort: number
   hygine: number
   certificates: string[]
+  washing_cost: number
 }
 
 type Emission = {
@@ -123,7 +124,7 @@ export default function GownDetail({ params }: GownDetailProps) {
         <EmissionsInfoModal />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        {/* <Card>
+        <Card>
           <CardHeader>
             <CardTitle>Reusable</CardTitle>
           </CardHeader>
@@ -131,7 +132,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             <span className="text-sm font-medium">{gown.reusable ? 'Yes' : 'No'}</span>
             <AnimatedSwitch checked={gown.reusable} onCheckedChange={(checked) => handleInputChange('reusable', checked)} />
           </CardContent>
-        </Card> */}
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle> Purchasing Cost</CardTitle>
