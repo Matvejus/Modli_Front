@@ -33,7 +33,7 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Economic Impacts per 1 use of gown</CardTitle>
+        <CardTitle> Economic Impact (1 gown use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">
@@ -53,7 +53,7 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
               <YAxis 
                 tick={{ fontSize: 12 }} 
                 width={50}
-                label={{ value: 'Impact', angle: -90, position: 'insideLeft' }}
+                label={{ value: 'Impact €', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip />
               <Legend wrapperStyle={{ paddingTop: '20px' }} />

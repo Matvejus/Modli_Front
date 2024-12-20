@@ -30,7 +30,7 @@ const SocialImpacts = ({ gowns }: SocialImpactProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Social Impacts per 1 use of gown</CardTitle>
+        <CardTitle>Social Impact (1 gown use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">

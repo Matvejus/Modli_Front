@@ -23,7 +23,7 @@ const WaterImpacts = ({ gowns }: WaterImpactsProps) => {
   const chartData = [
     // { name: 'CO2 (kg CO2-eq)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.CO2.toFixed(2) }), {}) },
     // { name: 'Water (MJ-eq)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
-    { name: 'Water (L)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
+    { name: 'Water', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
   ];
 
   const gownNames = gowns.map(gown => gown.name);
@@ -31,14 +31,14 @@ const WaterImpacts = ({ gowns }: WaterImpactsProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Water impact</CardTitle>
+        <CardTitle>Water impact (1 gown use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={chartData}
-              margin={{ top: 20, right: 30, left: 60, bottom: 5 }}
+              margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
@@ -51,7 +51,7 @@ const WaterImpacts = ({ gowns }: WaterImpactsProps) => {
               <YAxis 
                 tick={{ fontSize: 12 }} 
                 width={50}
-                label={{ value: 'Litre', angle: -90, position: 'insideLeft' }}
+                label={{ value: 'L', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip />
               <Legend wrapperStyle={{ paddingTop: '20px' }} />
