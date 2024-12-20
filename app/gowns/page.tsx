@@ -12,13 +12,14 @@ import GownEmissionChart from '@/components/dashboard/Api/GownRadar'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
 // import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
 import GownComparisonTable from '@/components/dashboard/Api/GownComparison/EmissionsTable'
-import EnviromentalImpacts from '@/components/dashboard/Api/GownComparison/EnivromentalImpacts'
 import EconomicImpacts from '@/components/dashboard/Api/GownComparison/EconomicImpacts'
 import SocialImpacts from '@/components/dashboard/Api/GownComparison/SocialImpacts'
 import GownHygieneComparison from '@/components/dashboard/Api/GownComparison/HygineComparison'
 import GownCertificatesTable from '@/components/dashboard/Api/GownComparison/CertificatesTable'
+import EnergyImpacts from '@/components/dashboard/Api/GownComparison/EnergyImpact'
+import WaterImpacts from '@/components/dashboard/Api/GownComparison/WaterImpact'
+import CO2Impacts from '@/components/dashboard/Api/GownComparison/CO2Impact'
 
-// Define the Gown interface
 interface Gown {
   gown: string;
   id: string;
@@ -305,18 +306,27 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
         </Card>
       </div>
         {selectedGownData.length > 0 && (
-              <div className="pt-3">
-                {/* <h4 className="text-md font-semibold mb-2">Selected Gowns Comparison</h4> */}
-                <div className="grid md:grid-cols-2 gap-6 mt-3">
-                {/* <GownEmissionChart gowns={selectedGownData} /> */}
-                <EnviromentalImpacts gowns={selectedGownData} />
-                <GownComparisonTable gowns={selectedGownData} />
-                <EconomicImpacts gowns={selectedGownData} />
-                <SocialImpacts gowns={selectedGownData} />
-                <GownHygieneComparison gowns={selectedGownData} />
-                <GownCertificatesTable gowns={selectedGownData} />
-                </div>
-              </div>
+    <div className="pt-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+        <CO2Impacts gowns={selectedGownData} />
+        <EnergyImpacts gowns={selectedGownData} />
+        <WaterImpacts gowns={selectedGownData} />
+      </div>
+
+      <div className="mb-6">
+        <GownComparisonTable gowns={selectedGownData} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <EconomicImpacts gowns={selectedGownData} />
+        <SocialImpacts gowns={selectedGownData} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <GownHygieneComparison gowns={selectedGownData} />
+        <GownCertificatesTable gowns={selectedGownData} />
+      </div>
+  </div>
             )}
       </div>
   );

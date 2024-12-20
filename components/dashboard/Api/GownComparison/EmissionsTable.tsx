@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { ArrowDownIcon } from 'lucide-react'
+import GownComparisonModal from '@/components/modals/emissions_detail'
 
 interface Gown {
   id: string
@@ -72,7 +73,10 @@ export default function GownComparisonTable({ gowns }: GownComparisonTableProps)
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Gown Comparison per 1 use</CardTitle>
+        <CardTitle className="flex items-center justify-between">
+          <span>Gown Comparison per 1 use</span>
+          <GownComparisonModal gowns={gowns} />
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
@@ -120,3 +124,4 @@ export default function GownComparisonTable({ gowns }: GownComparisonTableProps)
     </Card>
   )
 }
+
