@@ -31,7 +31,7 @@ export default function GownCertificatesTable({ gowns }: GownCertificatesTablePr
             <Table>
             <TableHeader>
                 <TableRow>
-                <TableHead>Gown Name</TableHead>
+                <TableHead>Gown</TableHead>
                 {allCertificates.map(cert => (
                     <TableHead key={cert}>{cert}</TableHead>
                 ))}

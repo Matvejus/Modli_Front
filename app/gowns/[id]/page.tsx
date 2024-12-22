@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import * as SwitchPrimitive from '@radix-ui/react-switch'
-import { useRouter } from 'next/navigation'
 import EmissionsInfoModal from '@/components/modals/gown_detail'
 import { LikertScale } from '@/components/dashboard/Api/LikertScale'
 
@@ -20,7 +20,7 @@ type Gown = {
   comfort: number
   hygine: number
   certificates: string[]
-  washing_cost: number
+  laundry_cost: number
 }
 
 type Emission = {
@@ -39,6 +39,7 @@ type Emission = {
 type Certificate = {
   id: string
   name: string
+  checked: boolean
 }
 
 interface GownDetailProps {
@@ -96,6 +97,17 @@ export default function GownDetail({ params }: GownDetailProps) {
     }
   }, [id, fetchGownDetails])
 
+  useEffect(() => {
+    if (gown && allCertificates.length > 0) {
+      setAllCertificates(prevCertificates =>
+        prevCertificates.map(cert => ({
+          ...cert,
+          checked: gown.certificates.includes(cert.name)
+        }))
+      )
+    }
+  }, [gown])
+
   const handleInputChange = (field: keyof Gown, value: string | number | boolean) => {
     if (gown) {
       setGown({ ...gown, [field]: value })
@@ -103,24 +115,23 @@ export default function GownDetail({ params }: GownDetailProps) {
     }
   }
 
-  const handleCertificateChange = (certificateName: string) => {
-    if (gown) {
-      const updatedCertificates = gown.certificates.includes(certificateName)
-        ? gown.certificates.filter(cert => cert !== certificateName)
-        : [...gown.certificates, certificateName]
-      setGown({ ...gown, certificates: updatedCertificates })
-      setHasChanges(true)
-    }
+  const handleCertificateChange = (certificateId: string) => {
+    setAllCertificates(prevCertificates =>
+      prevCertificates.map(cert =>
+        cert.id === certificateId ? { ...cert, checked: !cert.checked } : cert
+      )
+    )
+    setHasChanges(true)
   }
 
   const handleSave = async () => {
     if (!gown) return;
-  
+
     const updatedData = {
       ...gown,
-      certificates: gown.certificates.map((name) => allCertificates.find((c) => c.name === name)?.id),
+      certificates: allCertificates.filter(cert => cert.checked).map(cert => cert.id),
     };
-  
+
     try {
       const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
         method: 'PUT',
@@ -128,15 +139,16 @@ export default function GownDetail({ params }: GownDetailProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedData),
-      }); console.log(updatedData)
-  
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`);
       }
-  
+
+      await fetchGownDetails(); // Refetch the data after saving
+      setHasChanges(false);
       alert('Gown details saved successfully!');
-      router.push('/gowns');
     } catch (error) {
       console.error('Error saving gown details:', error);
       alert(`Failed to save gown details. Error: ${error}`);
@@ -163,7 +175,7 @@ export default function GownDetail({ params }: GownDetailProps) {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle> Purchasing Cost</CardTitle>
+            <CardTitle>Purchase cost (€/gown)</CardTitle>
           </CardHeader>
           <CardContent>
             <Input 
@@ -174,6 +186,21 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card>
+        {gown.reusable && (
+        <Card>
+        <CardHeader>
+          <CardTitle>Laundry cost (€/gown/wash)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Input 
+            type="number" 
+            value={gown.laundry_cost.toFixed(2)} 
+            onChange={(e) => handleInputChange('laundry_cost', parseFloat(e.target.value))} 
+            prefix="$" 
+          />
+        </CardContent>
+      </Card>
+        )}
         {gown.reusable && (
           <Card>
             <CardHeader>
@@ -198,8 +225,8 @@ export default function GownDetail({ params }: GownDetailProps) {
                 <div key={certificate.id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`certificate-${certificate.id}`}
-                    checked={gown.certificates.includes(certificate.name)}
-                    onCheckedChange={() => handleCertificateChange(certificate.name)}
+                    checked={certificate.checked}
+                    onCheckedChange={() => handleCertificateChange(certificate.id)}
                   />
                   <label
                     htmlFor={`certificate-${certificate.id}`}
