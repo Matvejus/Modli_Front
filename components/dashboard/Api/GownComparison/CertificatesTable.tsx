@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Check, X } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface Gown {
     id: string
@@ -27,6 +27,9 @@ export default function GownCertificatesTable({ gowns }: GownCertificatesTablePr
 
   return (
     <Card>
+        <CardHeader>
+            <CardTitle>Social Certifications</CardTitle>
+        </CardHeader>
         <CardContent>
             <Table>
             <TableHeader>

@@ -5,14 +5,14 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-4xl font-bold text-center text-gray-900 mb-8">
-          Circular Procurement Tool for Isolation Gowns
+          Decision Support Tool for Circular Procurement in Healthcare
         </h1>
         
         <div className="bg-white shadow-md rounded-lg p-6 mb-12">
           <p className="text-lg text-gray-700 text-center">
             This tool is developed for procurement professionals and others who want to
             gain insight into the economic, social and environmental impact of different
-            types of isolation gowns to make better informed purchasing decisions.
+            types of <b>isolation gowns</b> to make better informed purchasing decisions.
           </p>
         </div>
         
@@ -30,9 +30,8 @@ export default function LandingPage() {
             buttonLink="/portfolio_optimization"
           />
         </div>
-        
         <footer className="mt-12 text-center text-sm text-gray-600">
-          The development of this tool was co-funded by the Taskforce for Applied Research SIA, part of the Dutch Research Council (NWO)
+        This tool was developed by researchers from Amsterdam University of Applied Sciences (AUAS) and industry partners in the MODLI project. MODLI is co-funded by the Taskforce for Applied Research SIA, part of the Dutch Research Council (NWO). RAAK.PUB11.024
         </footer>
       </div>
     </div>
@@ -51,9 +50,11 @@ function FeatureCard({ title, description, buttonText, buttonLink }: FeatureCard
     <div className="bg-white shadow-md rounded-lg p-6">
       <h2 className="text-2xl font-semibold text-gray-900 mb-4">{title}</h2>
       <p className="text-gray-700 mb-6">{description}</p>
-      <Link href={buttonLink} className="inline-block bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition-colors">
-        {buttonText}
-      </Link>
+      <div className="flex justify-center">
+        <Link href={buttonLink} className="inline-block bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition-colors">
+          {buttonText}
+        </Link>
+      </div>
     </div>
   )
 }

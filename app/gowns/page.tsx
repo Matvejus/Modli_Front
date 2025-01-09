@@ -267,15 +267,14 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
     <div className="container mx-auto p-4 max-w-7xl">
       <Card className="mb-3">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center">Circular Procurement Tool</CardTitle>
+          <CardTitle className="text-3xl font-bold text-center">Circular Procurement Tool – Gown Comparison</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-lg text-gray-700 text-center mb-3">
             Please select at least two isolation gowns from the below list – this list includes 
             commonly used materials and material combinations for (non-sterile) isolation 
-            gowns. Data for these different types of isolation gowns has been prefilled with 
-            standard data. Click the edit button to add/change (if applicable) the purchase 
-            cost, laundry cost, maximum number of washes, social certifications, hygiene, and 
+            gowns. Click the edit button to add/change (if applicable) the purchase 
+            cost, laundry cost, maximum number of washes, social certifications, hygiene and 
             comfort ratings. 
           </p>
           <VariablesAndSourcesModal />
@@ -296,7 +295,7 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
               onGownSelection={handleGownSelection} 
             />
             <GownList 
-              title="Single-use Gowns"
+              title="Single-use gowns"
               gowns={singleUseGowns} 
               selectedGowns={selectedGowns} 
               onGownSelection={handleGownSelection} 

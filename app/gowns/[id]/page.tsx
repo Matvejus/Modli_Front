@@ -10,6 +10,14 @@ import { Checkbox } from "@/components/ui/checkbox"
 import * as SwitchPrimitive from '@radix-ui/react-switch'
 import EmissionsInfoModal from '@/components/modals/gown_detail'
 import { LikertScale } from '@/components/dashboard/Api/LikertScale'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Info } from 'lucide-react'
+
 
 type Gown = {
   id: string
@@ -158,13 +166,12 @@ export default function GownDetail({ params }: GownDetailProps) {
   if (loading || !gown) return <div className="flex justify-center items-center h-screen">Loading...</div>
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 text-black">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{gown.name}</h1>
-        <EmissionsInfoModal />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Reusable</CardTitle>
           </CardHeader>
@@ -172,7 +179,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             <span className="text-sm font-medium">{gown.reusable ? 'Yes' : 'No'}</span>
             <AnimatedSwitch checked={gown.reusable} onCheckedChange={(checked) => handleInputChange('reusable', checked)} />
           </CardContent>
-        </Card>
+        </Card> */}
         <Card>
           <CardHeader>
             <CardTitle>Purchase cost (€/gown)</CardTitle>
@@ -202,22 +209,52 @@ export default function GownDetail({ params }: GownDetailProps) {
       </Card>
         )}
         {gown.reusable && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Washes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Input 
-                type="number" 
-                value={gown.washes} 
-                onChange={(e) => handleInputChange('washes', parseInt(e.target.value))} 
-              />
-            </CardContent>
-          </Card>
+              <Card>
+              <CardHeader>
+                <div className="flex items-center space-x-2">
+                  <CardTitle>Max. number of washes (expected)</CardTitle>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                          <span className="sr-only">More information</span>
+                          <Info className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Your laundry/gown supplier will be able to advise you if you are unsure about the expected maximum number of washes for a specific gown before it reaches end-of-life.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Input 
+                  type="number" 
+                  value={gown.washes} 
+                  onChange={(e) => handleInputChange('washes', parseInt(e.target.value))} 
+                />
+              </CardContent>
+            </Card>
         )}
         <Card>
           <CardHeader>
-            <CardTitle>Certificates</CardTitle>
+                <div className="flex items-center space-x-2">
+                  <CardTitle>Social Certifications</CardTitle>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                          <span className="sr-only">More information</span>
+                          <Info className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Your laundry/gown supplier will be able to advise you if you are unsure if certifications are in place for specific gowns.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -241,7 +278,22 @@ export default function GownDetail({ params }: GownDetailProps) {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Comfort</CardTitle>
+              <div className="flex items-center space-x-2">
+                <CardTitle>Perceived Comfort (optional)</CardTitle>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                          <span className="sr-only">More information</span>
+                          <Info className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>If isolation gown user tests have been carried out at your healthcare organization you can include these results here by selecting a perceived comfort score.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
           </CardHeader>
           <CardContent>
             <LikertScale
@@ -253,7 +305,22 @@ export default function GownDetail({ params }: GownDetailProps) {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Hygiene</CardTitle>
+          <div className="flex items-center space-x-2">
+                <CardTitle>Perceived hygiene (optional)</CardTitle>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                          <span className="sr-only">More information</span>
+                          <Info className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>If applicable you can add a perceived hygiene score here based on the advice of your infection prevention team.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
           </CardHeader>
           <CardContent>
             <LikertScale
@@ -272,7 +339,7 @@ export default function GownDetail({ params }: GownDetailProps) {
         {hasChanges ? 'Save Changes' : 'Back'}
       </Button>
 
-      <h2 className="text-2xl font-semibold mb-4">Emissions</h2>
+      {/* <h2 className="text-2xl font-semibold mb-4">Emissions</h2>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
@@ -314,7 +381,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             ))}
           </TableBody>
         </Table>
-      </div>
+      </div> */}
     </div>
   )
 }

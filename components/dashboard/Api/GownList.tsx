@@ -64,7 +64,8 @@ export default function GownList({ title, gowns, selectedGowns, onGownSelection 
               className="mr-2"
             />
             <label id={`gown-label-${gown.id}`} htmlFor={`gown-${gown.id}`} className="text-sm">
-              {gown.name} - €{gown.cost} per p.{gown.washes ? ` - ${gown.washes} washes` : ''}
+              {/* {gown.name} - €{gown.cost} per p.{gown.washes ? ` - ${gown.washes} washes` : ''} */}
+              {gown.name}
             </label>
           </div>
           <Link href={`/gowns/${gown.id}`} className="text-blue-600 hover:underline text-sm">

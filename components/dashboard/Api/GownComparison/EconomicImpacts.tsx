@@ -22,8 +22,8 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
   const colors = ["#2C3E50", "#1ABC9C", "#F39C12"];
   
   const chartData = [
-    { name: 'Cost', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.CO2.toFixed(2) }), {}) },
-    { name: 'Waste', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Energy.toFixed(2) }), {}) },
+    { name: 'Purchase costs', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.CO2.toFixed(2) }), {}) },
+    { name: 'Waste costs', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Energy.toFixed(2) }), {}) },
     { name: 'Residual Value', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
     { name: 'Laundry', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Cost.toFixed(2) }), {}) },
   ];
@@ -53,7 +53,8 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
               <YAxis 
                 tick={{ fontSize: 12 }} 
                 width={50}
-                label={{ value: 'Impact €', angle: -90, position: 'insideLeft' }}
+                label={{ value: '€', angle: -90, position: 'insideLeft' }}
+                domain={[-2, 40]}
               />
               <Tooltip />
               <Legend wrapperStyle={{ paddingTop: '20px' }} />

@@ -61,11 +61,12 @@ export default function GownComparisonTable({ gowns }: GownComparisonTableProps)
 
     return (
       <>
-        {formatted} (
+        {formatted} 
+        {/* (
         <span className={percentageColor}>
           {percentageDifference > 0 ? `+${percentageFormatted}` : percentageFormatted}%
         </span>
-        )
+        ) */}
       </>
     )
   }
