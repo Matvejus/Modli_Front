@@ -22,7 +22,7 @@ const EnergyImpacts = ({ gowns }: EnergyImpactsProps) => {
   
   const chartData = [
     // { name: 'CO2 (kg CO2-eq)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.CO2.toFixed(2) }), {}) },
-    { name: 'Energy', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Energy.toFixed(2) }), {}) },
+    { ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Energy.toFixed(2) }), {}) },
     // { name: 'Water (L)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
   ];
 

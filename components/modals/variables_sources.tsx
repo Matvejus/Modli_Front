@@ -24,27 +24,13 @@ export default function VariablesAndSourcesModal() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-white text-black border-2 border-gray-200 shadow-lg">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Variables and Sources</DialogTitle>
+          <DialogTitle className="text-xl font-semibold"></DialogTitle>
           <DialogDescription className="text-gray-600">
-            Information about gown comparison and portfolio optimization.
           </DialogDescription>
         </DialogHeader>
         <div className="mt-6 space-y-6">
           <div>
-            <h2 className="text-lg font-bold mb-4 text-black">1. Gown Comparison:</h2>
-            <p className="mb-4 text-gray-800">
-              To compare the gowns, please mark the checkboxes of gowns that you would like based on sustainable
-              parameters. Click the &quot;Edit&quot; button to adjust the cost, wash durability, and select certifications for
-              each gown.
-            </p>
-          </div>
-          <div>
-            <h2 className="text-lg font-bold mb-4 text-black">2. Portfolio Optimization:</h2>
-            <p className="mb-4 text-gray-800">
-              To create an optimal portfolio based on combinations of reusable and disposable gowns, please check the
-              gowns that you would like the algorithm to choose from. Enter the address of your medical center and
-              operational information for tailored recommendations.
-            </p>
+            <h2 className="text-lg font-bold mb-4 text-black">This button will open PDF in the future</h2>
           </div>
         </div>
       </DialogContent>

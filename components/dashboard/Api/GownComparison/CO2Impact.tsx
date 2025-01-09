@@ -21,7 +21,7 @@ const CO2Impacts = ({ gowns }: CO2ImpactsProps) => {
   const colors = ["#2C3E50", "#1ABC9C", "#F39C12"];
   
   const chartData = [
-    { name: 'CO2', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.CO2.toFixed(2) }), {}) },
+    {...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.CO2.toFixed(2) }), {}) },
     // { name: 'Energy (MJ-eq)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Energy.toFixed(2) }), {}) },
     // { name: 'Water (L)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
   ];
@@ -38,7 +38,7 @@ const CO2Impacts = ({ gowns }: CO2ImpactsProps) => {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={chartData}
-              margin={{ top: 20, right: 20, left: 0, bottom: 0 }}
+              margin={{ top: 20, right: 20, left: 5, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 

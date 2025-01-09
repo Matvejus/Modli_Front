@@ -8,6 +8,7 @@ const options = [
   { value: 3, label: 'Average' },
   { value: 4, label: 'Good' },
   { value: 5, label: 'Very Good' },
+  { value: 6, label: 'n/a' },
 ]
 
 interface LikertScaleProps {

@@ -23,7 +23,7 @@ const WaterImpacts = ({ gowns }: WaterImpactsProps) => {
   const chartData = [
     // { name: 'CO2 (kg CO2-eq)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.CO2.toFixed(2) }), {}) },
     // { name: 'Water (MJ-eq)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
-    { name: 'Water', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
+    {...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
   ];
 
   const gownNames = gowns.map(gown => gown.name);
@@ -31,7 +31,7 @@ const WaterImpacts = ({ gowns }: WaterImpactsProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Water impact (1 gown use)</CardTitle>
+        <CardTitle>Water Impact (1 gown use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">
