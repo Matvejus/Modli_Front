@@ -265,7 +265,7 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
 
   return (
     <div className="container mx-auto p-4 max-w-7xl">
-      <Card className="mb-8">
+      <Card className="mb-3">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center">Circular Procurement Tool</CardTitle>
         </CardHeader>
@@ -288,7 +288,7 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
             <CardTitle>Compare Gowns</CardTitle>
           </CardHeader>
           <CardContent>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-3">
             <GownList 
               title="Reusable Gowns"
               gowns={reusableGowns} 
@@ -307,22 +307,22 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
       </div>
         {selectedGownData.length > 0 && (
     <div className="pt-3">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
         <CO2Impacts gowns={selectedGownData} />
         <EnergyImpacts gowns={selectedGownData} />
         <WaterImpacts gowns={selectedGownData} />
       </div>
 
-      <div className="mb-6">
+      <div className="mb-3">
         <GownComparisonTable gowns={selectedGownData} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
         <EconomicImpacts gowns={selectedGownData} />
         <SocialImpacts gowns={selectedGownData} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <GownHygieneComparison gowns={selectedGownData} />
         <GownCertificatesTable gowns={selectedGownData} />
       </div>

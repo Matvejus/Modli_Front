@@ -180,7 +180,7 @@ export default function GownDetail({ params }: GownDetailProps) {
           <CardContent>
             <Input 
               type="number" 
-              value={gown.cost.toFixed(2)} 
+              value={gown.cost} 
               onChange={(e) => handleInputChange('cost', parseFloat(e.target.value))} 
               prefix="$" 
             />
@@ -194,7 +194,7 @@ export default function GownDetail({ params }: GownDetailProps) {
         <CardContent>
           <Input 
             type="number" 
-            value={gown.laundry_cost.toFixed(2)} 
+            value={gown.laundry_cost} 
             onChange={(e) => handleInputChange('laundry_cost', parseFloat(e.target.value))} 
             prefix="$" 
           />

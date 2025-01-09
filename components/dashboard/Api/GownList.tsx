@@ -43,7 +43,7 @@ export default function GownList({ title, gowns, selectedGowns, onGownSelection 
   }, [selectedGowns])
 
   return (
-    <div className="mb-6">
+    <div className="mb-3">
       <h3 className="text-lg font-semibold mb-2">{title}</h3>
       {/* {selectedGownData.length > 0 && (
         <div>
