@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Star } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent,  CardHeader,  CardTitle } from '@/components/ui/card'
 
 interface Gown {
     id: string
@@ -38,6 +38,9 @@ export default function GownComparison({ gowns }: GownHygineProps) {
 
   return (
     <Card>
+      <CardHeader>
+      <CardTitle>Perceived hygine and comfort</CardTitle>
+      </CardHeader>
         <CardContent>
             <Table>
             <TableHeader>
