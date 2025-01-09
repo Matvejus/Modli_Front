@@ -306,14 +306,15 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
       </div>
         {selectedGownData.length > 0 && (
     <div className="pt-3">
+
+      <div className="mb-3">
+        <GownComparisonTable gowns={selectedGownData} />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
         <CO2Impacts gowns={selectedGownData} />
         <EnergyImpacts gowns={selectedGownData} />
         <WaterImpacts gowns={selectedGownData} />
-      </div>
-
-      <div className="mb-3">
-        <GownComparisonTable gowns={selectedGownData} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
