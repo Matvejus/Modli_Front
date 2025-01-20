@@ -16,7 +16,7 @@ export default function LandingPage() {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 text-center gap-8">
           <FeatureCard 
             title="1. Gown comparison"
             description="Use this feature to compare the economic, social and environmental impact of different types of reusable and disposable isolation gowns."

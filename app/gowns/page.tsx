@@ -284,7 +284,7 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
       <div className="mb-3">
         <Card>
           <CardHeader>
-            <CardTitle>Compare Gowns</CardTitle>
+            <CardTitle></CardTitle>
           </CardHeader>
           <CardContent>
           <div className="grid md:grid-cols-2 gap-3">

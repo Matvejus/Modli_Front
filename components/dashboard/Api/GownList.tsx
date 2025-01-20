@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Checkbox } from "@/components/ui/checkbox"
-import Link from "next/link"
 
 interface Gown {
   id: string
@@ -68,9 +67,12 @@ export default function GownList({ title, gowns, selectedGowns, onGownSelection 
               {gown.name}
             </label>
           </div>
-          <Link href={`/gowns/${gown.id}`} className="text-blue-600 hover:underline text-sm">
+          <button 
+            onClick={() => window.location.href = `/gowns/${gown.id}`} 
+            className="border border-black text-black-600 hover:bg-black hover:text-white text-sm px-2 py-1 rounded"
+          >
             Edit
-          </Link>
+          </button>
         </div>
       ))}
     </div>
