@@ -75,7 +75,7 @@ export default function GownComparisonTable({ gowns }: GownComparisonTableProps)
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span>Gown Comparison per 1 use</span>
+          <span>Environmental Impact – Overview (per 1 use)</span>
           <GownComparisonModal gowns={gowns} />
         </CardTitle>
       </CardHeader>
@@ -87,7 +87,7 @@ export default function GownComparisonTable({ gowns }: GownComparisonTableProps)
                 <TableHead className="w-[200px]">Gown Name</TableHead>
                 {categories.map(category => (
                   <TableHead key={category} className="w-[200px]">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center">
                       <span>{category === 'CO2' ? 'CO₂' : category}</span>
                       <Button
                         variant="ghost"

@@ -39,7 +39,7 @@ export default function GownComparison({ gowns }: GownHygineProps) {
   return (
     <Card>
       <CardHeader>
-      <CardTitle>Perceived hygine and comfort</CardTitle>
+      <CardTitle>Perceived hygiene and comfort</CardTitle>
       </CardHeader>
         <CardContent>
             <Table>

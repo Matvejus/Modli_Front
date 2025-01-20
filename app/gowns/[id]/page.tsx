@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import * as SwitchPrimitive from '@radix-ui/react-switch'
 import EmissionsInfoModal from '@/components/modals/gown_detail'
+import  {CertificationModal}  from '@/components/modals/CreateCertificate'
 import { LikertScale } from '@/components/dashboard/Api/LikertScale'
 import {
   Tooltip,
@@ -92,6 +93,9 @@ export default function GownDetail({ params }: GownDetailProps) {
       if (!certificatesRes.ok) throw new Error('Failed to fetch certificates')
       const certificatesData = await certificatesRes.json()
       setAllCertificates(certificatesData)
+      
+
+      
     } catch (error) {
       console.error("API error: ", error)
     } finally {
@@ -241,6 +245,7 @@ export default function GownDetail({ params }: GownDetailProps) {
           <CardHeader>
                 <div className="flex items-center space-x-2">
                   <CardTitle>Social Certifications</CardTitle>
+                  <CertificationModal />
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
