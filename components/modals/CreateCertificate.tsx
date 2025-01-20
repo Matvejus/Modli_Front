@@ -37,7 +37,7 @@ export function CertificationModal() {
         setOpen(false)
         setName('')
         setDescription('')
-        // You might want to refresh the list of certifications here
+        window.location.reload()
       } else {
         console.error('Failed to create certification')
       }
