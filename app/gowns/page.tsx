@@ -26,6 +26,7 @@ interface Gown {
   name: string;
   cost: number;
   reusable: boolean;
+  visible: boolean;
   washes?: number;
   hygine: number;
   comfort: number;
@@ -98,8 +99,8 @@ const fetchGowns = async () => {
       emission_impacts: gown.emission_impacts, // Keep the structure as-is
     }));
 
-    setReusableGowns(formattedData.filter((gown) => gown.reusable));
-    setSingleUseGowns(formattedData.filter((gown) => !gown.reusable));
+    setReusableGowns(formattedData.filter((gown) => gown.reusable && gown.visible));
+    setSingleUseGowns(formattedData.filter((gown) => !gown.reusable && gown.visible));
   } catch (error) {
     console.error("API error: ", error);
   } finally {
