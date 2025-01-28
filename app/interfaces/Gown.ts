@@ -9,6 +9,8 @@ export interface Gown {
     washes?: number;
     hygine: number;
     comfort: number;
+    residual_value: number;
+    waste_cost: number;
     certificates: string[];
     fte_local: number;
     fte_local_extra: number;
@@ -21,9 +23,11 @@ export interface Gown {
       transportation: number;
       washing: number;
       disposal: number;
-      production_costs: number
-      use_cost: number
-      lost_cost: number
-      eol_cost: number
+      production_costs: number;
+      use_cost: number;
+      lost_cost: number;
+      eol_cost: number;
+      laundry_cost: number;
+      waste: number;
     };
   }

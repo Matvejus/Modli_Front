@@ -14,33 +14,9 @@ import { LikertScale } from "@/components/dashboard/Api/LikertScale"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Info } from "lucide-react"
 import { EditCertificationModal } from "@/components/modals/EditCertificate"
+import { Gown } from "@/app/interfaces/Gown"
 
-type Gown = {
-  id: string
-  name: string
-  reusable: boolean
-  cost: number
-  washes: number
-  comfort: number
-  hygine: number
-  certificates: string[]
-  laundry_cost: number
-  residual_value: number
-  waste_cost: number
-}
 
-type Emission = {
-  emission_stage: string
-  fibers: number
-  yarn_production: number
-  fabric_production: number
-  finishing: number
-  production: number
-  packaging: number
-  transport: number
-  use: number
-  total: number
-}
 
 type Certificate = {
   id: string
@@ -55,22 +31,22 @@ interface GownDetailProps {
   }
 }
 
-const AnimatedSwitch = ({
-  checked,
-  onCheckedChange,
-}: { checked: boolean; onCheckedChange: (checked: boolean) => void }) => (
-  <SwitchPrimitive.Root
-    checked={checked}
-    onCheckedChange={onCheckedChange}
-    className="w-[42px] h-[25px] bg-gray-200 rounded-full relative shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-colors duration-200 ease-in-out data-[state=checked]:bg-blue-500"
-  >
-    <SwitchPrimitive.Thumb className="block w-[21px] h-[21px] bg-white rounded-full shadow-lg transform transition-transform duration-200 ease-in-out translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
-  </SwitchPrimitive.Root>
-)
+// const AnimatedSwitch = ({
+//   checked,
+//   onCheckedChange,
+// }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) => (
+//   <SwitchPrimitive.Root
+//     checked={checked}
+//     onCheckedChange={onCheckedChange}
+//     className="w-[42px] h-[25px] bg-gray-200 rounded-full relative shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-colors duration-200 ease-in-out data-[state=checked]:bg-blue-500"
+//   >
+//     <SwitchPrimitive.Thumb className="block w-[21px] h-[21px] bg-white rounded-full shadow-lg transform transition-transform duration-200 ease-in-out translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
+//   </SwitchPrimitive.Root>
+// )
 
 export default function GownDetail({ params }: GownDetailProps) {
   const [gown, setGown] = useState<Gown | null>(null)
-  const [emissions, setEmissions] = useState<Emission[]>([])
+  // const [emissions, setEmissions] = useState<Emission[]>([])
   const [allCertificates, setAllCertificates] = useState<Certificate[]>([])
   const [loading, setLoading] = useState(true)
   const [hasChanges, setHasChanges] = useState(false)
@@ -85,10 +61,10 @@ export default function GownDetail({ params }: GownDetailProps) {
       const gownData = await gownRes.json()
       setGown(gownData)
 
-      const emissionsRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/emissions/`)
-      if (!emissionsRes.ok) throw new Error("Failed to fetch emissions data")
-      const emissionsData = await emissionsRes.json()
-      setEmissions(emissionsData)
+      // const emissionsRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/emissions/`)
+      // if (!emissionsRes.ok) throw new Error("Failed to fetch emissions data")
+      // const emissionsData = await emissionsRes.json()
+      // setEmissions(emissionsData)
 
       const certificatesRes = await fetch(`${API_BASE_URL}/emissions/certificates/`)
       if (!certificatesRes.ok) throw new Error("Failed to fetch certificates")
