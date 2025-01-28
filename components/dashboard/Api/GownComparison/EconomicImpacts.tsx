@@ -13,14 +13,13 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
   const chartData = gowns.map((gown) => ({
     name: gown.name,
     "Purchase costs": Number.parseFloat((gown.emission_impacts.purchase_cost ?? 0).toFixed(2)),
-    // "Production costs": Number.parseFloat((gown.emission_impacts.production_costs ?? 0).toFixed(2)),
-    "Waste costs": Number.parseFloat((gown.emission_impacts.lost_cost ?? 0).toFixed(2)),
+    "Waste costs": Number.parseFloat((gown.emission_impacts.waste ?? 0).toFixed(2)),
     "Use costs": Number.parseFloat((gown.emission_impacts.use_cost ?? 0).toFixed(2)),
-    'Laundry': Number.parseFloat((gown.laundry_cost ?? 0).toFixed(2)),
-    "Residual Value": Number.parseFloat((gown.emission_impacts.Water ?? 0).toFixed(2)),
+    'Laundry': Number.parseFloat((gown.emission_impacts.laundry_cost ?? 0).toFixed(2)),
+    "Residual Value": Number.parseFloat((gown.residual_value ?? 0).toFixed(2)),
   }))
 
-  const costCategories = ["Purchase costs", 'Production costs', "Waste costs", "Use costs", "Laundry"]
+  const costCategories = ["Purchase costs", "Waste costs", "Use costs", "Laundry"]
 
   return (
     <Card className="w-full">
