@@ -9,26 +9,9 @@ import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
 import UsageChart from '@/components/dashboard/Api/GownUsage'
 import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from '@/components/modals/variables_sources'
-
+import { Gown } from '../interfaces/Gown'
 // Define the Gown interface
-interface Gown {
-  gown: string;
-  id: string; // Unique identifier for the gown
-  name: string; // Name of the gown
-  cost: number; // Cost of the gown
-  reusable: boolean; // Indicates if the gown is reusable
-  washes?: number; // Optional number of washes
-  emission_impacts: {
-    CO2: number; // CO2 emissions
-    Energy: number; // Energy consumption
-    Water: number; // Water usage
-    Cost: number; // Cost impact
-    production: number; // Production impact
-    transportation: number; // Transportation impact
-    washing: number; // Washing impact
-    disposal: number; // Disposal impact
-  };
-}
+
 
 interface GownData {
   name: string;
