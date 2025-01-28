@@ -19,29 +19,9 @@ import GownCertificatesTable from '@/components/dashboard/Api/GownComparison/Cer
 import EnergyImpacts from '@/components/dashboard/Api/GownComparison/EnergyImpact'
 import WaterImpacts from '@/components/dashboard/Api/GownComparison/WaterImpact'
 import CO2Impacts from '@/components/dashboard/Api/GownComparison/CO2Impact'
-
-interface Gown {
-  gown: string;
-  id: string;
-  name: string;
-  cost: number;
-  reusable: boolean;
-  visible: boolean;
-  washes?: number;
-  hygine: number;
-  comfort: number;
-  certificates: string[];
-  emission_impacts: {
-    CO2: number;
-    Energy: number;
-    Water: number;
-    Cost: number;
-    production: number;
-    transportation: number;
-    washing: number;
-    disposal: number;
-  };
-}
+import * as XLSX from "xlsx"
+import { Button } from "@/components/ui/button"
+import { Gown } from '../interfaces/Gown'
 
 interface GownData {
   name: string;
@@ -140,128 +120,49 @@ const fetchGowns = async () => {
     });
   };
 
-  const startOptimization = async () => {
-    setLoading(true);
-    setError(null);
-  
-    // Fetch emissions data for selected gowns
-    try {
-      const emissionsResponse = await fetch(`${API_BASE_URL}/emissions/gown_emissions/`);
-      if (!emissionsResponse.ok) throw new Error("Failed to fetch emissions data");
-      const emissionsData = await emissionsResponse.json();
-  
-      // Filter only selected gowns and format for optimization
-      const optimizationData = {
-        gowns: selectedGowns.map(gownId => {
-          const gownData = emissionsData.find((g: Gown) => g.gown === gownId);
-  
-          return {
-            name: gownData.name,
-            reusable: gownData.reusable ? 1 : 0,
-            impacts: {
-              envpars: ["CO2EQ", "WATER", "ENERGY", "MONEY"],
-              stages: ["NEWARRIVALS", "LAUNDRY", "LOST", "EOL", "ARRIVALMOM"],
-              params: [
-                [gownData.emissions.CO2, gownData.emissions.Water, gownData.emissions.Energy, gownData.emissions.Cost],  // NEWARRIVALS
-                gownData.reusable ? [1, 1, 0.5, 0.3] : [0, 0, 0, 0],  // LAUNDRY, depends on reusability
-                [1, 1, 1, 0],  // Static LOST
-                [4, 0, -10, -0.1],  // Static EOL
-                [100, 0, 100, 10]  // Static ARRIVALMOM
-              ]
-            }
-          };
-        }),
-        specifications: {
-          usage_per_week: specifications.usage_per_week,
-          pickups_per_week: specifications.pickups_per_week,
-          optimizer: specifications.optimizer,
-          loss_percentage: specifications.loss_percentage
-        }
-      };
-  
-      // Start the optimization with the structured data
-      const response = await fetch('/api/start-optimization', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(optimizationData),
-      });
-  
-      const data = await response.json();
-
-      if (response.ok) {
-        setResults({results: data.results});
-      } else {
-        setError(data.error || 'An error occurred during optimization');
-      }
-    } catch (error) {
-      setError('An unexpected error occurred: ' + (error instanceof Error ? error.message : String(error)));
-    } finally {
-      setLoading(false);
+  const downloadSelectedGownsAsXLSX = () => {
+    if (selectedGownData.length === 0) {
+      alert("Please select at least one gown to download data.")
+      return
     }
-  };
 
-  const prepareChartData = (results: { [gownName: string]: GownData }) => {
-    
-    const impactCategories = ['CO2EQ', 'WATER', 'ENERGY', 'MONEY', 'COST'];
-  
-    return impactCategories.map(category => {
-      const dataPoint: { name: string; [key: string]: number | string } = { name: category };
-      Object.entries(results.results).forEach(([gownName, gownData]) => {
-        const impact = gownData.Impacts?.total_impact?.[category] ?? 0; // Use fallback of 0 if undefined
-        dataPoint[gownName] = typeof impact === 'number' ? Number(impact.toFixed(2)) : 0;
-      });
-      return dataPoint;
-    });
-  };
-  
-  const prepareUsageData = (data: Results | { [gownNname: string]: GownData }) => {
-    const isResults = (data: any): data is Results => 'results' in data;
-  
-    const gownData = isResults(data) ? data.results : data;
-    const gownNames = Object.keys(gownData);
-  
-    const maxLength = Math.max(
-      ...gownNames.map(name => gownData[name]?.usage_values?.length || 0)
-    );
-  
-    return Array.from({ length: maxLength }, (_, index) => {
-      const dataPoint: { week: number; [key: string]: number } = { week: index + 1 };
-      gownNames.forEach(name => {
-        dataPoint[name] = gownData[name]?.usage_values?.[index] || 0;
-      });
-      return dataPoint;
-    });
-  };
-  
+    // Prepare data for XLSX with gown names as columns
+    const headers = ["", ...selectedGownData.map(gown => gown.name)];
+    const fields = [
+      { field: "ID", value: selectedGownData.map(gown => gown.id) },
+      { field: "Cost €", value: selectedGownData.map(gown => gown.cost) },
+      { field: "Reusable", value: selectedGownData.map(gown => gown.reusable ? "Yes" : "No") },
+      { field: "Laundry Cost €", value: selectedGownData.map(gown => gown.laundry_cost) },
+      { field: "Washes", value: selectedGownData.map(gown => gown.washes || "N/A") },
+      { field: "Hygiene", value: selectedGownData.map(gown => gown.hygine) },
+      { field: "Comfort", value: selectedGownData.map(gown => gown.comfort) },
+      { field: "Certificates", value: selectedGownData.map(gown => gown.certificates.join(", ")) },
+      { field: "FTE Local", value: selectedGownData.map(gown => gown.fte_local) },
+      { field: "FTE Local Extra", value: selectedGownData.map(gown => gown.fte_local_extra) },
+      { field: "CO2 Impact", value: selectedGownData.map(gown => gown.emission_impacts.CO2) },
+      { field: "Energy Impact", value: selectedGownData.map(gown => gown.emission_impacts.Energy) },
+      { field: "Water Impact", value: selectedGownData.map(gown => gown.emission_impacts.Water) },
+      { field: "Cost Impact €", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
+      { field: "Production Costs €", value: selectedGownData.map(gown => gown.emission_impacts.production_costs) },
+      { field: "Use Cost", value: selectedGownData.map(gown => gown.emission_impacts.use_cost) },
+      { field: "Lost Cost", value: selectedGownData.map(gown => gown.emission_impacts.lost_cost) },
+      { field: "EOL Cost", value: selectedGownData.map(gown => gown.emission_impacts.eol_cost) },
+    ];
 
-const prepareStackedData = (results: { [name: string]: GownData }) => {
-  return Object.entries(results.results).reduce<{
-    [key: string]: {
-      Impacts: {
-        stages: { [stage: string]: { [impact: string]: number } };
-        total_impact: { [impact: string]: number };
-      };
-    };
-  }>((acc, [gownName, gownData]) => {
-    if (
-      gownData.Impacts &&
-      typeof gownData.Impacts.stages === 'object' &&
-      Object.values(gownData.Impacts.stages).every(
-        (stage) => typeof stage === 'object' && stage !== null
-      )
-    ) {
-      acc[gownName] = {
-        Impacts: {
-          stages: gownData.Impacts.stages as { [stage: string]: { [impact: string]: number } },
-          total_impact: gownData.Impacts.total_impact
-        }
-      };
-    }
-    return acc;
-  }, {});
-};
+    // Create worksheet data
+    const worksheetData = [headers, ...fields.map(f => [f.field, ...f.value])];
+
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Selected Gowns");
+
+    // Generate XLSX file and trigger download
+    XLSX.writeFile(workbook, "selected_gowns_data.xlsx");
+  }
+
 
 
   return (
@@ -307,6 +208,11 @@ const prepareStackedData = (results: { [name: string]: GownData }) => {
       </div>
         {selectedGownData.length > 0 && (
     <div className="pt-3">
+      <div className='mb-3 flex justify-end'>
+        <Button onClick={downloadSelectedGownsAsXLSX} disabled={selectedGowns.length === 0}>
+          Export data
+        </Button>
+      </div>
 
       <div className="mb-3">
         <GownComparisonTable gowns={selectedGownData} />

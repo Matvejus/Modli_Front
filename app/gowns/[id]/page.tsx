@@ -30,6 +30,8 @@ type Gown = {
   hygine: number
   certificates: string[]
   laundry_cost: number
+  residual_value: number
+  waste_cost: number
 }
 
 type Emission = {
@@ -193,6 +195,32 @@ export default function GownDetail({ params }: GownDetailProps) {
               type="number" 
               value={gown.cost} 
               onChange={(e) => handleInputChange('cost', parseFloat(e.target.value))} 
+              prefix="$" 
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Waste cost (€/gown)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input 
+              type="number" 
+              value={gown.waste_cost} 
+              onChange={(e) => handleInputChange('waste_cost', parseFloat(e.target.value))} 
+              prefix="$" 
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Residual value (€/gown)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input 
+              type="number" 
+              value={gown.residual_value} 
+              onChange={(e) => handleInputChange('residual_value', parseFloat(e.target.value))} 
               prefix="$" 
             />
           </CardContent>

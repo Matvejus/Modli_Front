@@ -6,17 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 import { ArrowDownIcon } from 'lucide-react'
 import GownComparisonModal from '@/components/modals/emissions_detail'
-
-interface Gown {
-  id: string
-  name: string
-  emission_impacts: {
-    CO2: number
-    Energy: number
-    Water: number
-    Cost: number
-  }
-}
+import { Gown } from '@/app/interfaces/Gown'
 
 interface GownComparisonTableProps {
   gowns: Gown[]
@@ -76,7 +66,7 @@ export default function GownComparisonTable({ gowns }: GownComparisonTableProps)
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Environmental Impact – Overview (per 1 use)</span>
-          <GownComparisonModal gowns={gowns} />
+          {/* <GownComparisonModal gowns={gowns} /> */}
         </CardTitle>
       </CardHeader>
       <CardContent>
