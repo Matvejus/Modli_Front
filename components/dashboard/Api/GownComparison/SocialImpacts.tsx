@@ -10,15 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-interface Gown {
-  id: string
-  name: string
-  emission_impacts: {
-    CO2: number
-    Energy: number
-    Water: number
-  }
-}
+import { Gown } from '@/app/interfaces/Gown'
 
 interface SocialImpactProps {
   gowns: Gown[]
@@ -28,8 +20,8 @@ const SocialImpacts = ({ gowns }: SocialImpactProps) => {
   const colors = ["#2C3E50", "#1ABC9C", "#F39C12"];
   
   const chartData = [
-    { name: 'Local FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Energy.toFixed(2) }), {}) },
-    { name: 'Extra FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
+    { name: 'Local FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.fte_local.toFixed(2) }), {}) },
+    { name: 'Extra FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.fte_local_extra.toFixed(2) }), {}) },
   ];
 
   const gownNames = gowns.map(gown => gown.name);

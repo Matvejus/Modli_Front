@@ -2,23 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Checkbox } from "@/components/ui/checkbox"
-
-interface Gown {
-  id: string
-  name: string
-  cost: number
-  washes?: number
-  emission_impacts: {
-    production: number
-    transportation: number
-    washing: number
-    disposal: number
-    CO2:number,
-    Energy: number, 
-    Water: number,
-    Cost: number,
-  }
-}
+import { Gown } from '@/app/interfaces/Gown'
 
 interface GownListProps {
   title: string

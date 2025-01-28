@@ -1,24 +1,19 @@
-'use client'
+"use client"
 
-import { useEffect, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState, useCallback } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import * as SwitchPrimitive from '@radix-ui/react-switch'
-import EmissionsInfoModal from '@/components/modals/gown_detail'
-import  {CertificationModal}  from '@/components/modals/CreateCertificate'
-import { LikertScale } from '@/components/dashboard/Api/LikertScale'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { Info } from 'lucide-react'
-
+import * as SwitchPrimitive from "@radix-ui/react-switch"
+import EmissionsInfoModal from "@/components/modals/gown_detail"
+import { CertificationModal } from "@/components/modals/CreateCertificate"
+import { LikertScale } from "@/components/dashboard/Api/LikertScale"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Info } from "lucide-react"
+import { EditCertificationModal } from "@/components/modals/EditCertificate"
 
 type Gown = {
   id: string
@@ -30,6 +25,8 @@ type Gown = {
   hygine: number
   certificates: string[]
   laundry_cost: number
+  residual_value: number
+  waste_cost: number
 }
 
 type Emission = {
@@ -48,6 +45,7 @@ type Emission = {
 type Certificate = {
   id: string
   name: string
+  description: string
   checked: boolean
 }
 
@@ -57,7 +55,10 @@ interface GownDetailProps {
   }
 }
 
-const AnimatedSwitch = ({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (checked: boolean) => void }) => (
+const AnimatedSwitch = ({
+  checked,
+  onCheckedChange,
+}: { checked: boolean; onCheckedChange: (checked: boolean) => void }) => (
   <SwitchPrimitive.Root
     checked={checked}
     onCheckedChange={onCheckedChange}
@@ -75,27 +76,24 @@ export default function GownDetail({ params }: GownDetailProps) {
   const [hasChanges, setHasChanges] = useState(false)
   const { id } = params
   const router = useRouter()
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api'
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api"
 
   const fetchGownDetails = useCallback(async () => {
     try {
       const gownRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`)
-      if (!gownRes.ok) throw new Error('Failed to fetch gown details')
+      if (!gownRes.ok) throw new Error("Failed to fetch gown details")
       const gownData = await gownRes.json()
       setGown(gownData)
 
       const emissionsRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/emissions/`)
-      if (!emissionsRes.ok) throw new Error('Failed to fetch emissions data')
+      if (!emissionsRes.ok) throw new Error("Failed to fetch emissions data")
       const emissionsData = await emissionsRes.json()
       setEmissions(emissionsData)
 
       const certificatesRes = await fetch(`${API_BASE_URL}/emissions/certificates/`)
-      if (!certificatesRes.ok) throw new Error('Failed to fetch certificates')
+      if (!certificatesRes.ok) throw new Error("Failed to fetch certificates")
       const certificatesData = await certificatesRes.json()
       setAllCertificates(certificatesData)
-      
-
-      
     } catch (error) {
       console.error("API error: ", error)
     } finally {
@@ -111,11 +109,11 @@ export default function GownDetail({ params }: GownDetailProps) {
 
   useEffect(() => {
     if (gown && allCertificates.length > 0) {
-      setAllCertificates(prevCertificates =>
-        prevCertificates.map(cert => ({
+      setAllCertificates((prevCertificates) =>
+        prevCertificates.map((cert) => ({
           ...cert,
-          checked: gown.certificates.includes(cert.name)
-        }))
+          checked: gown.certificates.includes(cert.name),
+        })),
       )
     }
   }, [gown])
@@ -128,44 +126,42 @@ export default function GownDetail({ params }: GownDetailProps) {
   }
 
   const handleCertificateChange = (certificateId: string) => {
-    setAllCertificates(prevCertificates =>
-      prevCertificates.map(cert =>
-        cert.id === certificateId ? { ...cert, checked: !cert.checked } : cert
-      )
+    setAllCertificates((prevCertificates) =>
+      prevCertificates.map((cert) => (cert.id === certificateId ? { ...cert, checked: !cert.checked } : cert)),
     )
     setHasChanges(true)
   }
 
   const handleSave = async () => {
-    if (!gown) return;
+    if (!gown) return
 
     const updatedData = {
       ...gown,
-      certificates: allCertificates.filter(cert => cert.checked).map(cert => cert.id),
-    };
+      certificates: allCertificates.filter((cert) => cert.checked).map((cert) => cert.id),
+    }
 
     try {
       const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedData),
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`);
+        const errorData = await response.json()
+        throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`)
       }
 
-      await fetchGownDetails(); // Refetch the data after saving
-      setHasChanges(false);
-      alert('Gown details saved successfully!');
+      await fetchGownDetails() // Refetch the data after saving
+      setHasChanges(false)
+      alert("Gown details saved successfully!")
     } catch (error) {
-      console.error('Error saving gown details:', error);
-      alert(`Failed to save gown details. Error: ${error}`);
+      console.error("Error saving gown details:", error)
+      alert(`Failed to save gown details. Error: ${error}`)
     }
-  };
+  }
 
   if (loading || !gown) return <div className="flex justify-center items-center h-screen">Loading...</div>
 
@@ -189,77 +185,109 @@ export default function GownDetail({ params }: GownDetailProps) {
             <CardTitle>Purchase cost (€/gown)</CardTitle>
           </CardHeader>
           <CardContent>
-            <Input 
-              type="number" 
-              value={gown.cost} 
-              onChange={(e) => handleInputChange('cost', parseFloat(e.target.value))} 
-              prefix="$" 
+            <Input
+              type="number"
+              value={gown.cost}
+              onChange={(e) => handleInputChange("cost", Number.parseFloat(e.target.value))}
+              prefix="$"
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Waste cost (€/gown)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input
+              type="number"
+              value={gown.waste_cost}
+              onChange={(e) => handleInputChange("waste_cost", Number.parseFloat(e.target.value))}
+              prefix="$"
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Residual value (€/gown)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input
+              type="number"
+              value={gown.residual_value}
+              onChange={(e) => handleInputChange("residual_value", Number.parseFloat(e.target.value))}
+              prefix="$"
             />
           </CardContent>
         </Card>
         {gown.reusable && (
-        <Card>
-        <CardHeader>
-          <CardTitle>Laundry cost (€/gown/wash)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Input 
-            type="number" 
-            value={gown.laundry_cost} 
-            onChange={(e) => handleInputChange('laundry_cost', parseFloat(e.target.value))} 
-            prefix="$" 
-          />
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Laundry cost (€/gown/wash)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Input
+                type="number"
+                value={gown.laundry_cost}
+                onChange={(e) => handleInputChange("laundry_cost", Number.parseFloat(e.target.value))}
+                prefix="$"
+              />
+            </CardContent>
+          </Card>
         )}
         {gown.reusable && (
-              <Card>
-              <CardHeader>
-                <div className="flex items-center space-x-2">
-                  <CardTitle>Max. number of washes (expected)</CardTitle>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                          <span className="sr-only">More information</span>
-                          <Info className="h-4 w-4" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Your laundry/gown supplier will be able to advise you if you are unsure about the expected maximum number of washes for a specific gown before it reaches end-of-life.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <Input 
-                  type="number" 
-                  value={gown.washes} 
-                  onChange={(e) => handleInputChange('washes', parseInt(e.target.value))} 
-                />
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <CardTitle>Max. number of washes (expected)</CardTitle>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <span className="sr-only">More information</span>
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                        Your laundry/gown supplier will be able to advise you if you are unsure about the expected
+                        maximum number of washes for a specific gown before it reaches end-of-life.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Input
+                type="number"
+                value={gown.washes}
+                onChange={(e) => handleInputChange("washes", Number.parseInt(e.target.value))}
+              />
+            </CardContent>
+          </Card>
         )}
         <Card>
           <CardHeader>
-                <div className="flex items-center space-x-2">
-                  <CardTitle>Social Certifications</CardTitle>
-                  <CertificationModal />
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                          <span className="sr-only">More information</span>
-                          <Info className="h-4 w-4" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Your laundry/gown supplier will be able to advise you if you are unsure if certifications are in place for specific gowns.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+            <div className="flex items-center space-x-2">
+              <CardTitle>Social Certifications</CardTitle>
+              <CertificationModal />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                      <span className="sr-only">More information</span>
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      Your laundry/gown supplier will be able to advise you if you are unsure if certifications are in
+                      place for specific gowns.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -276,6 +304,12 @@ export default function GownDetail({ params }: GownDetailProps) {
                   >
                     {certificate.name}
                   </label>
+                  <EditCertificationModal
+                    certificateId={certificate.id}
+                    certificateName={certificate.name}
+                    certificateDescription={certificate.description}
+                    onUpdate={fetchGownDetails}
+                  />
                 </div>
               ))}
             </div>
@@ -283,65 +317,64 @@ export default function GownDetail({ params }: GownDetailProps) {
         </Card>
         <Card>
           <CardHeader>
-              <div className="flex items-center space-x-2">
-                <CardTitle>Perceived Comfort (optional)</CardTitle>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                          <span className="sr-only">More information</span>
-                          <Info className="h-4 w-4" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>If isolation gown user tests have been carried out at your healthcare organization you can include these results here by selecting a perceived comfort score.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+            <div className="flex items-center space-x-2">
+              <CardTitle>Perceived Comfort (optional)</CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                      <span className="sr-only">More information</span>
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      If isolation gown user tests have been carried out at your healthcare organization you can include
+                      these results here by selecting a perceived comfort score.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </CardHeader>
           <CardContent>
             <LikertScale
               value={gown.comfort}
-              onChange={(value) => handleInputChange('comfort', value)}
+              onChange={(value) => handleInputChange("comfort", value)}
               name="comfort"
             />
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-          <div className="flex items-center space-x-2">
-                <CardTitle>Perceived hygiene (optional)</CardTitle>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                          <span className="sr-only">More information</span>
-                          <Info className="h-4 w-4" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>If applicable you can add a perceived hygiene score here based on the advice of your infection prevention team.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+            <div className="flex items-center space-x-2">
+              <CardTitle>Perceived hygiene (optional)</CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                      <span className="sr-only">More information</span>
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                      If applicable you can add a perceived hygiene score here based on the advice of your infection
+                      prevention team.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </CardHeader>
           <CardContent>
-            <LikertScale
-              value={gown.hygine}
-              onChange={(value) => handleInputChange('hygine', value)}
-              name="hygiene"
-            />
+            <LikertScale value={gown.hygine} onChange={(value) => handleInputChange("hygine", value)} name="hygiene" />
           </CardContent>
         </Card>
       </div>
 
-      <Button 
-        onClick={hasChanges ? handleSave : () => router.push('/gowns')} 
-        className="mb-6"
-      >
-        {hasChanges ? 'Save Changes' : 'Back'}
+      <Button onClick={hasChanges ? handleSave : () => router.push("/gowns")} className="mb-6">
+        {hasChanges ? "Save Changes" : "Back"}
       </Button>
 
       {/* <h2 className="text-2xl font-semibold mb-4">Emissions</h2>

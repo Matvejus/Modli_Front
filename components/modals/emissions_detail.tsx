@@ -14,17 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { InfoCircledIcon } from "@radix-ui/react-icons"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ArrowDownIcon } from 'lucide-react'
-
-interface Gown {
-  id: string
-  name: string
-  emission_impacts: {
-    CO2: number
-    Energy: number
-    Water: number
-    Cost: number
-  }
-}
+import { Gown } from '@/app/interfaces/Gown'
 
 interface GownComparisonModalProps {
   gowns: Gown[]
