@@ -244,6 +244,32 @@ export default function GownDetail({ params }: GownDetailProps) {
         )}
         <Card>
           <CardHeader>
+            <CardTitle>FTE local (Hours)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input
+              type="number"
+              value={gown.fte_local}
+              onChange={(e) => handleInputChange("fte_local", Number.parseFloat(e.target.value))}
+              prefix="$"
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>FTE local extra (Hours)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Input
+              type="number"
+              value={gown.fte_local_extra}
+              onChange={(e) => handleInputChange("residual_value", Number.parseFloat(e.target.value))}
+              prefix="$"
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
             <div className="flex items-center space-x-2">
               <CardTitle>Social Certifications</CardTitle>
               <CertificationModal />
