@@ -46,7 +46,7 @@ const EnergyImpacts = ({ gowns }: EnergyImpactsProps) => {
                 tick={{ fontSize: 12 }}
                 interval={0}
                 angle={0}
-                height={60}
+                height={45}
               />
               <YAxis 
                 tick={{ fontSize: 12 }} 

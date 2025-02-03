@@ -23,7 +23,7 @@ const WaterImpacts = ({ gowns }: WaterImpactsProps) => {
   const chartData = [
     // { name: 'CO2 (kg CO2-eq)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.CO2.toFixed(2) }), {}) },
     // { name: 'Water (MJ-eq)', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
-    {...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.emission_impacts.Water.toFixed(2) }), {}) },
+    {...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: parseFloat(gown.emission_impacts.Water.toFixed(2)) }), {}) },
   ];
 
   const gownNames = gowns.map(gown => gown.name);
@@ -46,7 +46,7 @@ const WaterImpacts = ({ gowns }: WaterImpactsProps) => {
                 tick={{ fontSize: 12 }}
                 interval={0}
                 angle={0}
-                height={60}
+                height={45}
               />
               <YAxis 
                 tick={{ fontSize: 12 }} 
