@@ -263,7 +263,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             <Input
               type="number"
               value={gown.fte_local_extra}
-              onChange={(e) => handleInputChange("residual_value", Number.parseFloat(e.target.value))}
+              onChange={(e) => handleInputChange("fte_local_extra", Number.parseFloat(e.target.value))}
               prefix="$"
             />
           </CardContent>

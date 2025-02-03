@@ -29,5 +29,6 @@ export interface Gown {
       eol_cost: number;
       laundry_cost: number;
       waste: number;
+      residual_value: number;
     };
   }

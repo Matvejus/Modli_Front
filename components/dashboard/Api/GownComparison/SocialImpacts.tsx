@@ -21,7 +21,7 @@ const SocialImpacts = ({ gowns }: SocialImpactProps) => {
   
   const chartData = [
     { name: 'Local FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.fte_local.toFixed(2) }), {}) },
-    { name: 'Extra FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.fte_local_extra.toFixed(2) }), {}) },
+    // { name: 'Extra FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.fte_local_extra.toFixed(2) }), {}) },
   ];
 
   const gownNames = gowns.map(gown => gown.name);

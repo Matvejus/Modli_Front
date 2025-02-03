@@ -224,9 +224,13 @@ const fetchGowns = async () => {
         <WaterImpacts gowns={selectedGownData} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-        <EconomicImpacts gowns={selectedGownData} />
-        <SocialImpacts gowns={selectedGownData} />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+        <div className="col-span-2">
+          <EconomicImpacts gowns={selectedGownData} />
+        </div>
+        <div className="col-span-1">
+          <SocialImpacts gowns={selectedGownData} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
