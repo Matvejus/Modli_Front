@@ -20,7 +20,7 @@ const SocialImpacts = ({ gowns }: SocialImpactProps) => {
   const colors = ["#2C3E50", "#1ABC9C", "#F39C12"];
   
   const chartData = [
-    { name: 'Local FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.fte_local.toFixed(2) }), {}) },
+    { name: 'Local FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: (gown.fte_local).toFixed(2) }), {}) },
     // { name: 'Extra FTE', ...gowns.reduce((acc, gown) => ({ ...acc, [gown.name]: gown.fte_local_extra.toFixed(2) }), {}) },
   ];
 
