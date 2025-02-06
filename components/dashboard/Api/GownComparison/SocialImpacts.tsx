@@ -1,6 +1,6 @@
 "use client"
 
-import { Info } from 'lucide-react'
+import { Info , PersonStanding} from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from 'recharts'
 import {
@@ -55,14 +55,14 @@ const SocialImpacts = ({ gowns }: SocialImpactProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Social Impact (1 gown use)</CardTitle>
+        <CardTitle><PersonStanding className="inline-block mr-2" />Social Impact (1 gown use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart 
               data={chartData}
-              margin={{ top: 20, right: 30, left: 60, bottom: 5 }}
+              margin={{ top: 20, right: 30, left: 30, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
@@ -70,7 +70,7 @@ const SocialImpacts = ({ gowns }: SocialImpactProps) => {
                 tick={<CustomXAxisTick />}
                 interval={0}
                 angle={0}
-                height={60}
+                height={45}
               />
               <YAxis 
                 tick={{ fontSize: 12 }} 

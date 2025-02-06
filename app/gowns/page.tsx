@@ -22,6 +22,7 @@ import CO2Impacts from '@/components/dashboard/Api/GownComparison/CO2Impact'
 import * as XLSX from "xlsx"
 import { Button } from "@/components/ui/button"
 import { Gown } from '../interfaces/Gown'
+import { Recycle, Trash2, Leaf  } from 'lucide-react';
 
 interface GownData {
   name: string;
@@ -190,13 +191,13 @@ const fetchGowns = async () => {
           <CardContent>
           <div className="grid md:grid-cols-2 gap-3">
             <GownList 
-              title="Reusable Gowns"
+              title={<><Recycle className="inline-block mr-2" /> Reusable Gowns</>}
               gowns={reusableGowns} 
               selectedGowns={selectedGowns} 
               onGownSelection={handleGownSelection} 
             />
             <GownList 
-              title="Single-use gowns"
+              title={<><Trash2 className="inline-block mr-2" />Single-use gowns</>}
               gowns={singleUseGowns} 
               selectedGowns={selectedGowns} 
               onGownSelection={handleGownSelection} 

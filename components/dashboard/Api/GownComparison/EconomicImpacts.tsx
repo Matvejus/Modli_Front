@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { Gown } from "@/app/interfaces/Gown"
+import { Wallet } from "lucide-react"
 interface EconomicImpactProps {
   gowns: Gown[]
 }
@@ -24,7 +25,7 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Economic Impact (100 gown uses)</CardTitle>
+        <CardTitle><Wallet className="inline-block mr-2" />Economic Impact (100 gown uses)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="flex justify-between">
