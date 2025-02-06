@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-
+import { Wind } from "lucide-react"
 interface Gown {
   id: string
   name: string
@@ -31,7 +31,7 @@ const CO2Impacts = ({ gowns }: CO2ImpactsProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>CO₂ Impact (1 gown use)</CardTitle>
+        <CardTitle><Wind className="inline-block mr-2" />CO₂ Impact (1 gown use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">

@@ -22,6 +22,7 @@ import CO2Impacts from '@/components/dashboard/Api/GownComparison/CO2Impact'
 import * as XLSX from "xlsx"
 import { Button } from "@/components/ui/button"
 import { Gown } from '../interfaces/Gown'
+import { Recycle, Trash2, Leaf  } from 'lucide-react';
 
 interface GownData {
   name: string;
@@ -129,24 +130,23 @@ const fetchGowns = async () => {
     // Prepare data for XLSX with gown names as columns
     const headers = ["", ...selectedGownData.map(gown => gown.name)];
     const fields = [
-      { field: "ID", value: selectedGownData.map(gown => gown.id) },
-      { field: "Cost €", value: selectedGownData.map(gown => gown.cost) },
       { field: "Reusable", value: selectedGownData.map(gown => gown.reusable ? "Yes" : "No") },
-      { field: "Laundry Cost €", value: selectedGownData.map(gown => gown.laundry_cost) },
-      { field: "Washes", value: selectedGownData.map(gown => gown.washes || "N/A") },
-      { field: "Hygiene", value: selectedGownData.map(gown => gown.hygine) },
-      { field: "Comfort", value: selectedGownData.map(gown => gown.comfort) },
-      { field: "Certificates", value: selectedGownData.map(gown => gown.certificates.join(", ")) },
-      { field: "FTE Local", value: selectedGownData.map(gown => gown.fte_local) },
-      { field: "FTE Local Extra", value: selectedGownData.map(gown => gown.fte_local_extra) },
-      { field: "CO2 Impact", value: selectedGownData.map(gown => gown.emission_impacts.CO2) },
-      { field: "Energy Impact", value: selectedGownData.map(gown => gown.emission_impacts.Energy) },
-      { field: "Water Impact", value: selectedGownData.map(gown => gown.emission_impacts.Water) },
-      { field: "Cost Impact €", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
-      { field: "Production Costs €", value: selectedGownData.map(gown => gown.emission_impacts.production_costs) },
-      { field: "Use Cost", value: selectedGownData.map(gown => gown.emission_impacts.use_cost) },
-      { field: "Lost Cost", value: selectedGownData.map(gown => gown.emission_impacts.lost_cost) },
-      { field: "EOL Cost", value: selectedGownData.map(gown => gown.emission_impacts.eol_cost) },
+      { field: "Cost €", value: selectedGownData.map(gown => gown.cost) },
+      { field: "Laundry Cost (€ per gown wash)", value: selectedGownData.map(gown => gown.laundry_cost) },
+      { field: "Max. number of washes expected", value: selectedGownData.map(gown => gown.washes || "N/A") },
+      { field: "Perceived Hygiene", value: selectedGownData.map(gown => gown.hygine) },
+      { field: "Perceived Comfort", value: selectedGownData.map(gown => gown.comfort) },
+      { field: "Social Certifications", value: selectedGownData.map(gown => gown.certificates.join(", ")) },
+      { field: "FTE Local (per 1 gown use)", value: selectedGownData.map(gown => gown.fte_local) },
+      { field: "FTE Local Extra (per 1 gown use)", value: selectedGownData.map(gown => gown.fte_local_extra) },
+      { field: "CO₂-eq Impact (Unit per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.CO2) },
+      { field: "Energy Impact (Unit per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.Energy) },
+      { field: "Water Impact (Unit per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.Water) },
+      { field: "Total Economic impact (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
+      { field: "Purchase cost (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
+      { field: "Laundry Cost (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
+      { field: "Waste Cost (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.production_costs) },
+      { field: "EOL Residual Value (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.eol_cost) },
     ];
 
     // Create worksheet data
@@ -191,13 +191,13 @@ const fetchGowns = async () => {
           <CardContent>
           <div className="grid md:grid-cols-2 gap-3">
             <GownList 
-              title="Reusable Gowns"
+              title={<><Recycle className="inline-block mr-2" /> Reusable Gowns</>}
               gowns={reusableGowns} 
               selectedGowns={selectedGowns} 
               onGownSelection={handleGownSelection} 
             />
             <GownList 
-              title="Single-use gowns"
+              title={<><Trash2 className="inline-block mr-2" />Single-use gowns</>}
               gowns={singleUseGowns} 
               selectedGowns={selectedGowns} 
               onGownSelection={handleGownSelection} 

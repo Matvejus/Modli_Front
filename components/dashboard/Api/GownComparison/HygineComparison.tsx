@@ -2,7 +2,7 @@ import React from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Star } from 'lucide-react'
 import { Card, CardContent,  CardHeader,  CardTitle } from '@/components/ui/card'
-
+import { WashingMachine } from 'lucide-react'
 interface Gown {
     id: string
     name: string
@@ -39,7 +39,7 @@ export default function GownComparison({ gowns }: GownHygineProps) {
   return (
     <Card>
       <CardHeader>
-      <CardTitle>Perceived hygiene and comfort</CardTitle>
+      <CardTitle><WashingMachine className="inline-block mr-2" />Perceived hygiene and comfort</CardTitle>
       </CardHeader>
         <CardContent>
             <Table>

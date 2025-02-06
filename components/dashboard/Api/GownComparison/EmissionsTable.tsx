@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { ArrowDownIcon } from 'lucide-react'
+import { ArrowDownIcon, Leaf } from 'lucide-react'
 import GownComparisonModal from '@/components/modals/emissions_detail'
 import { Gown } from '@/app/interfaces/Gown'
 
@@ -65,7 +65,7 @@ export default function GownComparisonTable({ gowns }: GownComparisonTableProps)
     <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span>Environmental Impact – Overview (per 1 use)</span>
+          <span> <Leaf className="inline-block mr-2" />Environmental Impact – Overview (per 1 use)</span>
           {/* <GownComparisonModal gowns={gowns} /> */}
         </CardTitle>
       </CardHeader>

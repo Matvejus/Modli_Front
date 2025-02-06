@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Gown } from '@/app/interfaces/Gown'
 
 interface GownListProps {
-  title: string
+  title: string | React.ReactNode
   gowns: Gown[]
   selectedGowns: string[]
   onGownSelection: (id: string) => void

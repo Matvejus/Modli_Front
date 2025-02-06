@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { Waves } from "lucide-react"
 
 interface Gown {
   id: string
@@ -31,7 +32,7 @@ const WaterImpacts = ({ gowns }: WaterImpactsProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Water Impact (1 gown use)</CardTitle>
+        <CardTitle><Waves className="inline-block mr-2" />Water Impact (1 gown use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">
