@@ -54,28 +54,53 @@ export default function GownDetail({ params }: GownDetailProps) {
   const router = useRouter()
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api"
 
+
+  function getCookie(name: string): string | null {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+
   const fetchGownDetails = useCallback(async () => {
     try {
-      const gownRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`)
-      if (!gownRes.ok) throw new Error("Failed to fetch gown details")
-      const gownData = await gownRes.json()
-      setGown(gownData)
-
-      // const emissionsRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/emissions/`)
-      // if (!emissionsRes.ok) throw new Error("Failed to fetch emissions data")
-      // const emissionsData = await emissionsRes.json()
-      // setEmissions(emissionsData)
-
-      const certificatesRes = await fetch(`${API_BASE_URL}/emissions/certificates/`)
-      if (!certificatesRes.ok) throw new Error("Failed to fetch certificates")
-      const certificatesData = await certificatesRes.json()
-      setAllCertificates(certificatesData)
+      const csrftoken = getCookie('csrftoken');
+      const sessionRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/session/`, {
+        credentials: 'include',
+        headers: {
+          ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {})
+        },
+      });
+  
+      const sessionData = await sessionRes.json();
+      console.log("Session API Response:", sessionData);
+  
+      if (sessionRes.ok && sessionData) {
+        setGown(sessionData);
+        setLoading(false);
+        return;
+      }
+  
+      const gownRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`);
+      if (!gownRes.ok) throw new Error("Failed to fetch gown details");
+  
+      const gownData = await gownRes.json();
+      setGown(gownData);
+      setLoading(false);
     } catch (error) {
-      console.error("API error: ", error)
-    } finally {
-      setLoading(false)
+      console.error("API error: ", error);
+      alert("Failed to load gown details. Please try again later.");
+      setLoading(false);
     }
-  }, [id, API_BASE_URL])
+  }, [id, API_BASE_URL]);
 
   useEffect(() => {
     if (id) {
@@ -84,15 +109,15 @@ export default function GownDetail({ params }: GownDetailProps) {
   }, [id, fetchGownDetails])
 
   useEffect(() => {
-    if (gown && allCertificates.length > 0) {
+    if (gown && allCertificates.length > 0 && gown.certificates) {
       setAllCertificates((prevCertificates) =>
         prevCertificates.map((cert) => ({
           ...cert,
-          checked: gown.certificates.includes(cert.name),
+          checked: gown.certificates.includes(cert.id),
         })),
       )
     }
-  }, [gown])
+  }, [gown?.certificates])
 
   const handleInputChange = (field: keyof Gown, value: string | number | boolean) => {
     if (gown) {
@@ -108,36 +133,44 @@ export default function GownDetail({ params }: GownDetailProps) {
     setHasChanges(true)
   }
 
-  const handleSave = async () => {
-    if (!gown) return
+  const [isSaving, setIsSaving] = useState(false);
 
-    const updatedData = {
-      ...gown,
-      certificates: allCertificates.filter((cert) => cert.checked).map((cert) => cert.id),
-    }
+  const handleSave = async () => {
+    if (!gown || !hasChanges || isSaving) return;
+    setIsSaving(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedData),
-      })
+        const updatedData = {
+            ...gown,
+            certificates: allCertificates.filter((cert) => cert.checked).map((cert) => cert.id),
+        };
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`)
-      }
+        const csrftoken = getCookie('csrftoken');
+    const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/save/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {})
+      },
+      credentials: 'include',
+      body: JSON.stringify(updatedData),
+    });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`);
+        }
 
-      await fetchGownDetails() // Refetch the data after saving
-      setHasChanges(false)
-      alert("Gown details saved successfully!")
+        await fetchGownDetails(); // Refresh the UI with updated session data
+        setHasChanges(false);
+        console.log("Saved data:",updatedData)
+        alert("Gown details saved in session!");
     } catch (error) {
-      console.error("Error saving gown details:", error)
-      alert(`Failed to save gown details. Error: ${error}`)
+        console.error("Error saving gown details:", error);
+        alert(`Failed to save gown details. Error: ${error}`);
+    } finally {
+        setIsSaving(false);
     }
-  }
+};
 
   if (loading || !gown) return <div className="flex justify-center items-center h-screen">Loading...</div>
 
