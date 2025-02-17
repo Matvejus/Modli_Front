@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Checkbox } from "@/components/ui/checkbox"
 import { Gown } from '@/app/interfaces/Gown'
-
+import { setClientAuth } from '@/lib/client'
 interface GownListProps {
   title: string | React.ReactNode
   gowns: Gown[]
@@ -51,12 +51,15 @@ export default function GownList({ title, gowns, selectedGowns, onGownSelection 
               {gown.name}
             </label>
           </div>
-          <button 
-            onClick={() => window.location.href = `/gowns/${gown.id}`} 
-            className="border border-black text-black-600 hover:bg-black hover:text-white text-sm px-2 py-1 rounded"
-          >
-            Edit
-          </button>
+            <button 
+              onClick={async () => {
+              await setClientAuth();
+              window.location.href = `/gowns/${gown.id}`; 
+              }} 
+              className="border border-black text-black-600 hover:bg-black hover:text-white text-sm px-2 py-1 rounded"
+              >
+              Edit
+            </button>
         </div>
       ))}
     </div>

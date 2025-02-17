@@ -15,7 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Info } from "lucide-react"
 import { EditCertificationModal } from "@/components/modals/EditCertificate"
 import { Gown } from "@/app/interfaces/Gown"
-
+import { getClientSession, setClientAuth } from "@/lib/client"
 
 
 type Certificate = {
@@ -54,53 +54,63 @@ export default function GownDetail({ params }: GownDetailProps) {
   const router = useRouter()
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api"
 
-
-  function getCookie(name: string): string | null {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-  }
+  
+  // function getCookie(name: string): string | null {
+  //   let cookieValue = null;
+  //   if (document.cookie && document.cookie !== '') {
+  //       const cookies = document.cookie.split(';');
+  //       for (let i = 0; i < cookies.length; i++) {
+  //           const cookie = cookies[i].trim();
+  //           if (cookie.substring(0, name.length + 1) === (name + '=')) {
+  //               cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+  //               break;
+  //           }
+  //       }
+  //   }
+  //   return cookieValue;
+  // }
 
   const fetchGownDetails = useCallback(async () => {
     try {
-      const csrftoken = getCookie('csrftoken');
-      const sessionRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/session/`, {
-        credentials: 'include',
-        headers: {
-          ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {})
-        },
-      });
-  
-      const sessionData = await sessionRes.json();
-      console.log("Session API Response:", sessionData);
-  
-      if (sessionRes.ok && sessionData) {
-        setGown(sessionData);
-        setLoading(false);
-        return;
+      let token = await getClientSession()
+      if (!token) {
+        console.log("No existing session, creating new one...")
+        token = await setClientAuth()
+        if (!token) {
+          throw new Error("Failed to create new session")
+        }
       }
-  
-      const gownRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`);
-      if (!gownRes.ok) throw new Error("Failed to fetch gown details");
-  
-      const gownData = await gownRes.json();
-      setGown(gownData);
-      setLoading(false);
+
+      const sessionRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/session/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (sessionRes.ok) {
+        const sessionData = await sessionRes.json()
+        console.log("Session API Response:", sessionData)
+        setGown(sessionData)
+        setLoading(false)
+        return
+      }
+
+      const gownRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      if (!gownRes.ok) throw new Error("Failed to fetch gown details")
+
+      const gownData = await gownRes.json()
+      setGown(gownData)
+      setLoading(false)
     } catch (error) {
-      console.error("API error: ", error);
-      alert("Failed to load gown details. Please try again later.");
-      setLoading(false);
+      console.error("API error: ", error)
+      alert("Failed to load gown details. Please try again later.")
+      setLoading(false)
     }
-  }, [id, API_BASE_URL]);
+  }, [id, API_BASE_URL])
 
   useEffect(() => {
     if (id) {
@@ -136,41 +146,45 @@ export default function GownDetail({ params }: GownDetailProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
-    if (!gown || !hasChanges || isSaving) return;
-    setIsSaving(true);
+    if (!gown || !hasChanges || isSaving) return
+    setIsSaving(true)
 
     try {
-        const updatedData = {
-            ...gown,
-            certificates: allCertificates.filter((cert) => cert.checked).map((cert) => cert.id),
-        };
+      const updatedData = {
+        ...gown,
+        certificates: allCertificates.filter((cert) => cert.checked).map((cert) => cert.id),
+      }
 
-        const csrftoken = getCookie('csrftoken');
-    const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/save/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(csrftoken ? { 'X-CSRFToken': csrftoken } : {})
-      },
-      credentials: 'include',
-      body: JSON.stringify(updatedData),
-    });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`);
-        }
+      const token = await getClientSession()
+      if (!token) {
+        throw new Error("No session token available")
+      }
 
-        await fetchGownDetails(); // Refresh the UI with updated session data
-        setHasChanges(false);
-        console.log("Saved data:",updatedData)
-        alert("Gown details saved in session!");
+      const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/save/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`)
+      }
+
+      await fetchGownDetails() // Refresh the UI with updated session data
+      setHasChanges(false)
+      console.log("Saved data:", updatedData)
+      alert("Gown details saved in session!")
     } catch (error) {
-        console.error("Error saving gown details:", error);
-        alert(`Failed to save gown details. Error: ${error}`);
+      console.error("Error saving gown details:", error)
+      alert(`Failed to save gown details. Error: ${error}`)
     } finally {
-        setIsSaving(false);
+      setIsSaving(false)
     }
-};
+  }
 
   if (loading || !gown) return <div className="flex justify-center items-center h-screen">Loading...</div>
 
