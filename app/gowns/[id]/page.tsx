@@ -264,7 +264,7 @@ export default function GownDetail({ params }: GownDetailProps) {
               type="number"
               value={gown.fte_local_extra}
               onChange={(e) => handleInputChange("fte_local_extra", Number.parseFloat(e.target.value))}
-              prefix="$"
+              prefix=""
             />
           </CardContent>
         </Card> */}
