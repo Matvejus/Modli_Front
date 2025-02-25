@@ -24,8 +24,7 @@ export async function auth() {
   const currentTime = Date.now()
   const expires = new Date(Date.now() + 2 * 60 * 60 * 1000) // 2 hours from now
   const session = await encrypt({
-    sub: "user123",
-    iat: Math.floor(currentTime / 1000),
+    sub: "1",
     exp: Math.floor(expires.getTime() / 1000),
   })
   cookies().set("session", session, { expires, httpOnly: true })

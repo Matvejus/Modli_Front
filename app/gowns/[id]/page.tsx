@@ -81,7 +81,8 @@ export default function GownDetail({ params }: GownDetailProps) {
         }
       }
 
-      const sessionRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/session/`, {
+      const sessionRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -160,8 +161,8 @@ export default function GownDetail({ params }: GownDetailProps) {
         throw new Error("No session token available")
       }
 
-      const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/save/`, {
-        method: "POST",
+      const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
