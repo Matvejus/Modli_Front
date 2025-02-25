@@ -242,7 +242,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             </CardContent>
           </Card>
         )}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>FTE local (Hours)</CardTitle>
           </CardHeader>
@@ -264,10 +264,10 @@ export default function GownDetail({ params }: GownDetailProps) {
               type="number"
               value={gown.fte_local_extra}
               onChange={(e) => handleInputChange("fte_local_extra", Number.parseFloat(e.target.value))}
-              prefix="$"
+              prefix=""
             />
           </CardContent>
-        </Card>
+        </Card> */}
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-2">
