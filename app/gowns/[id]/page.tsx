@@ -242,7 +242,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             </CardContent>
           </Card>
         )}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>FTE local (Hours)</CardTitle>
           </CardHeader>
@@ -267,7 +267,7 @@ export default function GownDetail({ params }: GownDetailProps) {
               prefix="$"
             />
           </CardContent>
-        </Card>
+        </Card> */}
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-2">
