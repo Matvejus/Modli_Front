@@ -68,26 +68,28 @@ export default function GownsPage() {
     }))
   }
 
-const fetchGowns = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/emissions/gowns/`);
-    if (!response.ok) throw new Error('Failed to fetch data');
-    const data = await response.json();
-
-    // Map data to match the Gown structure and include emission_impacts directly
-    const formattedData: Gown[] = data.map((gown: Gown) => ({
-      ...gown,
-      emission_impacts: gown.emission_impacts, // Keep the structure as-is
-    }));
-
-    setReusableGowns(formattedData.filter((gown) => gown.reusable && gown.visible));
-    setSingleUseGowns(formattedData.filter((gown) => !gown.reusable && gown.visible));
-  } catch (error) {
-    console.error("API error: ", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchGowns = async () => {
+    try {
+      const response = await fetch(`api/emissions/gown-list/`, {
+        credentials: 'include'  // Add this line
+      });
+      if (!response.ok) throw new Error('Failed to fetch data');
+      const data = await response.json();
+      
+      // Map data to match the Gown structure and include emission_impacts directly
+      const formattedData: Gown[] = data.map((gown: Gown) => ({
+        ...gown,
+        emission_impacts: gown.emission_impacts,
+      }));
+      
+      setReusableGowns(formattedData.filter((gown) => gown.reusable && gown.visible));
+      setSingleUseGowns(formattedData.filter((gown) => !gown.reusable && gown.visible));
+    } catch (error) {
+      console.error("API error: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchGowns()
@@ -96,14 +98,22 @@ const fetchGowns = async () => {
 
   useEffect(() => {
     if (selectedGowns.length > 0) {
-      fetch(`${API_BASE_URL}/emissions/api/selected-gowns-emissions/?ids=${selectedGowns.join(',')}`)
-        .then(response => response.json())
+      fetch(`/api/emissions/selected-gowns-emissions?ids=${selectedGowns.join(',')}`, {
+        credentials: "include", // Ensure cookies are sent
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Failed to fetch selected gowns: ${response.status}`);
+          }
+          return response.json();
+        })
         .then(data => setSelectedGownData(data))
-        .catch(error => console.error('Error fetching selected gowns data:', error))
+        .catch(error => console.error('Error fetching selected gowns data:', error));
     } else {
-      setSelectedGownData([])
+      setSelectedGownData([]);
     }
-  }, [selectedGowns])
+  }, [selectedGowns]);
+  
 
   const handleGownSelection = (gownId: string) => {
     setSelectedGowns(prev => {
