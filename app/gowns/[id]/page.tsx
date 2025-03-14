@@ -46,42 +46,44 @@ interface GownDetailProps {
 
 export default function GownDetail({ params }: GownDetailProps) {
   const [gown, setGown] = useState<Gown | null>(null)
-  // const [emissions, setEmissions] = useState<Emission[]>([])
   const [allCertificates, setAllCertificates] = useState<Certificate[]>([])
   const [loading, setLoading] = useState(true)
   const [hasChanges, setHasChanges] = useState(false)
   const { id } = params
   const router = useRouter()
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api"
 
   const fetchGownDetails = useCallback(async () => {
     try {
-      const gownRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`)
-      if (!gownRes.ok) throw new Error("Failed to fetch gown details")
-      const gownData = await gownRes.json()
-      setGown(gownData)
+      setLoading(true);
+      
+      // Call your Next.js API route instead of Django directly
+      const gownRes = await fetch(`/api/emissions/gowns/${id}`, {
+        credentials: 'include'
+      });
+      
+      if (!gownRes.ok) throw new Error("Failed to fetch gown details");
+      const gownData = await gownRes.json();
+      setGown(gownData);
 
-      // const emissionsRes = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/emissions/`)
-      // if (!emissionsRes.ok) throw new Error("Failed to fetch emissions data")
-      // const emissionsData = await emissionsRes.json()
-      // setEmissions(emissionsData)
-
-      const certificatesRes = await fetch(`${API_BASE_URL}/emissions/certificates/`)
-      if (!certificatesRes.ok) throw new Error("Failed to fetch certificates")
-      const certificatesData = await certificatesRes.json()
-      setAllCertificates(certificatesData)
+      const certificatesRes = await fetch(`/api/emissions/certificates`, {
+        credentials: 'include'
+      });
+      
+      if (!certificatesRes.ok) throw new Error("Failed to fetch certificates");
+      const certificatesData = await certificatesRes.json();
+      setAllCertificates(certificatesData);
     } catch (error) {
-      console.error("API error: ", error)
+      console.error("API error: ", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [id, API_BASE_URL])
+  }, [id]);
 
   useEffect(() => {
     if (id) {
-      fetchGownDetails()
+      fetchGownDetails();
     }
-  }, [id, fetchGownDetails])
+  }, [id, fetchGownDetails]);
 
   useEffect(() => {
     if (gown && allCertificates.length > 0) {
@@ -92,7 +94,7 @@ export default function GownDetail({ params }: GownDetailProps) {
         })),
       )
     }
-  }, [gown])
+  }, [gown, allCertificates.length]);
 
   const handleInputChange = (field: keyof Gown, value: string | number | boolean) => {
     if (gown) {
@@ -109,38 +111,40 @@ export default function GownDetail({ params }: GownDetailProps) {
   }
 
   const handleSave = async () => {
-    if (!gown) return
+    if (!gown) return;
 
     const updatedData = {
       ...gown,
       certificates: allCertificates.filter((cert) => cert.checked).map((cert) => cert.id),
-    }
+    };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
-        method: "PUT",
+      // Call your Next.js API route instead of Django directly
+      const response = await fetch(`/api/emissions/gowns/${id}`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify(updatedData),
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`)
+        const errorData = await response.json();
+        throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`);
       }
 
-      await fetchGownDetails() // Refetch the data after saving
-      setHasChanges(false)
-      alert("Gown details saved successfully!")
+      await fetchGownDetails(); // Refetch the data after saving
+      setHasChanges(false);
+      alert("Gown details saved successfully!");
     } catch (error) {
-      console.error("Error saving gown details:", error)
-      alert(`Failed to save gown details. Error: ${error}`)
+      console.error("Error saving gown details:", error);
+      alert(`Failed to save gown details. Error: ${error}`);
     }
-  }
+  };
 
-  if (loading || !gown) return <div className="flex justify-center items-center h-screen">Loading...</div>
-
+  if (loading || !gown) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  
   return (
     <div className="container mx-auto p-4 text-black">
       <div className="flex justify-between items-center mb-6">
