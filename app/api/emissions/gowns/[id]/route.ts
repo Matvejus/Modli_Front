@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Use a consistent URL for your Django backend
-const DJANGO_API_URL = process.env.DJANGO_API_URL || 'http://127.0.0.1:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api'
 
 export async function GET(
   request: NextRequest,
@@ -13,7 +13,7 @@ export async function GET(
     
     console.log("Forwarding cookies:", cookies); // Debug log
     
-    const response = await fetch(`${DJANGO_API_URL}/emissions/gowns/${id}/`, {
+    const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
       headers: {
         "Content-Type": "application/json",
         "Cookie": cookies,
@@ -52,7 +52,7 @@ export async function POST(
     
     console.log("Forwarding cookies on POST:", cookies); // Debug log
 
-    const response = await fetch(`${DJANGO_API_URL}/emissions/gowns/${id}/`, {
+    const response = await fetch(`${API_BASE_URL}/emissions/gowns/${id}/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

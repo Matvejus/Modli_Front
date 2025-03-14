@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Use a consistent URL for your Django backend
-const DJANGO_API_URL = process.env.DJANGO_API_URL || 'http://127.0.0.1:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api'
 
 export async function GET(
   request: NextRequest,
@@ -16,7 +16,7 @@ export async function GET(
     const ids = searchParams.get('ids') || '';
     
     // Forward the request to Django with cookies
-    const response = await fetch(`${DJANGO_API_URL}/emissions/api/selected-gowns-emissions/?ids=${ids}`, {
+    const response = await fetch(`${API_BASE_URL}/emissions/api/selected-gowns-emissions/?ids=${ids}`, {
       headers: {
         "Content-Type": "application/json",
         "Cookie": cookies,
