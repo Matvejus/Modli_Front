@@ -15,15 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Info } from "lucide-react"
 import { EditCertificationModal } from "@/components/modals/EditCertificate"
 import { Gown } from "@/app/interfaces/Gown"
-
-
-
-type Certificate = {
-  id: number
-  name: string
-  description: string
-  checked: boolean
-}
+import { Certificate } from "@/app/interfaces/Certificate"
 
 interface GownDetailProps {
   params: {
@@ -90,7 +82,7 @@ export default function GownDetail({ params }: GownDetailProps) {
       setAllCertificates((prevCertificates) =>
         prevCertificates.map((cert) => ({
           ...cert,
-          checked: gown.certificates.includes(cert.id),
+          checked: gown.certificates.includes(cert),
         })),
       )
     }

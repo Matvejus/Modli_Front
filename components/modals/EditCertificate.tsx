@@ -29,7 +29,7 @@ import {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api"
 
 interface EditCertificationModalProps {
-  certificateId: string
+  certificateId: number
   certificateName: string
   certificateDescription: string
   onUpdate: () => void
