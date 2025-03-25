@@ -24,24 +24,7 @@ import { Button } from "@/components/ui/button"
 import { Gown } from '../interfaces/Gown'
 import { Recycle, Trash2, Leaf  } from 'lucide-react';
 
-interface GownData {
-  name: string;
-  Impacts: {
-    total_impact: {
-      [gown: string]: number;
-    };
-    stages: string;
-    new_arrivals: [number, number][];
-  };
-  usage_values: number[];
-  new_arrivals: { amount: number }[];
-}
 
-interface Results {
-  results: {
-    [name: string]: GownData;
-  };
-}
 
 export default function GownsPage() {
   const [reusableGowns, setReusableGowns] = useState<Gown[]>([])
@@ -49,25 +32,8 @@ export default function GownsPage() {
   const [selectedGowns, setSelectedGowns] = useState<string[]>([])
   const [selectedGownData, setSelectedGownData] = useState<Gown[]>([])
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<Results | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [specifications, setSpecifications] = useState({
-    usage_per_week: 1000,
-    pickups_per_week: 2,
-    optimizer: ["WATER"],
-    loss_percentage: 0.001
-  })
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api'
-
-  const handleSpecificationChange = (key: keyof typeof specifications, value: string | number) => {
-    setSpecifications(prev => ({
-      ...prev,
-      [key]: key === 'loss_percentage' ? parseFloat(value as string) : parseInt(value as string, 10),
-      optimizer: key === 'optimizer' ? [value as string] : prev.optimizer
-    }))
-  }
-
+  
   const fetchGowns = async () => {
     try {
       const response = await fetch(`api/emissions/gown-list/`, {
@@ -113,7 +79,7 @@ export default function GownsPage() {
       setSelectedGownData([]);
     }
   }, [selectedGowns]);
-  
+
 
   const handleGownSelection = (gownId: string) => {
     setSelectedGowns(prev => {

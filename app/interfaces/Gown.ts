@@ -1,3 +1,4 @@
+import { Certificate } from "./Certificate";
 export interface Gown {
     gown: string;
     id: string;
@@ -11,7 +12,7 @@ export interface Gown {
     comfort: number;
     residual_value: number;
     waste_cost: number;
-    certificates: string[];
+    certificates: Certificate[];
     fte_local: number;
     fte_local_extra: number;
     emission_impacts: {

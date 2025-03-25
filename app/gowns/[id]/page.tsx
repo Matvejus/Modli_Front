@@ -15,15 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Info } from "lucide-react"
 import { EditCertificationModal } from "@/components/modals/EditCertificate"
 import { Gown } from "@/app/interfaces/Gown"
-
-
-
-type Certificate = {
-  id: string
-  name: string
-  description: string
-  checked: boolean
-}
+import { Certificate } from "@/app/interfaces/Certificate"
 
 interface GownDetailProps {
   params: {
@@ -90,7 +82,7 @@ export default function GownDetail({ params }: GownDetailProps) {
       setAllCertificates((prevCertificates) =>
         prevCertificates.map((cert) => ({
           ...cert,
-          checked: gown.certificates.includes(cert.name),
+          checked: gown.certificates.includes(cert),
         })),
       )
     }
@@ -103,7 +95,7 @@ export default function GownDetail({ params }: GownDetailProps) {
     }
   }
 
-  const handleCertificateChange = (certificateId: string) => {
+  const handleCertificateChange = (certificateId: number) => {
     setAllCertificates((prevCertificates) =>
       prevCertificates.map((cert) => (cert.id === certificateId ? { ...cert, checked: !cert.checked } : cert)),
     )
@@ -115,8 +107,16 @@ export default function GownDetail({ params }: GownDetailProps) {
 
     const updatedData = {
       ...gown,
-      certificates: allCertificates.filter((cert) => cert.checked).map((cert) => cert.id),
+      certificates: allCertificates
+        .filter((cert) => cert.checked)
+        .map((cert) => ({
+          id: cert.id,
+          name: cert.name,
+          description: cert.description,
+        })),
     };
+
+    console.log(updatedData)
 
     try {
       // Call your Next.js API route instead of Django directly
@@ -128,7 +128,7 @@ export default function GownDetail({ params }: GownDetailProps) {
         credentials: 'include',
         body: JSON.stringify(updatedData),
       });
-
+      console.log(updatedData)
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(`Failed to save gown details: ${JSON.stringify(errorData)}`);
