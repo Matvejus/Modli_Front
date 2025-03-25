@@ -17,9 +17,7 @@ export default function GownCertificatesTable({ gowns }: GownCertificatesTablePr
   const allCertificates = Array.from(
     new Set(
       gowns.flatMap(gown => 
-        gown.certificates.map(cert => 
-          typeof cert === 'object' && cert.name ? cert.name : cert
-        )
+        gown.certificates.map(cert => cert.name)
       )
     )
   )
