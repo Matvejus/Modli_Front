@@ -136,7 +136,7 @@ export default function GownDetail({ params }: GownDetailProps) {
 
       await fetchGownDetails(); // Refetch the data after saving
       setHasChanges(false);
-      alert("Gown details saved successfully!");
+      // alert("Gown details saved successfully!");
     } catch (error) {
       console.error("Error saving gown details:", error);
       alert(`Failed to save gown details. Error: ${error}`);
