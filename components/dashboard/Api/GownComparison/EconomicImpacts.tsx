@@ -28,7 +28,7 @@ interface ResidualValueDataPoint {
 
 const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
   const colors = ["#2C3E50", "#1ABC9C", "#E74C3C", "#3498DB", "#9B59B6", "#34495E", "#F1C40F"]
-  const uses = 100
+  const uses = 1
   const chartData = gowns.map((gown) => ({
     name: gown.name,
     "Purchase costs": Number.parseFloat((gown.emission_impacts.purchase_cost ?? 0).toFixed(3)) * uses,
@@ -77,7 +77,7 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
       <CardHeader>
         <CardTitle>
           <Wallet className="inline-block mr-2" />
-          Economic Impact (100 gown uses)
+          Economic Impact (1 gown use)
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">

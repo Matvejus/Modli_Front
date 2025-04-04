@@ -79,7 +79,8 @@ export default function GownsPage() {
       setSelectedGownData([]);
     }
   }, [selectedGowns]);
-
+  console.log(selectedGowns)
+  
 
   const handleGownSelection = (gownId: string) => {
     setSelectedGowns(prev => {
