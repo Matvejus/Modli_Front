@@ -77,7 +77,7 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
       <CardHeader>
         <CardTitle>
           <Wallet className="inline-block mr-2" />
-          Economic Impact (1 gown use)
+          Economic Impact (per 1 use)
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0">

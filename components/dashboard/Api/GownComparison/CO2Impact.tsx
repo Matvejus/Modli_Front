@@ -31,7 +31,7 @@ const CO2Impacts = ({ gowns }: CO2ImpactsProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle><Wind className="inline-block mr-2" />CO₂ Impact (1 gown use)</CardTitle>
+        <CardTitle><Wind className="inline-block mr-2" />CO₂ Impact (per 1 use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">

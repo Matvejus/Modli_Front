@@ -19,7 +19,7 @@ export default function VariablesAndSourcesModal() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
-          <InfoCircledIcon className="mr-2 h-4 w-4" /> View variables and sources
+          <InfoCircledIcon className="mr-2 h-4 w-4" /> click here to view variables and sources used
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-white text-black border-2 border-gray-200 shadow-lg">

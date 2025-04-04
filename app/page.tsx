@@ -1,13 +1,13 @@
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, Recycle, LineChart, Shield } from "lucide-react"
+import { ArrowRight, PersonStanding, LineChart, HandCoins, Leaf } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="max-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-8 md:pt-8 lg:pt-8">
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
@@ -15,9 +15,6 @@ export default function LandingPage() {
 
         <div className="container px-4 md:px-6 mx-auto max-w-6xl">
           <div className="flex flex-col items-center text-center space-y-4">
-            <div className="inline-block rounded-lg bg-green-100 px-3 py-1 text-sm text-green-700">
-              Healthcare Sustainability
-            </div>
             <h1 className="text-4xl font-bold tracking-tighter text-slate-900 md:text-5xl lg:text-6xl">
               Decision Support Tool for
               <span className="bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
@@ -25,10 +22,6 @@ export default function LandingPage() {
                 Circular Procurement
               </span>
             </h1>
-            <p className="max-w-[700px] text-slate-700 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Helping healthcare professionals make informed purchasing decisions with economic, social, and
-              environmental impact insights.
-            </p>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
             </div>
           </div>
@@ -36,7 +29,7 @@ export default function LandingPage() {
       </section>
 
       {/* Main Content */}
-      <section className="py-2 md:py-2 lg:py-2 mb-6">
+      <section className="py-2 md:py-2 lg:py-2 mb-16">
         <div className="container px-4 md:px-6 mx-auto max-w-6xl">
           {/* <Card className="border-none bg-white/80 shadow-lg backdrop-blur-sm">
             <CardContent className="p-6 md:p-8">
@@ -53,7 +46,7 @@ export default function LandingPage() {
             </CardContent>
           </Card> */}
 
-          <div className="mt-16">
+          <div className="mt-4">
             <div className="grid gap-8">
               <Card className="overflow-hidden border-none bg-white shadow-xl transition-all hover:shadow-lg">
                 <div className="absolute top-0 right-0 h-[150px] w-[200px] bg-green-50 rounded-bl-full opacity-50"></div>
@@ -64,10 +57,6 @@ export default function LandingPage() {
                     </div>
                     <CardTitle className="text-2xl font-bold">Gown Comparison</CardTitle>
                   </div>
-                  <CardDescription className="text-base text-slate-600 mb-6">
-                    Compare the economic, social and environmental impact of different types of reusable and disposable
-                    isolation gowns.
-                  </CardDescription>
                   <div className="bg-green-50 p-6 rounded-lg mb-4">
                     <p className="text-lg text-slate-700 max-w-3xl mx-auto">
                       This tool is developed for procurement professionals and others who want to gain insight into the
@@ -80,16 +69,16 @@ export default function LandingPage() {
                 <CardContent className="relative z-10">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="flex flex-col items-center p-4 bg-slate-50 rounded-lg">
-                      <Shield className="h-8 w-8 text-green-600 mb-2" />
+                      <Leaf className="h-8 w-8 text-green-600 mb-2" />
                       <h3 className="font-medium text-slate-900">Environmental Impact</h3>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-slate-50 rounded-lg">
-                      <LineChart className="h-8 w-8 text-green-600 mb-2" />
+                      <HandCoins className="h-8 w-8 text-green-600 mb-2" />
                       <h3 className="font-medium text-slate-900">Economic Analysis</h3>
                     </div>
                     <div className="flex flex-col items-center p-4 bg-slate-50 rounded-lg">
-                      <Recycle className="h-8 w-8 text-green-600 mb-2" />
-                      <h3 className="font-medium text-slate-900">Sustainability Metrics</h3>
+                      <PersonStanding className="h-8 w-8 text-green-600 mb-2" />
+                      <h3 className="font-medium text-slate-900">Social Impact</h3>
                     </div>
                   </div>
                 </CardContent>
@@ -146,10 +135,8 @@ export default function LandingPage() {
                 className="rounded-sm"
               />
             </div> */}
-            <p className="max-w-[700px] text-sm text-slate-600">
-              This tool was developed by researchers from Amsterdam University of Applied Sciences (AUAS) and industry
-              partners in the MODLI project. MODLI is co-funded by the Taskforce for Applied Research SIA, part of the
-              Dutch Research Council (NWO). RAAK.PUB11.024
+            <p className="max-w-[max] text-sm text-slate-600">
+            This tool has been developed by researchers from Amsterdam University of Applied Sciences (AUAS) and industry partners in the MODLI project. MODLI is co-funded by the Taskforce for Applied Research SIA, part of the Dutch Research Council (NWO) RAAK.PUB11.024. The purpose of this tool is to provide information about the economic, environmental and social impact of different types of non-sterile isolation gowns that are used in healthcare settings and for general awareness raising purposes. The estimates provided by the tool are indicative and based on simplified assumptions and calculations. The AUAS does not guarantee the accuracy, reliability or completeness of the data included in the tool or for any conclusions or judgments based on using the tool and accepts no responsibility or liability neither for the use of the tool nor for any omissions or errors in the calculations or data.
             </p>
           </div>
         </div>
