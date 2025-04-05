@@ -144,64 +144,62 @@ export default function GownsPage() {
 
   return (
     <div className="container mx-auto p-4 max-w-7xl">
-      <Card className="mb-3">
+<Card className="mb-3">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center">Gown Comparison</CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
-
-        <div className="space-y-4">
-          <div className="flex gap-4 items-start">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-              1
+          <div className="space-y-4">
+            <div className="flex gap-4 items-start">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full border border-black text-black flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+                1
+              </div>
+              <div>
+                <p className="font-medium">
+                  Please choose which isolation gowns (max. 3) from the below list you want to compare.
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="font-medium">
-                Please decide which isolation gowns (max. 3) from the below list you want to compare.
-              </p>
+
+            <div className="flex gap-4 items-start">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full border border-black text-black flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+                2
+              </div>
+              <div>
+                <p className="font-medium">
+                  For each gown you want to compare select 'edit' to provide the required information.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  The values displayed here are default values that you can overwrite.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full border border-black text-black flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+                3
+              </div>
+              <div>
+                <p className="font-medium">
+                  Select the gowns by ticking the appropriate boxes – the comparison data will automatically show below
+                  the gown list.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full border border-black text-black flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+                4
+              </div>
+              <div>
+                <p className="font-medium">You can export the data by clicking the 'Export' button.</p>
+              </div>
             </div>
           </div>
-
-          <div className="flex gap-4 items-start">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-              2
-            </div>
-            <div>
-              <p className="font-medium">
-                For each gown you want to compare select 'edit' to provide the required information.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                The values displayed here are default values that you can overwrite.
-              </p>
-            </div>
+          <div className="mt-8">
+            <VariablesAndSourcesModal />
           </div>
-
-          <div className="flex gap-4 items-start">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-              3
-            </div>
-            <div>
-              <p className="font-medium">
-                Select the gowns by ticking the appropriate boxes – the comparison data will automatically show below
-                the gown list.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-4 items-start">
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-              4
-            </div>
-            <div>
-              <p className="font-medium">You can export the data by clicking the 'Export' button.</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <VariablesAndSourcesModal />
-        </div>
-      </CardContent>
+        </CardContent>
       </Card>
 
       <div className="mb-3">
