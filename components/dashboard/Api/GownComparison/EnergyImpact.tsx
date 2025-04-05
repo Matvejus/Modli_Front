@@ -31,7 +31,7 @@ const EnergyImpacts = ({ gowns }: EnergyImpactsProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle><HousePlug className="inline-block mr-2" />Energy Impact (1 gown use)</CardTitle>
+        <CardTitle><HousePlug className="inline-block mr-2" />Energy Impact (per 1 use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">

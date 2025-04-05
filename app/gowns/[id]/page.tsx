@@ -175,7 +175,25 @@ export default function GownDetail({ params }: GownDetailProps) {
         </Card>
         <Card>
           <CardHeader>
+          <div className="flex items-center space-x-2">
             <CardTitle>Waste cost (€/gown)</CardTitle>
+            <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <span className="sr-only">More information</span>
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                      Please contact your waste management company about waste management costs for disposable gowns. 
+                      If a value per kg is given, please multiply by 0.04 - the tool uses an average weight of 0.04 kg for disposable gowns.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+          </div>
           </CardHeader>
           <CardContent>
             <Input
@@ -188,7 +206,25 @@ export default function GownDetail({ params }: GownDetailProps) {
         </Card>
         <Card>
           <CardHeader>
+          <div className="flex items-center space-x-2">
             <CardTitle>Residual value (€/gown)</CardTitle>
+            <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <span className="sr-only">More information</span>
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                      Please contact your recycler for more information about the monetary value of end-of-life gowns/materials.
+                      If a value per kg is given, please multiply by 0.3 - the tool uses an average weight of 0.3 kg for reusable gowns.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+          </div>
           </CardHeader>
           <CardContent>
             <Input

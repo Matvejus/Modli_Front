@@ -32,7 +32,7 @@ const WaterImpacts = ({ gowns }: WaterImpactsProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle><Waves className="inline-block mr-2" />Water Impact (1 gown use)</CardTitle>
+        <CardTitle><Waves className="inline-block mr-2" />Water Impact (per 1 use)</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="h-[400px] w-full">
