@@ -56,6 +56,7 @@ export default function GownDetail({ params }: GownDetailProps) {
       if (!gownRes.ok) throw new Error("Failed to fetch gown details");
       const gownData = await gownRes.json();
       setGown(gownData);
+      console.log(gownData)
 
       const certificatesRes = await fetch(`/api/emissions/certificates`, {
         credentials: 'include'
@@ -71,6 +72,8 @@ export default function GownDetail({ params }: GownDetailProps) {
     }
   }, [id]);
 
+
+  
   useEffect(() => {
     if (id) {
       fetchGownDetails();
@@ -79,14 +82,25 @@ export default function GownDetail({ params }: GownDetailProps) {
 
   useEffect(() => {
     if (gown && allCertificates.length > 0) {
-      setAllCertificates((prevCertificates) =>
-        prevCertificates.map((cert) => ({
-          ...cert,
-          checked: gown.certificates.includes(cert),
-        })),
-      )
+      // Only update if certificates don't already have a checked property
+      const needsUpdate = allCertificates.some(cert => cert.checked === undefined);
+      
+      if (needsUpdate && Array.isArray(gown.certificates)) {
+        // Create a map of certificate IDs from gown.certificates for faster lookup
+        const selectedCertIds = new Set(gown.certificates.map(cert => cert.id));
+        
+        // Update all certificates with checked property based on whether their ID is in the selected set
+        setAllCertificates((prevCertificates) =>
+          prevCertificates.map((cert) => ({
+            ...cert,
+            checked: selectedCertIds.has(cert.id)
+          }))
+        );
+      }
     }
-  }, [gown, allCertificates.length]);
+  }, [gown, allCertificates]);
+
+  // console.log(allCertificates.map(cert => ({ name: cert.name, checked: cert.checked })));
 
   const handleInputChange = (field: keyof Gown, value: string | number | boolean) => {
     if (gown) {
