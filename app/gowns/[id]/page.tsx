@@ -218,6 +218,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card>
+        {gown.reusable && (
         <Card>
           <CardHeader>
           <div className="flex items-center space-x-2">
@@ -249,6 +250,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card>
+        )}
         {gown.reusable && (
           <Card>
             <CardHeader>
