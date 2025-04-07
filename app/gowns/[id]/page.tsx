@@ -12,11 +12,11 @@ import EmissionsInfoModal from "@/components/modals/gown_detail"
 import { CertificationModal } from "@/components/modals/CreateCertificate"
 import { LikertScale } from "@/components/dashboard/Api/LikertScale"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Info } from "lucide-react"
+import { Info, ChevronDown } from "lucide-react"
 import { EditCertificationModal } from "@/components/modals/EditCertificate"
 import { Gown } from "@/app/interfaces/Gown"
 import { Certificate } from "@/app/interfaces/Certificate"
-
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 interface GownDetailProps {
   params: {
     id: string
@@ -41,6 +41,7 @@ export default function GownDetail({ params }: GownDetailProps) {
   const [allCertificates, setAllCertificates] = useState<Certificate[]>([])
   const [loading, setLoading] = useState(true)
   const [hasChanges, setHasChanges] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   const { id } = params
   const router = useRouter()
 
@@ -218,6 +219,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card>
+        {gown.reusable && (
         <Card>
           <CardHeader>
           <div className="flex items-center space-x-2">
@@ -249,6 +251,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card>
+        )}
         {gown.reusable && (
           <Card>
             <CardHeader>
@@ -322,8 +325,10 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card> */}
-        <Card>
-          <CardHeader>
+            <Card>
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CardHeader>
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <CardTitle>Social Certifications</CardTitle>
               <CertificationModal />
@@ -344,7 +349,15 @@ export default function GownDetail({ params }: GownDetailProps) {
                 </Tooltip>
               </TooltipProvider>
             </div>
-          </CardHeader>
+            <CollapsibleTrigger asChild>
+              <button className="rounded p-1 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                <span className="sr-only">Toggle certifications</span>
+              </button>
+            </CollapsibleTrigger>
+          </div>
+        </CardHeader>
+        <CollapsibleContent>
           <CardContent>
             <div className="space-y-2">
               {allCertificates.map((certificate) => (
@@ -370,7 +383,9 @@ export default function GownDetail({ params }: GownDetailProps) {
               ))}
             </div>
           </CardContent>
-        </Card>
+        </CollapsibleContent>
+      </Collapsible>
+    </Card>
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-2">
