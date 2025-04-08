@@ -161,7 +161,7 @@ export default function GownDetail({ params }: GownDetailProps) {
   if (loading || !gown) return <div className="flex justify-center items-center h-screen">Loading...</div>;
   
   return (
-    <div className="container mx-auto p-4 text-black">
+    <div className="container mx-auto p-14 text-white relative z-20">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">{gown.name}</h1>
       </div>
@@ -447,50 +447,6 @@ export default function GownDetail({ params }: GownDetailProps) {
       <Button onClick={hasChanges ? handleSave : () => router.push("/gowns")} className="mb-6">
         {hasChanges ? "Save Changes" : "Back"}
       </Button>
-
-      {/* <h2 className="text-2xl font-semibold mb-4">Emissions</h2>
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="whitespace-nowrap">Stage</TableHead>
-              <TableHead className="whitespace-nowrap">Fibers</TableHead>
-              <TableHead className="whitespace-nowrap">Yarn Production</TableHead>
-              <TableHead className="whitespace-nowrap">Fabric Production</TableHead>
-              <TableHead className="whitespace-nowrap">Finishing</TableHead>
-              <TableHead className="whitespace-nowrap">Produciton</TableHead>
-              <TableHead className="whitespace-nowrap">Transport</TableHead>
-              <TableHead className="whitespace-nowrap">Use</TableHead>
-              <TableHead className="whitespace-nowrap">Total</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {emissions.map((emission, index) => (
-              <TableRow key={index}>
-                <TableCell>
-              {emission.emission_stage === 'CO2'
-                ? `${emission.emission_stage} (KG)`
-                : emission.emission_stage === 'Energy'
-                ? `${emission.emission_stage} (MJ)`
-                : emission.emission_stage === 'Water'
-                ? `${emission.emission_stage} (L)`
-                : emission.emission_stage === 'Cost'
-                ? `${emission.emission_stage} (€)`
-                : emission.emission_stage === 'Energy'}
-                </TableCell>
-                <TableCell>{emission.fibers.toFixed(2)}</TableCell>
-                <TableCell>{emission.yarn_production.toFixed(2)}</TableCell>
-                <TableCell>{emission.fabric_production.toFixed(2)}</TableCell>
-                <TableCell>{emission.finishing.toFixed(2)}</TableCell>
-                <TableCell>{emission.production.toFixed(2)}</TableCell>
-                <TableCell>{emission.transport.toFixed(2)}</TableCell>
-                <TableCell>{emission.use.toFixed(2)}</TableCell>
-                <TableCell>{emission.total.toFixed(2)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div> */}
     </div>
   )
 }

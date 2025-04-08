@@ -59,7 +59,8 @@ const config: Config = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
-  			}
+  			},
+  			'background-modli': 'rgb(40, 48, 139)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
