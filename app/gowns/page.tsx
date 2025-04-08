@@ -143,8 +143,8 @@ export default function GownsPage() {
 
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
-<Card className="mb-3">
+    <div className="container mx-auto pt-16 p-4 max-w-7xl relative z-20">
+      <Card className="mb-3 relative z-30 border-none bg-white shadow-xl">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center">Gown Comparison</CardTitle>
         </CardHeader>
@@ -203,61 +203,71 @@ export default function GownsPage() {
       </Card>
 
       <div className="mb-3">
-        <Card>
+        <Card className="relative z-30 border-none bg-white shadow-xl">
           <CardHeader>
             <CardTitle></CardTitle>
           </CardHeader>
           <CardContent>
-          <div className="grid md:grid-cols-2 gap-3">
-            <GownList 
-              title={<><Recycle className="inline-block mr-2" /> Reusable Gowns</>}
-              gowns={reusableGowns} 
-              selectedGowns={selectedGowns} 
-              onGownSelection={handleGownSelection} 
-            />
-            <GownList 
-              title={<><Trash2 className="inline-block mr-2" />Single-use gowns</>}
-              gowns={singleUseGowns} 
-              selectedGowns={selectedGowns} 
-              onGownSelection={handleGownSelection} 
-            />
+            <div className="grid md:grid-cols-2 gap-3">
+              <GownList
+                title={
+                  <>
+                    <Recycle className="inline-block mr-2" /> Reusable Gowns
+                  </>
+                }
+                gowns={reusableGowns}
+                selectedGowns={selectedGowns}
+                onGownSelection={handleGownSelection}
+              />
+              <GownList
+                title={
+                  <>
+                    <Trash2 className="inline-block mr-2" />
+                    Single-use gowns
+                  </>
+                }
+                gowns={singleUseGowns}
+                selectedGowns={selectedGowns}
+                onGownSelection={handleGownSelection}
+              />
             </div>
           </CardContent>
         </Card>
       </div>
-        {selectedGownData.length > 0 && (
-    <div className="pt-3">
-      <div className='mb-3 flex justify-end'>
-        <Button onClick={downloadSelectedGownsAsXLSX} disabled={selectedGowns.length === 0}>
-          Export data
-        </Button>
-      </div>
+      
+      {selectedGownData.length > 0 && (
+        <div className="pt-3 relative z-30">
+          <div className="mb-3 flex justify-end">
+            <Button onClick={downloadSelectedGownsAsXLSX} disabled={selectedGowns.length === 0}>
+              Export data
+            </Button>
+          </div>
 
-      <div className="mb-3">
-        <GownComparisonTable gowns={selectedGownData} />
-      </div>
+          <div className="mb-3">
+            <GownComparisonTable gowns={selectedGownData} />
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-        <CO2Impacts gowns={selectedGownData} />
-        <EnergyImpacts gowns={selectedGownData} />
-        <WaterImpacts gowns={selectedGownData} />
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+            <CO2Impacts gowns={selectedGownData} />
+            <EnergyImpacts gowns={selectedGownData} />
+            <WaterImpacts gowns={selectedGownData} />
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-        <div className="col-span-3">
-          <EconomicImpacts gowns={selectedGownData} />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+            <div className="col-span-3">
+              <EconomicImpacts gowns={selectedGownData} />
+            </div>
+            {/* <div className="col-span-1">
+              <SocialImpacts gowns={selectedGownData} />
+            </div> */}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <GownHygieneComparison gowns={selectedGownData} />
+            <GownCertificatesTable gowns={selectedGownData} />
+          </div>
         </div>
-        {/* <div className="col-span-1">
-          <SocialImpacts gowns={selectedGownData} />
-        </div> */}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <GownHygieneComparison gowns={selectedGownData} />
-        <GownCertificatesTable gowns={selectedGownData} />
-      </div>
-  </div>
-            )}
-      </div>
-  );
+      )}
+    </div>
+  )
 }
