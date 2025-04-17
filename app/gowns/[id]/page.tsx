@@ -41,7 +41,7 @@ export default function GownDetail({ params }: GownDetailProps) {
   const [allCertificates, setAllCertificates] = useState<Certificate[]>([])
   const [loading, setLoading] = useState(true)
   const [hasChanges, setHasChanges] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const { id } = params
   const router = useRouter()
 
