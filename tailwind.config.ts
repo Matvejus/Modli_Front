@@ -61,6 +61,7 @@ const config: Config = {
   				ring: 'hsl(var(--sidebar-ring))'
   			},
   			'background-modli': 'rgb(40, 48, 139)',
+  			'footer-modli': 'rgb(30, 36, 104)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

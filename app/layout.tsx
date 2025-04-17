@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Image from "next/image";
 import './globals.css'
+import Header from '@/components/header/header';
+import Footer from '@/components/footer/footer';
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,17 +19,10 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
       <body className={inter.className}>
         <div className="flex h-screen">
           <Image
-              alt="Modli logo"
+              alt="Modli doctors"
               src="/media/Modli_doctors.png"
               className="fixed top-0 right-0"
-              width={900}
-              height={100}
-            />
-          <Image
-              alt="Modli logo"
-              src="/media/logo.png"
-              className="fixed top-5 left-2"
-              width={200}
+              width={800}
               height={100}
             />
             <Image
@@ -36,10 +32,17 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
               width={100}
               height={100}
             />
-            <Image
+            {/* <Image
               alt="Modli white Arrow"
               src="/media/Modli_white_arrow.png"
               className="absolute right-0 top-[480px]"
+              width={100}
+              height={100}
+            /> */}
+            <Image
+              alt="Modli orange Arrow"
+              src="/media/Modli_orange_arrow.png"
+              className="absolute right-0 top-6"
               width={100}
               height={100}
             />
@@ -51,14 +54,16 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
               height={200}
             />
             <Image
-              alt="Modli waves"
+              alt="Modli tomorrow"
               src="/media/tomorrow.png"
               className="absolute top-[550px] right-40"
               width={200}
               height={200}
             />
           <main className="bg-background-modli flex-1 overflow-y-auto p-8">
+            <Header/>
             {children}
+            <Footer/>
           </main>
         </div>
       </body>
