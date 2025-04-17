@@ -23,7 +23,7 @@ export default function GownComparison({ gowns }: GownHygineProps) {
   const renderLikertScale = (rating: number): JSX.Element => {
     return (
       <div className="flex items-center">
-        {[0, 1, 2, 3, 4, 5].map((value) => (
+        {[1, 2, 3, 4, 5].map((value) => (
           <Star
             key={value}
             className={`w-5 h-5 ${

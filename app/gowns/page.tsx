@@ -23,6 +23,9 @@ import * as XLSX from "xlsx"
 import { Button } from "@/components/ui/button"
 import { Gown } from '../interfaces/Gown'
 import { Recycle, Trash2, Leaf  } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Info } from "lucide-react"
+
 
 
 
@@ -167,10 +170,10 @@ export default function GownsPage() {
               </div>
               <div>
                 <p className="font-medium">
-                  For each gown you want to compare select 'edit' to provide the required information.
+                  For each gown you want to compare select 'edit' to provide the required information and make sure to select 'save changes'.
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  The values displayed here are default values that you can overwrite.
+                  The values displayed are default values that you can be overwritten.
                 </p>
               </div>
             </div>
@@ -181,7 +184,7 @@ export default function GownsPage() {
               </div>
               <div>
                 <p className="font-medium">
-                  Select the gowns by ticking the appropriate boxes – the comparison data will automatically show below
+                  Select the gowns you would like to compare by ticking the appropriate boxes – the comparison results will automatically show below
                   the gown list.
                 </p>
               </div>

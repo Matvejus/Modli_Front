@@ -12,7 +12,7 @@ import EmissionsInfoModal from "@/components/modals/gown_detail"
 import { CertificationModal } from "@/components/modals/CreateCertificate"
 import { LikertScale } from "@/components/dashboard/Api/LikertScale"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Info, ChevronDown } from "lucide-react"
+import { Info, ChevronDown, Pencil } from "lucide-react"
 import { EditCertificationModal } from "@/components/modals/EditCertificate"
 import { Gown } from "@/app/interfaces/Gown"
 import { Certificate } from "@/app/interfaces/Certificate"
@@ -41,7 +41,7 @@ export default function GownDetail({ params }: GownDetailProps) {
   const [allCertificates, setAllCertificates] = useState<Certificate[]>([])
   const [loading, setLoading] = useState(true)
   const [hasChanges, setHasChanges] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const { id } = params
   const router = useRouter()
 

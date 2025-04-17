@@ -25,6 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Pencil } from "lucide-react"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api"
 
@@ -94,7 +95,7 @@ export function EditCertificationModal({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          Edit
+          <Pencil />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-white text-black">
