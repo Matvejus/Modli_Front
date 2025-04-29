@@ -10,12 +10,11 @@ import Navigation from "../navigation/navigation";
             <div className="container flex h-14 items-center justify-between"> 
                 <Image
                     alt="Modli logo"
-                    src="/media/logo.png"
-                    className="top-6 left-5"
-                    width={200}
+                    src="/media/AUAS.png"
+                    className="top-6 ml-8"
+                    width={400}
                     height={100}
                 />
-                <Navigation/>
             </div>
         </header>
         

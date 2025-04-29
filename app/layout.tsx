@@ -17,7 +17,7 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex h-screen">
+        <div className="flex flex-col min-h-screen">
           <Image
               alt="Modli doctors"
               src="/media/Modli_doctors.png"
@@ -63,8 +63,8 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
           <main className="bg-background-modli flex-1 overflow-y-auto p-8">
             <Header/>
             {children}
-            <Footer/>
           </main>
+          <Footer/>
         </div>
       </body>
     </html>

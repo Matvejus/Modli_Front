@@ -154,48 +154,43 @@ export default function GownsPage() {
         <CardContent className="pt-6">
           <div className="space-y-4">
             <div className="flex gap-4 items-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full border border-black text-black flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+              <div>
+                <p className="font-medium">
+                You can compare up to three isolation gowns from the list. Please follow the steps below                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
                 1
               </div>
               <div>
                 <p className="font-medium">
-                  Please choose which isolation gowns (max. 3) from the below list you want to compare.
+                For each gown you wish to compare, click <strong>Edit</strong> to enter the required information, then make sure to click <strong>Save Changes</strong>.
+                </p>
+                <p className="text-sm text-muted-foreground">
+                The displayed default values can be overwritten
                 </p>
               </div>
             </div>
 
             <div className="flex gap-4 items-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full border border-black text-black flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
                 2
               </div>
               <div>
                 <p className="font-medium">
-                  For each gown you want to compare select 'edit' to provide the required information and make sure to select 'save changes'.
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  The values displayed are default values that you can be overwritten.
+                <strong>Tick the checkboxes</strong> next to the gowns you'd like to compare. The comparison results will appear automatically below the list
                 </p>
               </div>
             </div>
 
             <div className="flex gap-4 items-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full border border-black text-black flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
                 3
               </div>
               <div>
-                <p className="font-medium">
-                  Select the gowns you would like to compare by ticking the appropriate boxes – the comparison results will automatically show below
-                  the gown list.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 items-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full border border-black text-black flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
-                4
-              </div>
-              <div>
-                <p className="font-medium">You can export the data by clicking the 'Export' button.</p>
+                <p className="font-medium">To export the data, click the <strong>Export</strong> button.</p>
               </div>
             </div>
           </div>
