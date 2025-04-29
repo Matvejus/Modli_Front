@@ -2,7 +2,8 @@ import React from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Star } from 'lucide-react'
 import { Card, CardContent,  CardHeader,  CardTitle } from '@/components/ui/card'
-import { WashingMachine } from 'lucide-react'
+import { WashingMachine, Smile } from 'lucide-react'
+
 interface Gown {
     id: string
     name: string
@@ -26,9 +27,7 @@ export default function GownComparison({ gowns }: GownHygineProps) {
         {[1, 2, 3, 4, 5].map((value) => (
           <Star
             key={value}
-            className={`w-5 h-5 ${
-              value < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-            }`}
+            className={`w-5 h-5 ${value <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
           />
         ))}
         <span className="ml-2 text-sm text-gray-500">{rating}/5</span>
@@ -39,7 +38,7 @@ export default function GownComparison({ gowns }: GownHygineProps) {
   return (
     <Card>
       <CardHeader>
-      <CardTitle><WashingMachine className="inline-block mr-2" />Perceived hygiene and comfort</CardTitle>
+      <CardTitle><WashingMachine className="inline-block mr-2" />Perceived hygiene and comfort<Smile className="inline-block ml-2" /></CardTitle>
       </CardHeader>
         <CardContent>
             <Table>

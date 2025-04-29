@@ -8,14 +8,16 @@ export default function LandingPage() {
   return (
     <div className="max-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-14 md:pt-18 lg:pt-10">
+      <section className="relative overflow-hidden pt-14 md:pt-18 lg:pt-18">
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
         <div className="absolute right-0 top-0 -z-10 h-[300px] w-[300px] rounded-full bg-green-100 opacity-20 blur-3xl md:h-[600px] md:w-[600px]"></div>
 
         <div className="container px-4 md:px-6 mx-auto max-w-6xl">
-          <div className="flex flex-col items-center text-center space-y-4">
+          <div className="flex flex-col items-center text-center space-y-8">
             <h1 className="text-4xl font-bold tracking-tighter text-white md:text-5xl lg:text-6xl">
-              Decision Support Tool for Circular Procurement
+              Decision Support Tool
+              <br />
+              <span >for Circular Procurement</span>
             </h1>
             <div className="flex flex-col gap-2 min-[400px]:flex-row"></div>
           </div>

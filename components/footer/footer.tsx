@@ -6,8 +6,8 @@ import { Info, ChevronDown } from "lucide-react"
 
 export default function Footer(){
 return (
-        <footer className="bg-footer-modli py-2 relative z-30 w-full">
-                <div className="mx-auto w-full">
+        <footer className="bg-footer-modli py-2 relative z-30 ">
+                <div className="mx-auto px-4 md:px-6 mx-auto max-w-6xl">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
                     <p className="max-w-[max] text-xs text-white">
                     This tool has been developed by researchers from Amsterdam University of Applied Sciences (AUAS) and

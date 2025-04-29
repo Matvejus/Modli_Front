@@ -219,7 +219,6 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card>
-        {gown.reusable && (
         <Card>
           <CardHeader>
           <div className="flex items-center space-x-2">
@@ -251,7 +250,6 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card>
-        )}
         {gown.reusable && (
           <Card>
             <CardHeader>
@@ -325,6 +323,7 @@ export default function GownDetail({ params }: GownDetailProps) {
             />
           </CardContent>
         </Card> */}
+           {gown.reusable && (
             <Card>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader>
@@ -386,6 +385,7 @@ export default function GownDetail({ params }: GownDetailProps) {
         </CollapsibleContent>
       </Collapsible>
     </Card>
+           )}
         <Card>
           <CardHeader>
             <div className="flex items-center space-x-2">

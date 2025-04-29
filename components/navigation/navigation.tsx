@@ -9,7 +9,7 @@ export default function Navigation(){
                 Home
               </Link>
               <Link href="/gowns" className="transition-colors hover:text-foreground/80">
-                Gowns
+                Gown Comparison
               </Link>
             </nav>
           </div>
