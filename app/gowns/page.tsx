@@ -153,10 +153,10 @@ export default function GownsPage() {
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-4">
-            <div className="flex gap-4 items-start">
+            <div className="ml-12 flex gap-4 items-start">
               <div>
                 <p className="font-medium">
-                You can compare up to three isolation gowns from the list. Please follow the steps below                </p>
+                You can compare up to three isolation gowns from the list. Please follow the steps below:</p>
               </div>
             </div>
 

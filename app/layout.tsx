@@ -4,7 +4,7 @@ import Image from "next/image";
 import './globals.css'
 import Header from '@/components/header/header';
 import Footer from '@/components/footer/footer';
-
+import DynamicTomorrowImage from '@/components/logo_tomorrow/logo_tomorrow';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -32,13 +32,6 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
               width={100}
               height={100}
             />
-            {/* <Image
-              alt="Modli white Arrow"
-              src="/media/Modli_white_arrow.png"
-              className="absolute right-0 top-[480px]"
-              width={100}
-              height={100}
-            /> */}
             <Image
               alt="Modli orange Arrow"
               src="/media/Modli_orange_arrow.png"
@@ -49,17 +42,11 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
             <Image
               alt="Modli waves"
               src="/media/waves.png"
-              className="absolute left-1/2 transform -translate-x-1/2 top-[380px] w-[950px] h-[250px] z-0"
+              className="absolute left-1/2 transform -translate-x-1/2 top-[350px] w-[950px] h-[250px] z-0"
               width={300}
               height={200}
             />
-            <Image
-              alt="Modli tomorrow"
-              src="/media/tomorrow.png"
-              className="absolute top-[550px] right-40"
-              width={200}
-              height={200}
-            />
+            <DynamicTomorrowImage />
           <main className="bg-background-modli flex-1 overflow-y-auto p-8">
             <Header/>
             {children}
