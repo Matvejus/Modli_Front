@@ -24,19 +24,19 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
 
     gowns.forEach((gown) => {
       if (category === "Purchase costs") {
-        dataPoint[gown.name] = Number.parseFloat((gown.emission_impacts.purchase_cost ?? 0).toFixed(3)) * uses
+        dataPoint[gown.name] = Number.parseFloat((gown.emission_impacts.purchase_cost ?? 0).toFixed(4)) * uses
       } else if (category === "Waste costs") {
-        dataPoint[gown.name] = Number.parseFloat((gown.emission_impacts.waste ?? 0).toFixed(3)) * uses
+        dataPoint[gown.name] = Number.parseFloat((gown.emission_impacts.waste ?? 0).toFixed(4)) * uses
       } else if (category === "Laundry") {
-        dataPoint[gown.name] = Number.parseFloat((gown.laundry_cost ?? 0).toFixed(3)) * uses
+        dataPoint[gown.name] = Number.parseFloat((gown.laundry_cost ?? 0).toFixed(4)) * uses
       } else if (category === "Residual Value") {
-        dataPoint[gown.name] = Number.parseFloat((gown.emission_impacts.residual_value ?? 0).toFixed(3)) * uses
+        dataPoint[gown.name] = Number.parseFloat((gown.emission_impacts.residual_value ?? 0).toFixed(4)) * uses
       } else if (category === "Total") {
         // Sum all impacts for the total
-        const purchaseCost = Number.parseFloat((gown.emission_impacts.purchase_cost ?? 0).toFixed(3)) * uses
-        const wasteCost = Number.parseFloat((gown.emission_impacts.waste ?? 0).toFixed(3)) * uses
-        const laundryCost = Number.parseFloat((gown.laundry_cost ?? 0).toFixed(3)) * uses
-        const residualValue = Number.parseFloat((gown.emission_impacts.residual_value ?? 0).toFixed(3)) * uses
+        const purchaseCost = Number.parseFloat((gown.emission_impacts.purchase_cost ?? 0).toFixed(4)) * uses
+        const wasteCost = Number.parseFloat((gown.emission_impacts.waste ?? 0).toFixed(4)) * uses
+        const laundryCost = Number.parseFloat((gown.laundry_cost ?? 0).toFixed(4)) * uses
+        const residualValue = Number.parseFloat((gown.emission_impacts.residual_value ?? 0).toFixed(4)) * uses
 
         // Note: Residual value is typically subtracted as it's a benefit, not a cost
         dataPoint[gown.name] = purchaseCost + wasteCost + laundryCost - residualValue
