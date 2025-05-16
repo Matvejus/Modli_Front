@@ -33,9 +33,9 @@ export default function GownComparisonTable({ gowns }: GownComparisonTableProps)
     const formatted = (() => {
       switch (category) {
         case 'CO2':
-          return `${value.toFixed(2)} kg eqv.`
+          return `${value.toFixed(2)} CO₂-eq`
         case 'Energy':
-          return `${value.toFixed(2)} MJ`
+          return `${value.toFixed(2)} MJ-eq`
         case 'Water':
           return `${value.toFixed(2)} L`
         default:

@@ -15,7 +15,9 @@ import Navigation from "../navigation/navigation";
                     width={400}
                     height={100}
                 />
+                <Navigation/>
             </div>
+
         </header>
         
     );
