@@ -202,8 +202,17 @@ export default function GownDetail({ params }: GownDetailProps) {
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>
-                      Please contact your waste management company about waste management costs for disposable gowns. 
-                      If a value per kg is given, please multiply by 0.04 - the tool uses an average weight of 0.04 kg for disposable gowns.
+                        {gown.reusable ? (
+                          <p>
+                            Please contact your waste management company about waste management costs for reusable gowns.
+                            If a value per kg is given, please multiply by 0.3 - the tool uses an average weight of 0.3 kg for reusable gowns
+                          </p>
+                        ) : (
+                          <p>
+                            Please contact your waste management company about waste management costs for disposable gowns. 
+                            If a value per kg is given, please multiply by 0.04 - the tool uses an average weight of 0.04 kg for disposable gowns.
+                          </p>
+                        )}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -232,10 +241,17 @@ export default function GownDetail({ params }: GownDetailProps) {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
+                    {gown.reusable ? (
                       <p>
                       Please contact your recycler for more information about the monetary value of end-of-life gowns/materials.
                       If a value per kg is given, please multiply by 0.3 - the tool uses an average weight of 0.3 kg for reusable gowns.
                       </p>
+                    ) : (
+                      <p>
+                      Please contact your recycler for more information about the monetary value of end-of-life gowns/materials.
+                      If a value per kg is given, please multiply by 0.04 - the tool uses an average weight of 0.04 kg for disposable gowns.
+                      </p>
+                    )}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

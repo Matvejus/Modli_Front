@@ -22,7 +22,7 @@ import CO2Impacts from '@/components/dashboard/Api/GownComparison/CO2Impact'
 import * as XLSX from "xlsx"
 import { Button } from "@/components/ui/button"
 import { Gown } from '../interfaces/Gown'
-import { Recycle, Trash2, Leaf  } from 'lucide-react';
+import { Recycle, Trash2, Leaf, LineChart } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Info } from "lucide-react"
 
@@ -114,19 +114,17 @@ export default function GownsPage() {
       { field: "Cost €", value: selectedGownData.map(gown => gown.cost) },
       { field: "Laundry Cost (€ per gown wash)", value: selectedGownData.map(gown => gown.laundry_cost) },
       { field: "Max. number of washes expected", value: selectedGownData.map(gown => gown.washes || "N/A") },
-      { field: "Perceived Hygiene", value: selectedGownData.map(gown => gown.hygine === 0 ? "n/a" : gown.hygine) },
-      { field: "Perceived Comfort", value: selectedGownData.map(gown => gown.comfort === 0 ? "n/a" : gown.comfort) },
+      { field: "Perceived hygiene (1-5 Likert scale)", value: selectedGownData.map(gown => gown.hygine === 0 ? "n/a" : gown.hygine) },
+      { field: "Perceived Comfort (1-5 Likert scale)", value: selectedGownData.map(gown => gown.comfort === 0 ? "n/a" : gown.comfort) },
       { field: "Social Certifications", value: selectedGownData.map(gown => gown.certificates.join(", ")) },
-      { field: "FTE Local (per 1 gown use)", value: selectedGownData.map(gown => gown.fte_local) },
-      { field: "FTE Local Extra (per 1 gown use)", value: selectedGownData.map(gown => gown.fte_local_extra) },
-      { field: "CO₂-eq Impact (Unit per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.CO2) },
-      { field: "Energy Impact (Unit per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.Energy) },
-      { field: "Water Impact (Unit per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.Water) },
-      { field: "Total Economic impact (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
-      { field: "Purchase cost (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
-      { field: "Laundry Cost (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
-      { field: "Waste Cost (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.production_costs) },
-      { field: "EOL Residual Value (€ per 1 gown use)", value: selectedGownData.map(gown => gown.emission_impacts.eol_cost) },
+      { field: "CO₂ Impact (CO₂-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.CO2) },
+      { field: "Energy Impact (MJ-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Energy) },
+      { field: "Water Impact (L per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Water) },
+      { field: "Purchase costs (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
+      { field: "Laundry Costs (€ per gown per use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
+      { field: "Waste Costs (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.production_costs) },
+      { field: "Residual Value (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.residual_value) },
+      { field: "Total Economic impact (€ per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
     ];
 
     // Create worksheet data
@@ -149,54 +147,65 @@ export default function GownsPage() {
     <div className="container mx-auto pt-16 p-4 max-w-7xl relative z-20">
       <Card className="mb-3 relative z-30 border-none bg-white shadow-xl">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center">Gown Comparison</CardTitle>
+          <div className="flex items-center justify-center gap-2 mt-2 mb-2">
+              <div className="rounded-full bg-green-100 p-2">
+                  <LineChart className="h-5 w-5 text-green-600" />
+              </div>
+                  <CardTitle className="text-3xl font-bold">Isolation Gown Comparison</CardTitle>
+          </div>        
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-4">
-            <div className="ml-12 flex gap-4 items-start">
+            <div className="ml-16 flex gap-4 items-start">
               <div>
                 <p className="font-medium">
-                You can compare up to three isolation gowns from the list. Please follow the steps below:</p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 items-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
-                1
-              </div>
-              <div>
-                <p className="font-medium">
-                For each gown you wish to compare, click <strong>Edit</strong> to enter the required information, then make sure to click <strong>Save Changes</strong>.
-                </p>
-                <p className="text-sm text-muted-foreground">
-                The displayed default values can be overwritten
+                  You can compare up to three isolation gowns from the list. Please follow the steps below:
                 </p>
               </div>
             </div>
-
-            <div className="flex gap-4 items-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
-                2
-              </div>
-              <div>
-                <p className="font-medium">
-                <strong>Tick the checkboxes</strong> next to the gowns you'd like to compare. The comparison results will appear automatically below the list
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 items-start">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
-                3
-              </div>
-              <div>
-                <p className="font-medium">To export the data, click the <strong>Export</strong> button.</p>
+            <div className="bg-green-50 p-6 rounded-lg mb-4">
+              <div className="flex flex-col space-y-8">
+                {" "}
+                {/* Changed from gap-6 to space-y-8 for more vertical spacing */}
+                <div className="flex gap-4 items-start">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+                    1
+                  </div>
+                  <div>
+                    <p className="font-medium">
+                      For each gown you wish to compare, click <strong>Edit</strong> to enter the required information, then
+                      make sure to click <strong>Save Changes</strong>.
+                    </p>
+                    <p className="text-sm text-muted-foreground">The displayed default values can be overwritten</p>
+                  </div>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+                    2
+                  </div>
+                  <div>
+                    <p className="font-medium">
+                      <strong>Tick the checkboxes</strong> next to the gowns you'd like to compare. The comparison results will
+                      appear automatically below the list.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+                    3
+                  </div>
+                  <div>
+                    <p className="font-medium">
+                      To export the data, click the <strong>Export</strong> button.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div className="mt-8">
-            <VariablesAndSourcesModal />
-          </div>
+        <div className="mt-8">
+          <VariablesAndSourcesModal />
+        </div>
         </CardContent>
       </Card>
 
