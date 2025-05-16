@@ -111,8 +111,8 @@ export default function GownsPage() {
     const headers = ["", ...selectedGownData.map(gown => gown.name)];
     const fields = [
       { field: "Reusable", value: selectedGownData.map(gown => gown.reusable ? "Yes" : "No") },
-      { field: "Cost €", value: selectedGownData.map(gown => gown.cost) },
-      { field: "Laundry Cost (€ per gown wash)", value: selectedGownData.map(gown => gown.laundry_cost) },
+      { field: "Cost €", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
+      // { field: "Laundry Cost (€ per gown wash)", value: selectedGownData.map(gown => gown.laundry_cost) },
       { field: "Max. number of washes expected", value: selectedGownData.map(gown => gown.washes || "N/A") },
       { field: "Perceived hygiene (1-5 Likert scale)", value: selectedGownData.map(gown => gown.hygine === 0 ? "n/a" : gown.hygine) },
       { field: "Perceived Comfort (1-5 Likert scale)", value: selectedGownData.map(gown => gown.comfort === 0 ? "n/a" : gown.comfort) },
@@ -120,7 +120,7 @@ export default function GownsPage() {
       { field: "CO₂ Impact (CO₂-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.CO2) },
       { field: "Energy Impact (MJ-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Energy) },
       { field: "Water Impact (L per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Water) },
-      { field: "Purchase costs (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
+      // { field: "Purchase costs (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
       { field: "Laundry Costs (€ per gown per use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
       { field: "Waste Costs (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.production_costs) },
       { field: "Residual Value (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.residual_value) },
