@@ -8,6 +8,7 @@ import Navigation from "../navigation/navigation";
     return (
         <header>
             <div className="container flex h-14 items-center justify-between"> 
+            <Link href="/">
                 <Image
                     alt="Modli logo"
                     src="/media/AUAS.png"
@@ -15,7 +16,8 @@ import Navigation from "../navigation/navigation";
                     width={400}
                     height={100}
                 />
-                <Navigation/>
+            </Link>
+                {/* <Navigation/> */}
             </div>
 
         </header>

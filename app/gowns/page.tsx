@@ -34,6 +34,7 @@ export default function GownsPage() {
   const [singleUseGowns, setSingleUseGowns] = useState<Gown[]>([])
   const [selectedGowns, setSelectedGowns] = useState<string[]>([])
   const [selectedGownData, setSelectedGownData] = useState<Gown[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
   
@@ -204,7 +205,7 @@ export default function GownsPage() {
             </div>
           </div>
         <div className="mt-8">
-          <VariablesAndSourcesModal />
+          <VariablesAndSourcesModal/>
         </div>
         </CardContent>
       </Card>
