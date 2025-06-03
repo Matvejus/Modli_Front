@@ -112,20 +112,18 @@ export default function GownsPage() {
     const headers = ["", ...selectedGownData.map(gown => gown.name)];
     const fields = [
       { field: "Reusable", value: selectedGownData.map(gown => gown.reusable ? "Yes" : "No") },
-      { field: "Cost €", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
-      // { field: "Laundry Cost (€ per gown wash)", value: selectedGownData.map(gown => gown.laundry_cost) },
-      { field: "Max. number of washes expected", value: selectedGownData.map(gown => gown.washes || "N/A") },
+      { field: "Purchase cost (€ per gown)", value: selectedGownData.map(gown => gown.cost.toFixed(2)) },
+      { field: "Purchase cost (€ per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost.toFixed(2)) },
+      { field: "Max. number of washes expected", value: selectedGownData.map(gown => gown.washes || "n/a") },
       { field: "Perceived hygiene (1-5 Likert scale)", value: selectedGownData.map(gown => gown.hygine === 0 ? "n/a" : gown.hygine) },
       { field: "Perceived Comfort (1-5 Likert scale)", value: selectedGownData.map(gown => gown.comfort === 0 ? "n/a" : gown.comfort) },
       { field: "Social Certifications", value: selectedGownData.map(gown => gown.certificates.join(", ")) },
-      { field: "CO₂ Impact (CO₂-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.CO2) },
-      { field: "Energy Impact (MJ-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Energy) },
-      { field: "Water Impact (L per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Water) },
-      // { field: "Purchase costs (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
-      { field: "Laundry Costs (€ per gown per use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
-      { field: "Waste Costs (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.production_costs) },
-      { field: "Residual Value (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.residual_value) },
-      { field: "Total Economic impact (€ per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost) },
+      { field: "CO₂ Impact (CO₂-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.CO2.toFixed(2)) },
+      { field: "Energy Impact (MJ-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Energy.toFixed(2)) },
+      { field: "Water Impact (L per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Water.toFixed(2)) },
+      { field: "Laundry Costs (€ per gown per use)", value: selectedGownData.map(gown => gown.emission_impacts.laundry_cost ? gown.emission_impacts.laundry_cost.toFixed(2) : "n/a") },
+      { field: "Waste Costs (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.waste ? gown.emission_impacts.waste.toFixed(2) : "n/a") },
+      { field: "Residual Value (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.residual_value.toFixed(2)) },
     ];
 
     // Create worksheet data

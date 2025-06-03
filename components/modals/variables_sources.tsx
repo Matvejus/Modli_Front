@@ -53,8 +53,8 @@ export default function VariablesAndSourcesModal() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-1/3">Variables</TableHead>
-                    <TableHead className="w-1/3">Default values</TableHead>
+                    <TableHead className="w-1/3">Variable</TableHead>
+                    <TableHead className="w-1/3">Default value</TableHead>
                     <TableHead className="w-1/3">References</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -62,12 +62,12 @@ export default function VariablesAndSourcesModal() {
                   <TableRow>
                     <TableCell>Weight of reusable gowns</TableCell>
                     <TableCell>300 grams</TableCell>
-                    <TableCell>BAwear (2024)</TableCell>
+                    <TableCell>bAwear (2024)</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Weight of disposable gown</TableCell>
                     <TableCell>40 grams</TableCell>
-                    <TableCell>BAwear (2024)</TableCell>
+                    <TableCell>bAwear (2024)</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>
@@ -260,7 +260,7 @@ export default function VariablesAndSourcesModal() {
 
             <ul className="list-disc pl-6 space-y-2">
               <li>
-                <strong>Water (L)</strong> – Refers to fresh water used in all the three phases and scaled according to
+                <strong>Water (L)</strong> – Refers to fresh water used in all three phases and scaled according to
                 the water scarcity index. This is represented in liters, and accounts for the amount of water needed to
                 restore the balance of in- and outflux of water during the process to negate any local ecological
                 damage. Thus, it favors water use in places where there is an abundance of water, and punishes water use
@@ -268,7 +268,7 @@ export default function VariablesAndSourcesModal() {
               </li>
               <li>
                 <strong>Energy (MJ-eq)</strong> – The energy needed to finish each phase (production, usage and
-                end-of-life). This is represented in MJ-eq, which allows to compare energy use from different sources.
+                end-of-life). This is represented in MJ-eq, which allows comparison of energy use from different sources.
               </li>
               <li>
                 <strong>CO₂-eq</strong> - refers to the total emission of greenhouse gasses. CO₂-eq measures the impact
@@ -345,7 +345,7 @@ export default function VariablesAndSourcesModal() {
             </ul>
 
             <p>
-              For an overview of (social) certifications in the textile industry please see:
+              For an overview of (social) certifications in the apparel and textile industry please see:
               <a
                 href="https://www.keurmerkenwijzer.nl/alle-keurmerken/kleding"
                 className="text-blue-600 hover:underline ml-1"
