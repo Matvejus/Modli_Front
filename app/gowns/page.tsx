@@ -117,7 +117,7 @@ export default function GownsPage() {
       { field: "Max. number of washes expected", value: selectedGownData.map(gown => gown.washes || "n/a") },
       { field: "Perceived hygiene (1-5 Likert scale)", value: selectedGownData.map(gown => gown.hygine === 0 ? "n/a" : gown.hygine) },
       { field: "Perceived Comfort (1-5 Likert scale)", value: selectedGownData.map(gown => gown.comfort === 0 ? "n/a" : gown.comfort) },
-      { field: "Social Certifications", value: selectedGownData.map(gown => gown.certificates.join(", ")) },
+      { field: "Social Certifications", value: selectedGownData.map(gown => gown.certificates.map(cert => cert.name).join(", ")) },
       { field: "CO₂ Impact (CO₂-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.CO2.toFixed(2)) },
       { field: "Energy Impact (MJ-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Energy.toFixed(2)) },
       { field: "Water Impact (L per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Water.toFixed(2)) },
