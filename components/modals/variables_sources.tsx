@@ -1,6 +1,4 @@
 "use client"
-
-import type React from "react"
 import { useState } from "react"
 import {
   Dialog,
@@ -14,8 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { InfoCircledIcon } from "@radix-ui/react-icons"
-
-
 
 export default function VariablesAndSourcesModal() {
   const [isOpen, setIsOpen] = useState(false)
@@ -39,11 +35,11 @@ export default function VariablesAndSourcesModal() {
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mt-4">
-          <TabsList className="grid grid-cols-3 mb-4">
+          <TabsList className="grid grid-cols-4 mb-4">
             <TabsTrigger value="economic">Economic Impact</TabsTrigger>
             <TabsTrigger value="environmental">Environmental Impact</TabsTrigger>
             <TabsTrigger value="social">Social Impact</TabsTrigger>
-            {/* <TabsTrigger value="disclaimer">Disclaimer</TabsTrigger> */}
+            <TabsTrigger value="disclaimer">Disclaimer</TabsTrigger>
           </TabsList>
 
           {/* Economic Impact Tab */}
@@ -57,8 +53,8 @@ export default function VariablesAndSourcesModal() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-1/3">Variables</TableHead>
-                    <TableHead className="w-1/3">Default values</TableHead>
+                    <TableHead className="w-1/3">Variable</TableHead>
+                    <TableHead className="w-1/3">Default value</TableHead>
                     <TableHead className="w-1/3">References</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -66,12 +62,12 @@ export default function VariablesAndSourcesModal() {
                   <TableRow>
                     <TableCell>Weight of reusable gowns</TableCell>
                     <TableCell>300 grams</TableCell>
-                    <TableCell>BAwear (2024)</TableCell>
+                    <TableCell>bAwear (2024)</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>Weight of disposable gown</TableCell>
                     <TableCell>40 grams</TableCell>
-                    <TableCell>BAwear (2024)</TableCell>
+                    <TableCell>bAwear (2024)</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell>
@@ -90,7 +86,7 @@ export default function VariablesAndSourcesModal() {
                     <TableCell>
                       Purchase costs*
                       <br />
-                      (price per gown)
+                      (price per gown + potential cost for (laundry) tag per gown)
                     </TableCell>
                     <TableCell>
                       Reusable gowns: €42
@@ -103,9 +99,9 @@ export default function VariablesAndSourcesModal() {
                     <TableCell>
                       Laundry costs*
                       <br />
-                      (laundry cost per gown wash charged by industrial laundry)
+                      (laundry cost per wash charged by industrial laundry)
                     </TableCell>
-                    <TableCell>€1.25 per gown wash</TableCell>
+                    <TableCell>€1.25 per gown/wash</TableCell>
                     <TableCell>
                       LOKAAS Pilot (2022-2024) Reblend Maatschappelijke Business Case Circulaire Isolatiejassen (2023).
                       In the upscaled LOKAAS, a cost of €0.80 per gown wash is estimated.
@@ -115,10 +111,10 @@ export default function VariablesAndSourcesModal() {
                     <TableCell>
                       Waste costs*
                       <br />
-                      (charged by waste management companies for hospital specific wastes)
+                      (charged by waste management companies for hospital specific waste)
                     </TableCell>
                     <TableCell>
-                      Hospital specific waste costs €1.20/kg
+                      Hospital specific waste is charged at €1.20/kg
                       <br />• Disposable gown (40 grams): €0.05 per gown
                       <br />• Reusable gown is expected to be recycled, thus €0.00
                     </TableCell>
@@ -128,7 +124,7 @@ export default function VariablesAndSourcesModal() {
                       Reblend Maatschappelijke Business Case Circulaire Isolatiejassen (2023).
                       <br />
                       <br />
-                      Due to the current safety/hygiene regulations, after use disposable gowns are classified as
+                      Due to the current safety/hygiene regulations, after use, disposable gowns are classified as
                       (contaminated) hospital specific waste.
                     </TableCell>
                   </TableRow>
@@ -142,12 +138,18 @@ export default function VariablesAndSourcesModal() {
                       Reusable gown: €0.03 at end-of-life
                       <br />
                       <br />
-                      Disposable gown: €0.0 at end-of-life
+                      Disposable gown: €0.00 at end-of-life
                     </TableCell>
                     <TableCell>
                       End-of-life reusable gowns are valued at: €0.02 - €0.14/kg as feedstock for fibre-to-fibre
-                      recycling and €0.08/kg for downcycling (<a href="https://reports.fashionforgood.com/report/sorting-for-circularity-europe/" className="text-blue-600 hover:underline">Sorting for Circularity Europe, Fashion for Good, 2022</a>).
-                      In the calculation we have taken a default value of 0.1 per kg.
+                      recycling and €0.08/kg for downcycling (
+                      <a
+                        href="https://reports.fashionforgood.com/report/sorting-for-circularity-europe/"
+                        className="text-blue-600 hover:underline"
+                      >
+                        Sorting for Circularity Europe, Fashion for Good, 2022
+                      </a>
+                      ). In the calculation we have taken a default value of 0.1 per kg.
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -155,8 +157,8 @@ export default function VariablesAndSourcesModal() {
             </div>
 
             <p className="text-sm italic">
-              Notes: * refers to user-input variables. In case of no input from users, the default values in the second
-              column will be used in the calculation of economic impact.
+              Note: *refers to user-input variables. In case of no user input, the default values in the second column
+              will be used in the calculation of economic impact.
             </p>
           </TabsContent>
 
@@ -238,6 +240,12 @@ export default function VariablesAndSourcesModal() {
                     <TableCell>10.000km by boat</TableCell>
                   </TableRow>
                   <TableRow>
+                    <TableCell>Polyester-Cotton Blend (65-35)</TableCell>
+                    <TableCell>Global mix: USA, India, China & Market mix</TableCell>
+                    <TableCell>Global mix: USA, India, China & Market mix</TableCell>
+                    <TableCell>10.000km by boat</TableCell>
+                  </TableRow>
+                  <TableRow>
                     <TableCell>100% Polypropelene (disposable)</TableCell>
                     <TableCell>Market mix</TableCell>
                     <TableCell>Market mix</TableCell>
@@ -252,29 +260,29 @@ export default function VariablesAndSourcesModal() {
 
             <ul className="list-disc pl-6 space-y-2">
               <li>
-                <strong>Water (L)</strong> – Refers to fresh water used in all the three phases and scaled according to
+                <strong>Water (L)</strong> – Refers to fresh water used in all three phases and scaled according to
                 the water scarcity index. This is represented in liters, and accounts for the amount of water needed to
                 restore the balance of in- and outflux of water during the process to negate any local ecological
                 damage. Thus, it favors water use in places where there is an abundance of water, and punishes water use
                 where it is scarce.
               </li>
               <li>
-                <strong>Energy (MJ-eq)</strong> – The energy needed to finish each phase (production, usage and end-of-
-                life). This is represented in MJ-eq.
+                <strong>Energy (MJ-eq)</strong> – The energy needed to finish each phase (production, usage and
+                end-of-life). This is represented in MJ-eq, which allows comparison of energy use from different sources.
               </li>
               <li>
                 <strong>CO₂-eq</strong> - refers to the total emission of greenhouse gasses. CO₂-eq measures the impact
                 of different greenhouse gases (GHGs) on global warming in terms of the amount of CO₂ calculated based on
                 the Global Warming Potential index. The Global Warming Potential is a fixed value that expresses any
-                greenhouse gas in terms of CO₂-equiv.
+                greenhouse gas in terms of CO2-equiv.
               </li>
             </ul>
 
             <h3 className="text-lg font-semibold mt-4">Exclusions</h3>
             <p>
               We do not include the following metrics: Toxicity, Land use, Eutrophication, Acidification, Ozone
-              depletion. These effects are relatively small and because the exact chemicals used during these stages are
-              unknown, these metrics cannot be accurately estimated.
+              depletion. These effects are relatively small and because the exact chemicals used during the different
+              stages are unknown, these metrics cannot be accurately estimated.
             </p>
           </TabsContent>
 
@@ -287,39 +295,57 @@ export default function VariablesAndSourcesModal() {
 
             <h3 className="text-lg font-semibold mt-4">Social certifications</h3>
             <p>
-              The following certifications with a focus on social aspects (e.g. farmers receive living wages) are
-              included. When using the tool, users can manually add other types of certification.
+              The following certifications with a (partial) focus on social aspects (e.g. farmers receiving a living
+              wage) are included. When using the tool, users can manually add other types of certification.
             </p>
 
             <ul className="list-disc pl-6 space-y-2">
               <li>
-              Fairtrade Textile Production Standard: 
-                <a href="https://www.fairtrade.net/en/why-fairtrade/how-we-do-it/standards/who-we-have-standards-for/textile-standard.html#:~:text=The%20Fairtrade%20Textile%20Standard%20aims%20to%20facilitate%20change,brands%20to%20commit%20to%20fair%20terms%20of%20trade." className="text-blue-600 hover:underline">
+                Fairtrade Textile Production Standard:
+                <a
+                  href="https://www.fairtrade.net/en/why-fairtrade/how-we-do-it/standards/who-we-have-standards-for/textile-standard.html#:~:text=The%20Fairtrade%20Textile%20Standard%20aims%20to%20facilitate%20change,brands%20to%20commit%20to%20fair%20terms%20of%20trade."
+                  className="text-blue-600 hover:underline"
+                >
                   Fairtrade Textile Production Standard: Textile Standard
                 </a>
               </li>
               <li>
-              Fair for Life Kleding: 
-                <a href="https://www.fairforlife.org/pmws/indexDOM.php?client_id=fairforlife&page_id=root_2_3&lang_iso639=en" className="text-blue-600 hover:underline">
-                   Fair for Life - Standard & material
+                Fair for Life Kleding:
+                <a
+                  href="https://www.fairforlife.org/pmws/indexDOM.php?client_id=fairforlife&page_id=root_2_3&lang_iso639=en"
+                  className="text-blue-600 hover:underline"
+                >
+                  Fair for Life - Standard & material
                 </a>
               </li>
               <li>
-              Fair Wear Foundation: 
-                <a href="https://www.fairwear.org/responsible-purchasing-practices" className="text-blue-600 hover:underline">
-                   Responsible purchasing practices – Fair Wear
+                Fair Wear Foundation:
+                <a
+                  href="https://www.fairwear.org/responsible-purchasing-practices"
+                  className="text-blue-600 hover:underline"
+                >
+                  Responsible purchasing practices – Fair Wear
                 </a>
               </li>
               <li>
-              OEKO-TEX Made in Green: 
-                <a href="https://www.oeko-tex.com/en/news/infocenter/discover-the-made-in-green-label-check-and-experience-transparency" className="text-blue-600 hover:underline">
-                   Discover the MADE IN GREEN Label Check and experience transparency
+                OEKO-TEX Made in Green:
+                <a
+                  href="https://www.oeko-tex.com/en/news/infocenter/discover-the-made-in-green-label-check-and-experience-transparency"
+                  className="text-blue-600 hover:underline"
+                >
+                  Discover the MADE IN GREEN Label Check and experience transparency
+                </a>
+              </li>
+              <li>
+                BlueSign Certified (PFAS free):
+                <a href="https://www.bluesign.com/" className="text-blue-600 hover:underline">
+                  bluesign | Sustainable Solutions for the Textile Industry
                 </a>
               </li>
             </ul>
 
             <p>
-              For an overview of social certifications in textile industry:
+              For an overview of (social) certifications in the apparel and textile industry please see:
               <a
                 href="https://www.keurmerkenwijzer.nl/alle-keurmerken/kleding"
                 className="text-blue-600 hover:underline ml-1"
@@ -341,7 +367,6 @@ export default function VariablesAndSourcesModal() {
             </p>
           </TabsContent>
 
-          {/* Disclaimer Tab
           <TabsContent value="disclaimer">
             <div className="p-4 border rounded-md bg-gray-50">
               <h3 className="text-lg font-semibold mb-2">Disclaimer</h3>
@@ -357,7 +382,7 @@ export default function VariablesAndSourcesModal() {
                 neither for the use of the tool nor for any omissions or errors in the calculations or data.
               </p>
             </div>
-          </TabsContent> */}
+          </TabsContent>
         </Tabs>
 
         <div className="mt-6 flex justify-end">
@@ -369,4 +394,3 @@ export default function VariablesAndSourcesModal() {
     </Dialog>
   )
 }
-
