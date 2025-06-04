@@ -1,33 +1,27 @@
-'use client'
+"use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 // import { Button } from "@/components/ui/button"
-import GownList from '@/components/dashboard/Api/GownList'
-import GownEmissionChart from '@/components/dashboard/Api/GownRadar'
+import GownList from "@/components/dashboard/Api/GownList"
 // import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
 // import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
 // import UsageChart from '@/components/dashboard/Api/GownUsage'
 // import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
-import VariablesAndSourcesModal from '@/components/modals/variables_sources'
+import VariablesAndSourcesModal from "@/components/modals/variables_sources"
 // import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
-import GownComparisonTable from '@/components/dashboard/Api/GownComparison/EmissionsTable'
-import EconomicImpacts from '@/components/dashboard/Api/GownComparison/EconomicImpacts'
-import SocialImpacts from '@/components/dashboard/Api/GownComparison/SocialImpacts'
-import GownHygieneComparison from '@/components/dashboard/Api/GownComparison/HygineComparison'
-import GownCertificatesTable from '@/components/dashboard/Api/GownComparison/CertificatesTable'
-import EnergyImpacts from '@/components/dashboard/Api/GownComparison/EnergyImpact'
-import WaterImpacts from '@/components/dashboard/Api/GownComparison/WaterImpact'
-import CO2Impacts from '@/components/dashboard/Api/GownComparison/CO2Impact'
+import GownComparisonTable from "@/components/dashboard/Api/GownComparison/EmissionsTable"
+import EconomicImpacts from "@/components/dashboard/Api/GownComparison/EconomicImpacts"
+import GownHygieneComparison from "@/components/dashboard/Api/GownComparison/HygineComparison"
+import GownCertificatesTable from "@/components/dashboard/Api/GownComparison/CertificatesTable"
+import EnergyImpacts from "@/components/dashboard/Api/GownComparison/EnergyImpact"
+import WaterImpacts from "@/components/dashboard/Api/GownComparison/WaterImpact"
+import CO2Impacts from "@/components/dashboard/Api/GownComparison/CO2Impact"
 import * as XLSX from "xlsx"
 import { Button } from "@/components/ui/button"
-import { Gown } from '../interfaces/Gown'
-import { Recycle, Trash2, Leaf, LineChart } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Info } from "lucide-react"
-
-
-
+import type { Gown } from "../interfaces/Gown"
+import { Recycle, Trash2, LineChart } from "lucide-react"
+import GownInvestmentCalculator from "@/components/dashboard/Api/GownComparison/InvestmentCalculator"
 
 export default function GownsPage() {
   const [reusableGowns, setReusableGowns] = useState<Gown[]>([])
@@ -37,70 +31,67 @@ export default function GownsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  
   const fetchGowns = async () => {
     try {
       const response = await fetch(`api/emissions/gown-list/`, {
-        credentials: 'include'  // Add this line
-      });
-      if (!response.ok) throw new Error('Failed to fetch data');
-      const data = await response.json();
-      
+        credentials: "include", // Add this line
+      })
+      if (!response.ok) throw new Error("Failed to fetch data")
+      const data = await response.json()
+
       // Map data to match the Gown structure and include emission_impacts directly
       const formattedData: Gown[] = data.map((gown: Gown) => ({
         ...gown,
         emission_impacts: gown.emission_impacts,
-      }));
-      
-      setReusableGowns(formattedData.filter((gown) => gown.reusable && gown.visible));
-      setSingleUseGowns(formattedData.filter((gown) => !gown.reusable && gown.visible));
+      }))
+
+      setReusableGowns(formattedData.filter((gown) => gown.reusable && gown.visible))
+      setSingleUseGowns(formattedData.filter((gown) => !gown.reusable && gown.visible))
     } catch (error) {
-      console.error("API error: ", error);
+      console.error("API error: ", error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
     fetchGowns()
   }, [])
 
-
   useEffect(() => {
     if (selectedGowns.length > 0) {
-      fetch(`/api/emissions/selected-gowns-emissions?ids=${selectedGowns.join(',')}`, {
+      fetch(`/api/emissions/selected-gowns-emissions?ids=${selectedGowns.join(",")}`, {
         credentials: "include", // Ensure cookies are sent
       })
-        .then(response => {
+        .then((response) => {
           if (!response.ok) {
-            throw new Error(`Failed to fetch selected gowns: ${response.status}`);
+            throw new Error(`Failed to fetch selected gowns: ${response.status}`)
           }
-          return response.json();
+          return response.json()
         })
-        .then(data => setSelectedGownData(data))
-        .catch(error => console.error('Error fetching selected gowns data:', error));
+        .then((data) => setSelectedGownData(data))
+        .catch((error) => console.error("Error fetching selected gowns data:", error))
     } else {
-      setSelectedGownData([]);
+      setSelectedGownData([])
     }
-  }, [selectedGowns]);
+  }, [selectedGowns])
   console.log(selectedGowns)
-  
 
   const handleGownSelection = (gownId: string) => {
-    setSelectedGowns(prev => {
+    setSelectedGowns((prev) => {
       if (prev.includes(gownId)) {
         // If the gown is already selected, remove it
-        return prev.filter(id => id !== gownId);
+        return prev.filter((id) => id !== gownId)
       } else if (prev.length < 3) {
         // Add the gown only if the total selected is less than 3
-        return [...prev, gownId];
+        return [...prev, gownId]
       } else {
         // If 3 gowns are already selected, prevent adding more
-        alert("You can only select up to 3 gowns.");
-        return prev;
+        alert("You can only select up to 3 gowns.")
+        return prev
       }
-    });
-  };
+    })
+  }
 
   const downloadSelectedGownsAsXLSX = () => {
     if (selectedGownData.length === 0) {
@@ -109,49 +100,81 @@ export default function GownsPage() {
     }
 
     // Prepare data for XLSX with gown names as columns
-    const headers = ["", ...selectedGownData.map(gown => gown.name)];
+    const headers = ["", ...selectedGownData.map((gown) => gown.name)]
     const fields = [
-      { field: "Reusable", value: selectedGownData.map(gown => gown.reusable ? "Yes" : "No") },
-      { field: "Purchase cost (€ per gown)", value: selectedGownData.map(gown => gown.cost.toFixed(2)) },
-      { field: "Purchase cost (€ per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.purchase_cost.toFixed(2)) },
-      { field: "Max. number of washes expected", value: selectedGownData.map(gown => gown.washes || "n/a") },
-      { field: "Perceived hygiene (1-5 Likert scale)", value: selectedGownData.map(gown => gown.hygine === 0 ? "n/a" : gown.hygine) },
-      { field: "Perceived Comfort (1-5 Likert scale)", value: selectedGownData.map(gown => gown.comfort === 0 ? "n/a" : gown.comfort) },
-      { field: "Social Certifications", value: selectedGownData.map(gown => gown.certificates.map(cert => cert.name).join(", ")) },
-      { field: "CO₂ Impact (CO₂-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.CO2.toFixed(2)) },
-      { field: "Energy Impact (MJ-eq per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Energy.toFixed(2)) },
-      { field: "Water Impact (L per 1 use)", value: selectedGownData.map(gown => gown.emission_impacts.Water.toFixed(2)) },
-      { field: "Laundry Costs (€ per gown per use)", value: selectedGownData.map(gown => gown.emission_impacts.laundry_cost ? gown.emission_impacts.laundry_cost.toFixed(2) : "n/a") },
-      { field: "Waste Costs (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.waste ? gown.emission_impacts.waste.toFixed(2) : "n/a") },
-      { field: "Residual Value (€ per gown)", value: selectedGownData.map(gown => gown.emission_impacts.residual_value.toFixed(2)) },
-    ];
+      { field: "Reusable", value: selectedGownData.map((gown) => (gown.reusable ? "Yes" : "No")) },
+      { field: "Purchase cost (€ per gown)", value: selectedGownData.map((gown) => gown.cost.toFixed(2)) },
+      {
+        field: "Purchase cost (€ per 1 use)",
+        value: selectedGownData.map((gown) => gown.emission_impacts.purchase_cost.toFixed(2)),
+      },
+      { field: "Max. number of washes expected", value: selectedGownData.map((gown) => gown.washes || "n/a") },
+      {
+        field: "Perceived hygiene (1-5 Likert scale)",
+        value: selectedGownData.map((gown) => (gown.hygine === 0 ? "n/a" : gown.hygine)),
+      },
+      {
+        field: "Perceived Comfort (1-5 Likert scale)",
+        value: selectedGownData.map((gown) => (gown.comfort === 0 ? "n/a" : gown.comfort)),
+      },
+      {
+        field: "Social Certifications",
+        value: selectedGownData.map((gown) => gown.certificates.map((cert) => cert.name).join(", ")),
+      },
+      {
+        field: "CO₂ Impact (CO₂-eq per 1 use)",
+        value: selectedGownData.map((gown) => gown.emission_impacts.CO2.toFixed(2)),
+      },
+      {
+        field: "Energy Impact (MJ-eq per 1 use)",
+        value: selectedGownData.map((gown) => gown.emission_impacts.Energy.toFixed(2)),
+      },
+      {
+        field: "Water Impact (L per 1 use)",
+        value: selectedGownData.map((gown) => gown.emission_impacts.Water.toFixed(2)),
+      },
+      {
+        field: "Laundry Costs (€ per gown per use)",
+        value: selectedGownData.map((gown) =>
+          gown.emission_impacts.laundry_cost ? gown.emission_impacts.laundry_cost.toFixed(2) : "n/a",
+        ),
+      },
+      {
+        field: "Waste Costs (€ per gown)",
+        value: selectedGownData.map((gown) =>
+          gown.emission_impacts.waste ? gown.emission_impacts.waste.toFixed(2) : "n/a",
+        ),
+      },
+      {
+        field: "Residual Value (€ per gown)",
+        value: selectedGownData.map((gown) => gown.emission_impacts.residual_value.toFixed(2)),
+      },
+    ]
 
     // Create worksheet data
-    const worksheetData = [headers, ...fields.map(f => [f.field, ...f.value])];
+    const worksheetData = [headers, ...fields.map((f) => [f.field, ...f.value])]
 
     // Create workbook and worksheet
-    const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new()
+    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData)
 
     // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Selected Gowns");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Selected Gowns")
 
     // Generate XLSX file and trigger download
-    XLSX.writeFile(workbook, "selected_gowns_data.xlsx");
+    XLSX.writeFile(workbook, "selected_gowns_data.xlsx")
   }
-
-
 
   return (
     <div className="container mx-auto pt-16 p-4 max-w-7xl relative z-20">
       <Card className="mb-3 relative z-30 border-none bg-white shadow-xl">
         <CardHeader>
           <div className="flex items-center justify-center gap-2 mt-2 mb-2">
-              <div className="rounded-full bg-green-100 p-2">
-                  <LineChart className="h-5 w-5 text-green-600" />
-              </div>
-                  <CardTitle className="text-3xl font-bold">Isolation Gown Comparison</CardTitle>
-          </div>        
+            <div className="rounded-full bg-green-100 p-2">
+              <LineChart className="h-5 w-5 text-green-600" />
+            </div>
+            <CardTitle className="text-3xl font-bold">Isolation Gown Comparison</CardTitle>
+          </div>
         </CardHeader>
         <CardContent className="pt-6">
           <div className="space-y-4">
@@ -172,8 +195,8 @@ export default function GownsPage() {
                   </div>
                   <div>
                     <p className="font-medium">
-                      For each gown you wish to compare, click <strong>Edit</strong> to enter the required information, then
-                      make sure to click <strong>Save Changes</strong>.
+                      For each gown you wish to compare, click <strong>Edit</strong> to enter the required information,
+                      then make sure to click <strong>Save Changes</strong>.
                     </p>
                     <p className="text-sm text-muted-foreground">The displayed default values can be overwritten</p>
                   </div>
@@ -184,8 +207,8 @@ export default function GownsPage() {
                   </div>
                   <div>
                     <p className="font-medium">
-                      <strong>Tick the checkboxes</strong> next to the gowns you'd like to compare. The comparison results will
-                      appear automatically below the list.
+                      <strong>Tick the checkboxes</strong> next to the gowns you'd like to compare. The comparison
+                      results will appear automatically below the list.
                     </p>
                   </div>
                 </div>
@@ -202,9 +225,9 @@ export default function GownsPage() {
               </div>
             </div>
           </div>
-        <div className="mt-8">
-          <VariablesAndSourcesModal/>
-        </div>
+          <div className="mt-8">
+            <VariablesAndSourcesModal />
+          </div>
         </CardContent>
       </Card>
 
@@ -240,7 +263,7 @@ export default function GownsPage() {
           </CardContent>
         </Card>
       </div>
-      
+
       {selectedGownData.length > 0 && (
         <div className="pt-3 relative z-30">
           <div className="mb-3 flex justify-end">
@@ -251,6 +274,10 @@ export default function GownsPage() {
 
           <div className="mb-3">
             <GownComparisonTable gowns={selectedGownData} />
+          </div>
+
+          <div className="mb-3">
+            <GownInvestmentCalculator selectedGowns={selectedGownData} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
