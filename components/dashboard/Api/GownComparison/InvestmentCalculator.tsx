@@ -4,28 +4,16 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Calculator, TrendingUp, Leaf, DollarSign } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Calculator, TrendingUp, Leaf, DollarSign, Calendar, Recycle, Trash2 } from "lucide-react"
 import type { Gown } from "@/app/interfaces/Gown"
+import { Button } from "@/components/ui/button"
+import type { InvestmentResult } from "@/app/interfaces/Investment"
 
 interface InvestmentCalculatorProps {
   selectedGowns: Gown[]
 }
 
-interface InvestmentResult {
-  gownId: string
-  gownName: string
-  isReusable: boolean
-  totalGownsNeeded: number
-  totalInitialCost: number
-  totalLaundryCost: number
-  totalWasteCost: number
-  totalInvestmentCost: number
-  costPerUse: number
-  totalEmissions: number
-  totalWashes: number
-  replacementCycles: number
-}
+
 
 export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCalculatorProps) {
   const [investmentPeriod, setInvestmentPeriod] = useState<number>(1)
@@ -42,52 +30,73 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
     const totalUsesOverPeriod = totalUsesPerYear * investmentPeriod
 
     const calculatedResults: InvestmentResult[] = selectedGowns.map((gown) => {
-      let totalGownsNeeded: number
-      let replacementCycles: number
-      let totalWashes: number
-      let totalLaundryCost = 0
-      let totalWasteCost = 0
-
-      if (gown.reusable && gown.washes) {
-        // For reusable gowns: calculate how many gowns needed based on wash cycles
-        const usesPerGown = gown.washes
-        totalGownsNeeded = Math.ceil(totalUsesOverPeriod / usesPerGown)
-        replacementCycles = Math.ceil(totalUsesOverPeriod / usesPerGown)
-        totalWashes = Math.min(totalUsesOverPeriod, totalGownsNeeded * usesPerGown)
-
-        // Calculate laundry cost (cost per wash * total uses)
-        totalLaundryCost = (gown.laundry_cost || 0) * totalUsesOverPeriod
-      } else {
-        // For single-use gowns: one gown per use
-        totalGownsNeeded = totalUsesOverPeriod
-        replacementCycles = totalUsesOverPeriod
-        totalWashes = 0
-
-        // Calculate waste cost (cost per gown * total gowns)
-        totalWasteCost = (gown.emission_impacts.waste || 0) * totalGownsNeeded
-      }
-
-      const totalInitialCost = totalGownsNeeded * gown.cost
-      const totalInvestmentCost = totalInitialCost + totalLaundryCost + totalWasteCost
-      const costPerUse = totalInvestmentCost / totalUsesOverPeriod
-
-      // Calculate total emissions (CO2 equivalent per use * total uses)
-      const totalEmissions = gown.emission_impacts.CO2 * totalUsesOverPeriod
-
-      return {
+      const result: InvestmentResult = {
         gownId: gown.id,
         gownName: gown.name,
         isReusable: gown.reusable,
-        totalGownsNeeded,
-        totalInitialCost,
-        totalLaundryCost,
-        totalWasteCost,
-        totalInvestmentCost,
-        costPerUse,
-        totalEmissions,
-        totalWashes,
-        replacementCycles,
+        totalGownsNeeded: 0,
+        totalInvestmentCost: 0,
+        annualDepreciation: 0,
+        annualUsage: totalUsesPerYear,
+        annualLaundryCosts: 0,
+        totalAnnualCostReusable: 0,
+        totalPurchaseCostDisposable: 0,
+        totalWasteCostDisposable: 0,
+        totalAnnualCostDisposable: 0,
+        costPerUse: 0,
+        totalEmissionsCo2: 0,
+        totalEmissionsWater: 0,
+        totalEmissionsEnergy: 0,
+        totalEmissions: 0,
+        totalWashes: 0,
+        replacementCycles: 0,
       }
+
+      if (gown.reusable && gown.washes) {
+        // REUSABLE GOWN CALCULATIONS
+        const usesPerGown = gown.washes
+        result.totalGownsNeeded = Math.ceil(totalUsesOverPeriod / usesPerGown)
+        result.replacementCycles = Math.ceil(totalUsesOverPeriod / usesPerGown)
+        result.totalWashes = Math.min(totalUsesOverPeriod, result.totalGownsNeeded * usesPerGown)
+
+        // Total investment cost reusable gowns (€) = units purchased * purchase cost per gown
+        result.totalInvestmentCost = result.totalGownsNeeded * gown.cost
+
+        // Annual Depreciation (€) = total investment cost / Investment period (years)
+        result.annualDepreciation = result.totalInvestmentCost / investmentPeriod
+
+        // Annual Laundry costs for reusable gowns (€) = Annual usage * Laundry cost per 1 use
+        result.annualLaundryCosts = result.annualUsage * (gown.laundry_cost || 0)
+
+        // Total Annual cost for reusable gowns (€) = Annual depreciation + Annual laundry costs
+        result.totalAnnualCostReusable = result.annualDepreciation + result.annualLaundryCosts
+
+        result.costPerUse = result.totalAnnualCostReusable / result.annualUsage
+      } else {
+        // DISPOSABLE GOWN CALCULATIONS
+        result.totalGownsNeeded = totalUsesOverPeriod
+        result.replacementCycles = totalUsesOverPeriod
+        result.totalWashes = 0
+
+        // Total Purchase cost disposable gowns (€) = total gowns needed * cost per gown
+        result.totalPurchaseCostDisposable = result.totalGownsNeeded * gown.cost
+
+        // Total Waste cost for disposable gowns (€) = waste cost * total gowns
+        result.totalWasteCostDisposable = (gown.emission_impacts.waste || 0) * result.totalGownsNeeded
+
+        // Total annual cost = (purchase cost + waste cost) / investment period
+        result.totalAnnualCostDisposable =
+          (result.totalPurchaseCostDisposable + result.totalWasteCostDisposable) / investmentPeriod
+
+        result.costPerUse = result.totalAnnualCostDisposable / result.annualUsage
+      }
+
+      // Calculate total emissions: CO2 equivalent, Water, Energy per use  * total uses
+      result.totalEmissionsCo2 = gown.emission_impacts.CO2 * totalUsesOverPeriod
+      result.totalEmissionsWater = gown.emission_impacts.Water * totalUsesOverPeriod
+      result.totalEmissionsEnergy = gown.emission_impacts.Energy * totalUsesOverPeriod
+
+      return result
     })
 
     setResults(calculatedResults)
@@ -121,8 +130,8 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
     <Card className="border-none bg-white shadow-xl">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <div className="rounded-full bg-blue-100 p-2">
-            <Calculator className="h-5 w-5 text-blue-600" />
+          <div className="rounded-full">
+            <Calculator />
           </div>
           <CardTitle className="text-xl font-bold">Investment Analysis</CardTitle>
         </div>
@@ -176,7 +185,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                 className="flex items-center gap-1"
               >
                 <DollarSign className="h-4 w-4" />
-                Total Cost
+                Annual Cost
                 {sortBy === "cost" && (
                   <button
                     onClick={(e) => {
@@ -221,13 +230,15 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
             .sort((a, b) => {
               const multiplier = sortOrder === "asc" ? 1 : -1
               if (sortBy === "cost") {
-                return (a.totalInvestmentCost - b.totalInvestmentCost) * multiplier
+                const aCost = a.isReusable ? a.totalAnnualCostReusable : a.totalAnnualCostDisposable
+                const bCost = b.isReusable ? b.totalAnnualCostReusable : b.totalAnnualCostDisposable
+                return (aCost - bCost) * multiplier
               } else {
                 return (a.totalEmissions - b.totalEmissions) * multiplier
               }
             })
             .map((result) => (
-              <Card key={result.gownId} className="border-l-4 border-l-blue-500">
+              <Card key={result.gownId} className="border-l">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2">
                     {result.gownName}
@@ -241,111 +252,177 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium">Total Investment Cost</span>
-                      </div>
-                      <p className="text-2xl font-bold text-green-600">
-                        €{result.totalInvestmentCost.toLocaleString()}
-                      </p>
-                      <div className="text-xs text-muted-foreground space-y-1">
-                        <p>Initial: €{result.totalInitialCost.toLocaleString()}</p>
-                        {result.isReusable && result.totalLaundryCost > 0 && (
-                          <p className="text-blue-600 font-medium">
-                            + Laundry: €{result.totalLaundryCost.toLocaleString()}
-                          </p>
-                        )}
-                        {!result.isReusable && result.totalWasteCost > 0 && (
-                          <p className="text-orange-600 font-medium">
-                            + Waste: €{result.totalWasteCost.toLocaleString()}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-medium">Cost per Use</span>
-                      </div>
-                      <p className="text-2xl font-bold text-blue-600">€{result.costPerUse.toFixed(2)}</p>
-                      <p className="text-xs text-muted-foreground">
-                        Over {(usesPerDay * workingDaysPerYear * investmentPeriod).toLocaleString()} total uses
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Leaf className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium">Total CO₂ Emissions</span>
-                      </div>
-                      <p className="text-2xl font-bold text-green-600">{result.totalEmissions.toFixed(1)} kg</p>
-                      <p className="text-xs text-muted-foreground">
-                        CO₂-equivalent over {investmentPeriod} year{investmentPeriod > 1 ? "s" : ""}
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Calculator className="h-4 w-4 text-purple-600" />
-                        <span className="text-sm font-medium">
-                          {result.isReusable ? "Replacement Cycles" : "Disposal Count"}
-                        </span>
-                      </div>
-                      <p className="text-2xl font-bold text-purple-600">{result.replacementCycles.toLocaleString()}</p>
-                      {result.isReusable && (
-                        <p className="text-xs text-muted-foreground">
-                          {result.totalWashes.toLocaleString()} total washes
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Additional Details */}
-                  <div className="mt-4 pt-4 border-t">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="text-muted-foreground">Purchase Cost per Gown:</span>
-                        <p className="font-medium">
-                          €{selectedGowns.find((g) => g.id === result.gownId)?.cost.toFixed(2)}
-                        </p>
-                      </div>
-                      {result.isReusable && (
-                        <>
-                          <div>
-                            <span className="text-muted-foreground">Max Washes per Gown:</span>
-                            <p className="font-medium">{selectedGowns.find((g) => g.id === result.gownId)?.washes}</p>
+                  {result.isReusable ? (
+                    // REUSABLE GOWN DISPLAY
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Recycle className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm font-medium">Total Investment Cost</span>
                           </div>
-                          <div>
-                            <span className="text-muted-foreground">Laundry Cost per Use:</span>
-                            <p className="font-medium text-blue-600">
-                              €
-                              {selectedGowns
-                                .find((g) => g.id === result.gownId)
-                                ?.laundry_cost?.toFixed(2) || "0.00"}
-                            </p>
+                          <p className="text-2xl font-bold text-blue-600">
+                            €{result.totalInvestmentCost.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {result.totalGownsNeeded.toLocaleString()} gowns × €
+                            {selectedGowns.find((g) => g.id === result.gownId)?.cost.toFixed(2)}
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-green-600" />
+                            <span className="text-sm font-medium">Annual Depreciation</span>
                           </div>
-                        </>
-                      )}
-                      {!result.isReusable && (
+                          <p className="text-2xl font-bold text-green-600">
+                            €{result.annualDepreciation.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Over {investmentPeriod} year{investmentPeriod > 1 ? "s" : ""}
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="h-4 w-4 text-yellow-600" />
+                            <span className="text-sm font-medium">Annual Laundry Costs</span>
+                          </div>
+                          <p className="text-2xl font-bold text-yellow-600">
+                            €{result.annualLaundryCosts.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {result.annualUsage.toLocaleString()} uses × €
+                            {selectedGowns
+                              .find((g) => g.id === result.gownId)
+                              ?.laundry_cost?.toFixed(2) || "0.00"}
+                          </p>
+                        </div>
+
+                        <div className="space-y-2 bg-yellow-50 p-3 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4 text-orange-600" />
+                            <span className="text-sm font-medium">Total Annual Cost</span>
+                          </div>
+                          <p className="text-2xl font-bold text-orange-600">
+                            €{result.totalAnnualCostReusable.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">Depreciation + Laundry</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm bg-blue-50 p-3 rounded-lg">
                         <div>
-                          <span className="text-muted-foreground">Waste Cost per Gown:</span>
-                          <p className="font-medium text-orange-600">
-                            €
+                          <span className="text-muted-foreground">Cost per Use:</span>
+                          <p className="font-bold text-blue-600">€{result.costPerUse.toFixed(2)}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Max Washes per Gown:</span>
+                          <p className="font-medium">{selectedGowns.find((g) => g.id === result.gownId)?.washes}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Total Washes:</span>
+                          <p className="font-medium">{result.totalWashes.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">CO₂ per Use:</span>
+                          <p className="font-medium">
+                            {selectedGowns.find((g) => g.id === result.gownId)?.emission_impacts.CO2.toFixed(2)} kg
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    // DISPOSABLE GOWN DISPLAY
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Trash2 className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm font-medium">Total Purchase Cost</span>
+                          </div>
+                          <p className="text-2xl font-bold text-blue-600">
+                            €{result.totalPurchaseCostDisposable.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {result.totalGownsNeeded.toLocaleString()} gowns × €
+                            {selectedGowns.find((g) => g.id === result.gownId)?.cost.toFixed(2)}
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <span className="text-sm font-medium">Total Waste Cost</span>
+                          </div>
+                          <p className="text-2xl font-bold text-red-600">
+                            €{result.totalWasteCostDisposable.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {result.totalGownsNeeded.toLocaleString()} gowns × €
                             {selectedGowns.find((g) => g.id === result.gownId)?.emission_impacts.waste?.toFixed(2) ||
                               "0.00"}
                           </p>
                         </div>
-                      )}
-                      <div>
-                        <span className="text-muted-foreground">CO₂ per Use:</span>
-                        <p className="font-medium">
-                          {selectedGowns.find((g) => g.id === result.gownId)?.emission_impacts.CO2.toFixed(2)} kg
-                        </p>
+
+                        <div className="space-y-2 bg-yellow-50 p-3 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="h-4 w-4 text-orange-600" />
+                            <span className="text-sm font-medium">Total Annual Cost</span>
+                          </div>
+                          <p className="text-2xl font-bold text-orange-600">
+                            €{result.totalAnnualCostDisposable.toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Purchase + Waste / {investmentPeriod} year{investmentPeriod > 1 ? "s" : ""}
+                          </p>
+                        </div>
                       </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm bg-orange-50 p-3 rounded-lg">
+                        <div>
+                          <span className="text-muted-foreground">Cost per Use:</span>
+                          <p className="font-bold text-orange-600">€{result.costPerUse.toFixed(2)}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Annual Usage:</span>
+                          <p className="font-medium">{result.annualUsage.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">Total Disposals:</span>
+                          <p className="font-medium">{result.replacementCycles.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">CO₂ per Use:</span>
+                          <p className="font-medium">
+                            {selectedGowns.find((g) => g.id === result.gownId)?.emission_impacts.CO2.toFixed(2)} kg
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Emissions Summary */}
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="flex flex-row items-center gap-2 mb-2">
+                      <Leaf className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium">Environmental Impact</span>
                     </div>
+                    <div className="flex flex-row gap-6">
+                      <p className="text-lg font-bold text-green-600">
+                        {result.totalEmissionsCo2.toFixed(1)} kg CO₂-equivalent
+                      </p>
+                      <p className="text-lg font-bold text-blue-600">
+                        {result.totalEmissionsWater.toFixed(1)} kg Water
+                      </p>
+                      <p className="text-lg font-bold text-yellow-500">
+                        {result.totalEmissionsEnergy.toFixed(1)} mj Energy
+                      </p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Over {investmentPeriod} year{investmentPeriod > 1 ? "s" : ""} (
+                      {(usesPerDay * workingDaysPerYear * investmentPeriod).toLocaleString()} total uses)
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -361,14 +438,21 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Most Cost-Effective (total investment):</span>
+                  <span className="font-medium">Lowest Annual Cost:</span>
                   <span className="text-green-600 font-bold">
-                    {
-                      results.reduce((min, current) =>
-                        current.totalInvestmentCost < min.totalInvestmentCost ? current : min,
-                      ).gownName
-                    }{" "}
-                    (€{Math.min(...results.map((r) => r.totalInvestmentCost)).toLocaleString()})
+                    {(() => {
+                      const minResult = results.reduce((min, current) => {
+                        const currentCost = current.isReusable
+                          ? current.totalAnnualCostReusable
+                          : current.totalAnnualCostDisposable
+                        const minCost = min.isReusable ? min.totalAnnualCostReusable : min.totalAnnualCostDisposable
+                        return currentCost < minCost ? current : min
+                      })
+                      const minCost = minResult.isReusable
+                        ? minResult.totalAnnualCostReusable
+                        : minResult.totalAnnualCostDisposable
+                      return `${minResult.gownName} (€${minCost.toLocaleString()})`
+                    })()}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
@@ -382,14 +466,10 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="font-medium">Lowest Initial Investment:</span>
+                  <span className="font-medium">Most Cost-Effective per Use:</span>
                   <span className="text-blue-600 font-bold">
-                    {
-                      results.reduce((min, current) =>
-                        current.totalInitialCost < min.totalInitialCost ? current : min,
-                      ).gownName
-                    }{" "}
-                    (€{Math.min(...results.map((r) => r.totalInitialCost)).toLocaleString()})
+                    {results.reduce((min, current) => (current.costPerUse < min.costPerUse ? current : min)).gownName}{" "}
+                    (€{Math.min(...results.map((r) => r.costPerUse)).toFixed(2)})
                   </span>
                 </div>
               </div>

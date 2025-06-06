@@ -276,10 +276,6 @@ export default function GownsPage() {
             <GownComparisonTable gowns={selectedGownData} />
           </div>
 
-          <div className="mb-3">
-            <GownInvestmentCalculator selectedGowns={selectedGownData} />
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
             <CO2Impacts gowns={selectedGownData} />
             <EnergyImpacts gowns={selectedGownData} />
@@ -293,6 +289,10 @@ export default function GownsPage() {
             {/* <div className="col-span-1">
               <SocialImpacts gowns={selectedGownData} />
             </div> */}
+          </div>
+
+          <div className="mb-3">
+            <GownInvestmentCalculator selectedGowns={selectedGownData} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
