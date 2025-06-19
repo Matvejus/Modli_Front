@@ -138,7 +138,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Input Parameters */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-blue-50 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-lg">
           <div className="space-y-2">
             <Label htmlFor="investment-period">Investment Period (Years)</Label>
             <Input
