@@ -214,14 +214,15 @@ export default function GownsPage() {
             </div> */}
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+            <GownHygieneComparison gowns={selectedGownData} />
+            <GownCertificatesTable gowns={selectedGownData} />
+          </div>
+
           <div className="mb-3">
             <GownInvestmentCalculator selectedGowns={selectedGownData} />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <GownHygieneComparison gowns={selectedGownData} />
-            <GownCertificatesTable gowns={selectedGownData} />
-          </div>
         </div>
       )}
     </div>
