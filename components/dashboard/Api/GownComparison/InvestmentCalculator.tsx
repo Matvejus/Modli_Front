@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Calculator, DollarSign, Building, Cog, AlertTriangle, Leaf, Droplets, Zap } from "lucide-react"
+import { Calculator, DollarSign, Building, Cog, AlertTriangle, Leaf, Droplets, Zap, ShoppingCart } from "lucide-react"
 import type { Gown } from "@/app/interfaces/Gown"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -21,6 +21,7 @@ interface InvestmentResult {
   numberOfGownsToInvest: number
   planningHorizon: number
   annualGownUse: number
+  lossPercentage: number
   // Backend calculations
   maxGownUsesWithReduction: number
   totalUsesOverHorizon: number
@@ -28,6 +29,7 @@ interface InvestmentResult {
   // Financial results
   capex: number
   opex: number
+  extraDisposableCost: number
   totalExpenses: number
   // Emissions results
   totalCO2: number
@@ -43,6 +45,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
   const [numberOfGownsToInvest, setNumberOfGownsToInvest] = useState<number>(8000)
   const [planningHorizon, setPlanningHorizon] = useState<number>(5)
   const [annualGownUse, setAnnualGownUse] = useState<number>(36500)
+  const [lossPercentage, setLossPercentage] = useState<number>(5)
 
   const [results, setResults] = useState<InvestmentResult[]>([])
   const [sortBy, setSortBy] = useState<"total" | "capex" | "opex" | "emissions">("total")
@@ -52,6 +55,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
     if (selectedGowns.length === 0) return
 
     const totalUsesOverHorizon = annualGownUse * planningHorizon
+    const reductionFactor = (100 - lossPercentage) / 100
 
     const calculatedResults: InvestmentResult[] = selectedGowns.map((gown) => {
       const result: InvestmentResult = {
@@ -61,11 +65,13 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
         numberOfGownsToInvest,
         planningHorizon,
         annualGownUse,
+        lossPercentage,
         maxGownUsesWithReduction: 0,
         totalUsesOverHorizon,
         extraDisposableGownsNeeded: 0,
         capex: 0,
         opex: 0,
+        extraDisposableCost: 0,
         totalExpenses: 0,
         totalCO2: 0,
         totalWater: 0,
@@ -77,14 +83,14 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
       if (gown.reusable && gown.washes) {
         // REUSABLE GOWN CALCULATIONS
 
-        // Maximum number of gown uses from reusable gowns, with 5% reduction accounted for lost
+        // Maximum number of gown uses from reusable gowns, with user-defined reduction accounted for lost
         const maxUsesWithoutReduction = numberOfGownsToInvest * gown.washes
-        result.maxGownUsesWithReduction = Math.floor(maxUsesWithoutReduction * 0.95) // 5% reduction
+        result.maxGownUsesWithReduction = Math.floor(maxUsesWithoutReduction * reductionFactor)
 
         // CAPEX: Initial investment in reusable gowns
         result.capex = numberOfGownsToInvest * gown.cost
 
-        // Check if we need extra disposable gowns (OPEX)
+        // Check if we need extra disposable gowns
         if (totalUsesOverHorizon > result.maxGownUsesWithReduction) {
           result.extraDisposableGownsNeeded = totalUsesOverHorizon - result.maxGownUsesWithReduction
         } else {
@@ -93,8 +99,17 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
 
         // OPEX for reusable gowns: (laundry cost + waste cost - residual values) * maxGownUsesWithReduction
         const opexPerUse = gown.laundry_cost + gown.waste_cost - gown.residual_value
-
         result.opex = opexPerUse * result.maxGownUsesWithReduction
+
+        // EXTRA DISPOSABLE COST: Cost of additional disposable gowns needed when capacity is exceeded
+        if (result.extraDisposableGownsNeeded > 0) {
+          // Find a disposable gown cost from selected gowns or use a default
+          const disposableGown = selectedGowns.find((g) => !g.reusable)
+          const disposableGownCost = disposableGown?.cost || 0.81 // Default disposable cost
+          const disposableWasteCost = disposableGown?.waste_cost || 0
+
+          result.extraDisposableCost = result.extraDisposableGownsNeeded * (disposableGownCost + disposableWasteCost)
+        }
 
         // EMISSIONS CALCULATIONS based on actual demand (totalUsesOverHorizon)
         result.totalCO2 = Math.floor(gown.emission_impacts.CO2 * totalUsesOverHorizon)
@@ -117,6 +132,9 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
         const wasteOpex = totalUsesOverHorizon * (gown.waste_cost || 0)
         result.opex = purchaseOpex + wasteOpex
 
+        // No extra disposable cost for disposable gowns
+        result.extraDisposableCost = 0
+
         // EMISSIONS CALCULATIONS based on demand (totalUsesOverHorizon)
         result.totalCO2 = Math.floor(gown.emission_impacts.CO2 * totalUsesOverHorizon)
         result.totalWater = Math.floor(gown.emission_impacts.Water * totalUsesOverHorizon)
@@ -125,7 +143,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
         result.utilizationRate = 100 // Always 100% for disposables
       }
 
-      result.totalExpenses = result.capex + result.opex
+      result.totalExpenses = result.capex + result.opex + result.extraDisposableCost
       result.costPerUse = result.totalExpenses / totalUsesOverHorizon
 
       return result
@@ -138,7 +156,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
     if (selectedGowns.length > 0) {
       calculateInvestment()
     }
-  }, [selectedGowns, numberOfGownsToInvest, planningHorizon, annualGownUse])
+  }, [selectedGowns, numberOfGownsToInvest, planningHorizon, annualGownUse, lossPercentage])
 
   if (selectedGowns.length === 0) {
     return (
@@ -171,7 +189,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
       <CardContent className="space-y-6">
         {/* User Input Parameters */}
         <div className="p-4 bg-blue-50 rounded-lg">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label htmlFor="gowns-investment" className="text-black font-medium">
                 Number of reusable gowns to buy (CAPEX)
@@ -209,6 +227,20 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                 min="1"
                 value={annualGownUse}
                 onChange={(e) => setAnnualGownUse(Number(e.target.value))}
+                className="border-black"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="loss-percentage" className="text-black font-medium">
+                Loss percentage (%)
+              </Label>
+              <Input
+                id="loss-percentage"
+                type="number"
+                min="0"
+                max="50"
+                value={lossPercentage}
+                onChange={(e) => setLossPercentage(Number(e.target.value))}
                 className="border-black"
               />
             </div>
@@ -312,7 +344,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
               <thead>
                 <tr className="border-b">
                   <th className="text-left py-2 font-medium">Gown Type</th>
-                  <th className="text-right py-2 font-medium">Max Uses (5% reduction)</th>
+                  <th className="text-right py-2 font-medium">Max Uses ({lossPercentage}% reduction)</th>
                   <th className="text-right py-2 font-medium">Extra Disposable Needed</th>
                   <th className="text-right py-2 font-medium">Utilization Rate</th>
                 </tr>
@@ -365,7 +397,9 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div
+                    className={`grid grid-cols-1 md:grid-cols-${result.extraDisposableCost > 0 ? "4" : "3"} gap-4 mb-4`}
+                  >
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Building className="h-4 w-4 text-blue-600" />
@@ -390,7 +424,22 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                       </p>
                     </div>
 
-                    <div className="space-y-2 bg-yellow-50 p-3 rounded-lg">
+                    {result.extraDisposableCost > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <ShoppingCart className="h-4 w-4 text-red-600" />
+                          <span className="text-sm font-medium">Extra Disposables</span>
+                        </div>
+                        <p className="text-2xl font-bold text-red-600">
+                          €{result.extraDisposableCost.toLocaleString()}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {result.extraDisposableGownsNeeded.toLocaleString()} disposable gowns needed
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2 bg-yellow-50 px-4 rounded-lg">
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-green-600" />
                         <span className="text-sm font-medium">Total Expenses</span>
@@ -475,7 +524,8 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                         <strong>Capacity Exceeded:</strong> Your reusable gown investment can only cover{" "}
                         {result.maxGownUsesWithReduction.toLocaleString()} uses out of{" "}
                         {result.totalUsesOverHorizon.toLocaleString()} total demand. You'll need{" "}
-                        {result.extraDisposableGownsNeeded.toLocaleString()} additional disposable gowns.
+                        {result.extraDisposableGownsNeeded.toLocaleString()} additional disposable gowns costing €
+                        {result.extraDisposableCost.toLocaleString()}.
                       </AlertDescription>
                     </Alert>
                   )}
