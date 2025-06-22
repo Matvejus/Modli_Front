@@ -8,10 +8,12 @@ import { Calculator, DollarSign, Building, Cog, AlertTriangle, Leaf, Droplets, Z
 import type { Gown } from "@/app/interfaces/Gown"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { EmissionDonutChart, EmissionBreakdown } from "./InvestmentEmissionsDonughtChart"
 
 interface InvestmentCalculatorProps {
   selectedGowns: Gown[]
 }
+
 
 interface InvestmentResult {
   gownId: string
@@ -31,14 +33,15 @@ interface InvestmentResult {
   opex: number
   extraDisposableCost: number
   totalExpenses: number
-  // Emissions results
-  totalCO2: number
-  totalWater: number
-  totalEnergy: number
+  // Emissions results with breakdown
+  co2Breakdown: EmissionBreakdown
+  waterBreakdown: EmissionBreakdown
+  energyBreakdown: EmissionBreakdown
   // Additional metrics
   utilizationRate: number
   costPerUse: number
 }
+
 
 export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCalculatorProps) {
   // User inputs
@@ -73,9 +76,9 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
         opex: 0,
         extraDisposableCost: 0,
         totalExpenses: 0,
-        totalCO2: 0,
-        totalWater: 0,
-        totalEnergy: 0,
+        co2Breakdown: { reusableEmissions: 0, disposableEmissions: 0, totalEmissions: 0 },
+        waterBreakdown: { reusableEmissions: 0, disposableEmissions: 0, totalEmissions: 0 },
+        energyBreakdown: { reusableEmissions: 0, disposableEmissions: 0, totalEmissions: 0 },
         utilizationRate: 0,
         costPerUse: 0,
       }
@@ -111,10 +114,41 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
           result.extraDisposableCost = result.extraDisposableGownsNeeded * (disposableGownCost + disposableWasteCost)
         }
 
-        // EMISSIONS CALCULATIONS based on actual demand (totalUsesOverHorizon)
-        result.totalCO2 = Math.floor(gown.emission_impacts.CO2 * totalUsesOverHorizon)
-        result.totalWater = Math.floor(gown.emission_impacts.Water * totalUsesOverHorizon)
-        result.totalEnergy = Math.floor(gown.emission_impacts.Energy * totalUsesOverHorizon)
+        // EMISSIONS CALCULATIONS with breakdown
+        const reusableUses = Math.min(totalUsesOverHorizon, result.maxGownUsesWithReduction)
+        const disposableUses = result.extraDisposableGownsNeeded
+
+        // Reusable emissions (based on actual uses covered by reusable gowns)
+        result.co2Breakdown.reusableEmissions = Math.floor(gown.emission_impacts.CO2 * reusableUses)
+        result.waterBreakdown.reusableEmissions = Math.floor(gown.emission_impacts.Water * reusableUses)
+        result.energyBreakdown.reusableEmissions = Math.floor(gown.emission_impacts.Energy * reusableUses)
+
+        // Disposable emissions (if extra disposables are needed)
+        if (disposableUses > 0) {
+          const disposableGown = selectedGowns.find((g) => !g.reusable)
+          if (disposableGown) {
+            result.co2Breakdown.disposableEmissions = Math.floor(disposableGown.emission_impacts.CO2 * disposableUses)
+            result.waterBreakdown.disposableEmissions = Math.floor(
+              disposableGown.emission_impacts.Water * disposableUses,
+            )
+            result.energyBreakdown.disposableEmissions = Math.floor(
+              disposableGown.emission_impacts.Energy * disposableUses,
+            )
+          } else {
+            // Use default disposable emissions if no disposable gown selected
+            result.co2Breakdown.disposableEmissions = Math.floor(0.5 * disposableUses) // Default CO2
+            result.waterBreakdown.disposableEmissions = Math.floor(2.0 * disposableUses) // Default Water
+            result.energyBreakdown.disposableEmissions = Math.floor(8.0 * disposableUses) // Default Energy
+          }
+        }
+
+        // Total emissions
+        result.co2Breakdown.totalEmissions =
+          result.co2Breakdown.reusableEmissions + result.co2Breakdown.disposableEmissions
+        result.waterBreakdown.totalEmissions =
+          result.waterBreakdown.reusableEmissions + result.waterBreakdown.disposableEmissions
+        result.energyBreakdown.totalEmissions =
+          result.energyBreakdown.reusableEmissions + result.energyBreakdown.disposableEmissions
 
         // Utilization rate
         result.utilizationRate = Math.min(100, (totalUsesOverHorizon / result.maxGownUsesWithReduction) * 100)
@@ -135,10 +169,14 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
         // No extra disposable cost for disposable gowns
         result.extraDisposableCost = 0
 
-        // EMISSIONS CALCULATIONS based on demand (totalUsesOverHorizon)
-        result.totalCO2 = Math.floor(gown.emission_impacts.CO2 * totalUsesOverHorizon)
-        result.totalWater = Math.floor(gown.emission_impacts.Water * totalUsesOverHorizon)
-        result.totalEnergy = Math.floor(gown.emission_impacts.Energy * totalUsesOverHorizon)
+        // EMISSIONS CALCULATIONS - all from disposable gowns
+        result.co2Breakdown.disposableEmissions = Math.floor(gown.emission_impacts.CO2 * totalUsesOverHorizon)
+        result.waterBreakdown.disposableEmissions = Math.floor(gown.emission_impacts.Water * totalUsesOverHorizon)
+        result.energyBreakdown.disposableEmissions = Math.floor(gown.emission_impacts.Energy * totalUsesOverHorizon)
+
+        result.co2Breakdown.totalEmissions = result.co2Breakdown.disposableEmissions
+        result.waterBreakdown.totalEmissions = result.waterBreakdown.disposableEmissions
+        result.energyBreakdown.totalEmissions = result.energyBreakdown.disposableEmissions
 
         result.utilizationRate = 100 // Always 100% for disposables
       }
@@ -379,7 +417,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
               } else if (sortBy === "opex") {
                 return (a.opex - b.opex) * multiplier
               } else {
-                return (a.totalCO2 - b.totalCO2) * multiplier
+                return (a.co2Breakdown.totalEmissions - b.co2Breakdown.totalEmissions) * multiplier
               }
             })
             .map((result) => (
@@ -439,7 +477,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                       </div>
                     )}
 
-                    <div className="space-y-2 bg-yellow-50 px-4 rounded-lg">
+                    <div className="space-y-2 bg-yellow-50 p-3 rounded-lg">
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-green-600" />
                         <span className="text-sm font-medium">Total Expenses</span>
@@ -449,45 +487,33 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                     </div>
                   </div>
 
-                  {/* Emissions Section */}
+                  {/* Emissions Section with Donut Charts */}
                   <div className="mt-4 p-3 bg-green-50 rounded-lg">
                     <h4 className="font-medium mb-3 text-green-800">Total Environmental Impact</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Leaf className="h-4 w-4 text-green-600" />
-                          <span className="text-sm font-medium">CO₂ Emissions</span>
-                        </div>
-                        <p className="text-xl font-bold text-green-600">{result.totalCO2.toLocaleString()} kg</p>
-                        <p className="text-xs text-muted-foreground">
-                          {selectedGowns.find((g) => g.id === result.gownId)?.emission_impacts.CO2.toFixed(2)} kg per
-                          use
-                        </p>
-                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <EmissionDonutChart
+                        breakdown={result.co2Breakdown}
+                        title="CO₂ Emissions"
+                        unit="kg CO₂-eq"
+                        color="#10b981"
+                        icon={Leaf}
+                      />
 
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Droplets className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm font-medium">Water Usage</span>
-                        </div>
-                        <p className="text-xl font-bold text-blue-600">{result.totalWater.toLocaleString()} L</p>
-                        <p className="text-xs text-muted-foreground">
-                          {selectedGowns.find((g) => g.id === result.gownId)?.emission_impacts.Water.toFixed(2)} L per
-                          use
-                        </p>
-                      </div>
+                      <EmissionDonutChart
+                        breakdown={result.waterBreakdown}
+                        title="Water Usage"
+                        unit="L"
+                        color="#3b82f6"
+                        icon={Droplets}
+                      />
 
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Zap className="h-4 w-4 text-yellow-600" />
-                          <span className="text-sm font-medium">Energy Usage</span>
-                        </div>
-                        <p className="text-xl font-bold text-yellow-600">{result.totalEnergy.toLocaleString()} MJ</p>
-                        <p className="text-xs text-muted-foreground">
-                          {selectedGowns.find((g) => g.id === result.gownId)?.emission_impacts.Energy.toFixed(2)} MJ per
-                          use
-                        </p>
-                      </div>
+                      <EmissionDonutChart
+                        breakdown={result.energyBreakdown}
+                        title="Energy Usage"
+                        unit="MJ-eq"
+                        color="#f59e0b"
+                        icon={Zap}
+                      />
                     </div>
                   </div>
 
@@ -569,8 +595,12 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Lowest CO₂ Emissions:</span>
                   <span className="text-black font-bold">
-                    {results.reduce((min, current) => (current.totalCO2 < min.totalCO2 ? current : min)).gownName} (
-                    {Math.min(...results.map((r) => r.totalCO2)).toLocaleString()} kg)
+                    {
+                      results.reduce((min, current) =>
+                        current.co2Breakdown.totalEmissions < min.co2Breakdown.totalEmissions ? current : min,
+                      ).gownName
+                    }{" "}
+                    ({Math.min(...results.map((r) => r.co2Breakdown.totalEmissions)).toLocaleString()} kg)
                   </span>
                 </div>
               </div>
