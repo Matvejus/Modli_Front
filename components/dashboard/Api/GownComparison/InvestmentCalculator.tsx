@@ -39,6 +39,7 @@ interface InvestmentResult {
   // Backend calculations
   maxGownUsesWithReduction: number
   totalUsesOverHorizon: number
+  actualUsesForOpex: number // Add this new field
   extraDisposableGownsNeeded: number
   // Financial results
   capex: number
@@ -100,6 +101,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
         lossPercentage,
         maxGownUsesWithReduction: 0,
         totalUsesOverHorizon,
+        actualUsesForOpex: 0, // Add this initialization
         extraDisposableGownsNeeded: 0,
         capex: 0,
         opex: 0,
@@ -129,9 +131,11 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
           result.extraDisposableGownsNeeded = 0
         }
 
-        // OPEX for reusable gowns: (laundry cost + waste cost - residual values) * maxGownUsesWithReduction
+        // OPEX for reusable gowns: (laundry cost + waste cost - residual values) * actual uses needed
         const opexPerUse = gown.laundry_cost + gown.waste_cost - gown.residual_value
-        result.opex = opexPerUse * result.maxGownUsesWithReduction
+        // Use the minimum between demand and capacity - only pay OPEX for what you actually use
+        const actualUsesForOpex = Math.min(totalUsesOverHorizon, result.maxGownUsesWithReduction)
+        result.opex = opexPerUse * actualUsesForOpex
 
         // EXTRA DISPOSABLE COST: Cost of additional disposable gowns needed when capacity is exceeded
         if (result.extraDisposableGownsNeeded > 0) {
@@ -181,6 +185,9 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
 
         // Utilization rate
         result.utilizationRate = Math.min(100, (totalUsesOverHorizon / result.maxGownUsesWithReduction) * 100)
+
+        // Set actual uses for OPEX calculation
+        result.actualUsesForOpex = actualUsesForOpex
       } else {
         // DISPOSABLE GOWN CALCULATIONS
 
@@ -555,7 +562,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                       </div>
                       <p className="text-2xl font-bold text-orange-600">€{result.opex.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
-                        {result.isReusable ? "(Laundry + Waste - Residual) × Max Uses" : "Purchase + Waste costs"}
+                        {result.isReusable ? "(Laundry + Waste - Residual) × Actual Uses" : "Purchase + Waste costs"}
                       </p>
                     </div>
 
@@ -569,7 +576,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                           €{result.extraDisposableCost.toLocaleString()}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {result.extraDisposableGownsNeeded.toLocaleString()} disposable gowns needed
+                          {result.extraDisposableGownsNeeded.toLocaleString()} disposable gowns × (purchase price + waste cost)
                         </p>
                       </div>
                     )}
