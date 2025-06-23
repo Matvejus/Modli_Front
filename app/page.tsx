@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, PersonStanding, LineChart, HandCoins, Leaf } from "lucide-react"
+import { ArrowRight, PersonStanding, LineChart, HandCoins, Leaf, Calculator } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -47,7 +47,7 @@ export default function LandingPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="relative z-10">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mb-6">
                     <div className="flex flex-col items-center p-4 bg-slate-50 rounded-lg">
                       <Leaf className="h-8 w-8 text-green-600 mb-2" />
                       <h3 className="font-medium text-slate-900">Environmental Impact</h3>
@@ -59,6 +59,10 @@ export default function LandingPage() {
                     <div className="flex flex-col items-center p-4 bg-slate-50 rounded-lg">
                       <PersonStanding className="h-8 w-8 text-green-600 mb-2" />
                       <h3 className="font-medium text-slate-900">Social Impact</h3>
+                    </div>
+                    <div className="flex flex-col items-center p-4 bg-slate-50 rounded-lg">
+                      <Calculator className="h-8 w-8 text-green-600 mb-2" />
+                      <h3 className="font-medium text-slate-900">Investment Calculations</h3>
                     </div>
                   </div>
                 </CardContent>
