@@ -4,16 +4,28 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Calculator, DollarSign, Building, Cog, AlertTriangle, Leaf, Droplets, Zap, ShoppingCart } from "lucide-react"
+import {
+  Calculator,
+  DollarSign,
+  Building,
+  Cog,
+  AlertTriangle,
+  Leaf,
+  Droplets,
+  Zap,
+  ShoppingCart,
+  Hash,
+  Euro,
+} from "lucide-react"
 import type { Gown } from "@/app/interfaces/Gown"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { EmissionDonutChart, EmissionBreakdown } from "./InvestmentEmissionsDonughtChart"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { EmissionDonutChart, type EmissionBreakdown } from "./InvestmentEmissionsDonughtChart"
 
 interface InvestmentCalculatorProps {
   selectedGowns: Gown[]
 }
-
 
 interface InvestmentResult {
   gownId: string
@@ -42,10 +54,13 @@ interface InvestmentResult {
   costPerUse: number
 }
 
-
 export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCalculatorProps) {
+  // Investment mode: 'gowns' or 'budget'
+  const [investmentMode, setInvestmentMode] = useState<"gowns" | "budget">("gowns")
+
   // User inputs
   const [numberOfGownsToInvest, setNumberOfGownsToInvest] = useState<number>(8000)
+  const [investmentBudget, setInvestmentBudget] = useState<number>(400000) // Default budget
   const [planningHorizon, setPlanningHorizon] = useState<number>(5)
   const [annualGownUse, setAnnualGownUse] = useState<number>(36500)
   const [lossPercentage, setLossPercentage] = useState<number>(5)
@@ -54,6 +69,12 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
   const [sortBy, setSortBy] = useState<"total" | "capex" | "opex" | "emissions">("total")
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc")
 
+  // Calculate number of gowns based on budget for each selected gown
+  const calculateGownsFromBudget = (gown: Gown, budget: number): number => {
+    if (!gown.reusable) return 0 // Budget mode only applies to reusable gowns
+    return Math.floor(budget / gown.cost)
+  }
+
   const calculateInvestment = () => {
     if (selectedGowns.length === 0) return
 
@@ -61,11 +82,19 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
     const reductionFactor = (100 - lossPercentage) / 100
 
     const calculatedResults: InvestmentResult[] = selectedGowns.map((gown) => {
+      // Determine number of gowns based on mode
+      let actualGownsToInvest: number
+      if (investmentMode === "budget" && gown.reusable) {
+        actualGownsToInvest = calculateGownsFromBudget(gown, investmentBudget)
+      } else {
+        actualGownsToInvest = gown.reusable ? numberOfGownsToInvest : 0
+      }
+
       const result: InvestmentResult = {
         gownId: gown.id,
         gownName: gown.name,
         isReusable: gown.reusable,
-        numberOfGownsToInvest,
+        numberOfGownsToInvest: actualGownsToInvest,
         planningHorizon,
         annualGownUse,
         lossPercentage,
@@ -83,15 +112,15 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
         costPerUse: 0,
       }
 
-      if (gown.reusable && gown.washes) {
+      if (gown.reusable && gown.washes && actualGownsToInvest > 0) {
         // REUSABLE GOWN CALCULATIONS
 
         // Maximum number of gown uses from reusable gowns, with user-defined reduction accounted for lost
-        const maxUsesWithoutReduction = numberOfGownsToInvest * gown.washes
+        const maxUsesWithoutReduction = actualGownsToInvest * gown.washes
         result.maxGownUsesWithReduction = Math.floor(maxUsesWithoutReduction * reductionFactor)
 
         // CAPEX: Initial investment in reusable gowns
-        result.capex = numberOfGownsToInvest * gown.cost
+        result.capex = actualGownsToInvest * gown.cost
 
         // Check if we need extra disposable gowns
         if (totalUsesOverHorizon > result.maxGownUsesWithReduction) {
@@ -194,7 +223,15 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
     if (selectedGowns.length > 0) {
       calculateInvestment()
     }
-  }, [selectedGowns, numberOfGownsToInvest, planningHorizon, annualGownUse, lossPercentage])
+  }, [
+    selectedGowns,
+    numberOfGownsToInvest,
+    investmentBudget,
+    investmentMode,
+    planningHorizon,
+    annualGownUse,
+    lossPercentage,
+  ])
 
   if (selectedGowns.length === 0) {
     return (
@@ -227,60 +264,116 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
       <CardContent className="space-y-6">
         {/* User Input Parameters */}
         <div className="p-4 bg-blue-50 rounded-lg">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="gowns-investment" className="text-black font-medium">
-                Number of reusable gowns to buy (CAPEX)
-              </Label>
-              <Input
-                id="gowns-investment"
-                type="number"
-                min="1"
-                value={numberOfGownsToInvest}
-                onChange={(e) => setNumberOfGownsToInvest(Number(e.target.value))}
-                className="border-black"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="planning-horizon" className="text-black font-medium">
-                Planning horizon (in years)
-              </Label>
-              <Input
-                id="planning-horizon"
-                type="number"
-                min="1"
-                max="20"
-                value={planningHorizon}
-                onChange={(e) => setPlanningHorizon(Number(e.target.value))}
-                className="border-black"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="annual-use" className="text-black font-medium">
-                Number of annual gown uses
-              </Label>
-              <Input
-                id="annual-use"
-                type="number"
-                min="1"
-                value={annualGownUse}
-                onChange={(e) => setAnnualGownUse(Number(e.target.value))}
-                className="border-black"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="loss-percentage" className="text-black font-medium">
-                Loss percentage (%)
-              </Label>
-              <Input
-                id="loss-percentage"
-                type="number"
-                min="0"
-                max="50"
-                value={lossPercentage}
-                onChange={(e) => setLossPercentage(Number(e.target.value))}
-                className="border-black"
-              />
+          <div className="space-y-4">
+            {/* Investment Mode Tabs */}
+            <Tabs value={investmentMode} onValueChange={(value) => setInvestmentMode(value as "gowns" | "budget")}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="gowns" className="flex items-center gap-2">
+                  <Hash className="h-4 w-4" />
+                  Number of Gowns
+                </TabsTrigger>
+                <TabsTrigger value="budget" className="flex items-center gap-2">
+                  <Euro className="h-4 w-4" />
+                  Investment Budget
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="gowns" className="mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="gowns-investment" className="text-black font-medium">
+                    Number of reusable gowns to buy (CAPEX)
+                  </Label>
+                  <Input
+                    id="gowns-investment"
+                    type="number"
+                    min="1"
+                    value={numberOfGownsToInvest}
+                    onChange={(e) => setNumberOfGownsToInvest(Number(e.target.value))}
+                    className="border-black"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Specify the exact number of reusable gowns to purchase
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="budget" className="mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="investment-budget" className="text-black font-medium">
+                    Investment budget (€) for reusable gowns
+                  </Label>
+                  <Input
+                    id="investment-budget"
+                    type="number"
+                    min="1"
+                    value={investmentBudget}
+                    onChange={(e) => setInvestmentBudget(Number(e.target.value))}
+                    className="border-black"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    The number of gowns will be calculated based on your budget and gown cost
+                  </p>
+                  {/* Show calculated gowns for each selected reusable gown */}
+                  {selectedGowns.filter((g) => g.reusable).length > 0 && (
+                    <div className="mt-2 p-2 bg-white rounded border">
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Calculated gowns for budget:</p>
+                      {selectedGowns
+                        .filter((g) => g.reusable)
+                        .map((gown) => (
+                          <div key={gown.id} className="text-xs text-muted-foreground">
+                            {gown.name}: {calculateGownsFromBudget(gown, investmentBudget).toLocaleString()} gowns (€
+                            {gown.cost.toFixed(2)} each)
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            {/* Other Parameters */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              <div className="space-y-2">
+                <Label htmlFor="planning-horizon" className="text-black font-medium">
+                  Planning horizon (in years)
+                </Label>
+                <Input
+                  id="planning-horizon"
+                  type="number"
+                  min="1"
+                  max="20"
+                  value={planningHorizon}
+                  onChange={(e) => setPlanningHorizon(Number(e.target.value))}
+                  className="border-black"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="annual-use" className="text-black font-medium">
+                  Number of annual gown uses
+                </Label>
+                <Input
+                  id="annual-use"
+                  type="number"
+                  min="1"
+                  value={annualGownUse}
+                  onChange={(e) => setAnnualGownUse(Number(e.target.value))}
+                  className="border-black"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="loss-percentage" className="text-black font-medium">
+                  Loss percentage (%)
+                </Label>
+                <Input
+                  id="loss-percentage"
+                  type="number"
+                  min="0"
+                  max="50"
+                  value={lossPercentage}
+                  onChange={(e) => setLossPercentage(Number(e.target.value))}
+                  className="border-black"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -382,6 +475,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
               <thead>
                 <tr className="border-b">
                   <th className="text-left py-2 font-medium">Gown Type</th>
+                  <th className="text-right py-2 font-medium">Gowns Purchased</th>
                   <th className="text-right py-2 font-medium">Max Uses ({lossPercentage}% reduction)</th>
                   <th className="text-right py-2 font-medium">Extra Disposable Needed</th>
                   <th className="text-right py-2 font-medium">Utilization Rate</th>
@@ -391,6 +485,9 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                 {results.map((result) => (
                   <tr key={result.gownId} className="border-b">
                     <td className="py-2 font-medium">{result.gownName}</td>
+                    <td className="text-right py-2">
+                      {result.isReusable ? result.numberOfGownsToInvest.toLocaleString() : "n/a"}
+                    </td>
                     <td className="text-right py-2">
                       {result.isReusable ? result.maxGownUsesWithReduction.toLocaleString() : "0"}
                     </td>
@@ -446,7 +543,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                       <p className="text-2xl font-bold text-blue-600">€{result.capex.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
                         {result.isReusable
-                          ? `${numberOfGownsToInvest.toLocaleString()} gowns × €${selectedGowns.find((g) => g.id === result.gownId)?.cost.toFixed(2)}`
+                          ? `${result.numberOfGownsToInvest.toLocaleString()} gowns × €${selectedGowns.find((g) => g.id === result.gownId)?.cost.toFixed(2)}`
                           : "No initial investment"}
                       </p>
                     </div>
@@ -523,6 +620,10 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                       <h4 className="font-medium mb-2">Capacity Analysis</h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
+                          <span className="text-muted-foreground">Gowns purchased:</span>
+                          <p className="font-medium">{result.numberOfGownsToInvest.toLocaleString()} gowns</p>
+                        </div>
+                        <div>
                           <span className="text-muted-foreground">Maximum possible uses:</span>
                           <p className="font-medium">{result.maxGownUsesWithReduction.toLocaleString()} uses</p>
                         </div>
@@ -533,10 +634,6 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                         <div>
                           <span className="text-muted-foreground">Utilization:</span>
                           <p className="font-medium">{result.utilizationRate.toFixed(1)}%</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Extra Disposables:</span>
-                          <p className="font-medium">{result.extraDisposableGownsNeeded.toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
