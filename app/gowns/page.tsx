@@ -18,9 +18,12 @@ import EnergyImpacts from "@/components/dashboard/Api/GownComparison/EnergyImpac
 import WaterImpacts from "@/components/dashboard/Api/GownComparison/WaterImpact"
 import CO2Impacts from "@/components/dashboard/Api/GownComparison/CO2Impact"
 import type { Gown } from "../interfaces/Gown"
-import { Recycle, Trash2, LineChart } from "lucide-react"
+import { Recycle, Trash2, LineChart, Home } from "lucide-react"
 import GownInvestmentCalculator from "@/components/dashboard/Api/GownComparison/InvestmentCalculator"
 import XLSXdownload from "@/components/dashboard/Api/GownComparison/XLSXdownload"
+import Link from "next/link"
+
+
 
 export default function GownsPage() {
   const [reusableGowns, setReusableGowns] = useState<Gown[]>([])
@@ -95,6 +98,13 @@ export default function GownsPage() {
   return (
     <div className="container mx-auto pt-16 p-4 max-w-7xl relative z-20">
       <Card className="mb-3 relative z-30 border-none bg-white shadow-xl">
+        {/* Home link at top left */}
+        <div className="absolute top-10 left-[90px] flex flex-col items-center gap-1">
+          <Link href="/" className="transition-colors hover:text-foreground/80 flex flex-col items-center">
+            <Home className="w-6 h-6" />
+            <span className="text-xs font-bold mt-1">Home</span>
+          </Link>
+        </div>
         <CardHeader>
           <div className="flex items-center justify-center gap-2 mt-2 mb-2">
             <div className="rounded-full bg-green-100 p-2">

@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { EmissionDonutChart, type EmissionBreakdown } from "./InvestmentEmissionsDonughtChart"
+import InvestmentComparisonChart from "./InvestmentComparisonChart"
 
 interface InvestmentCalculatorProps {
   selectedGowns: Gown[]
@@ -576,7 +577,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                           €{result.extraDisposableCost.toLocaleString()}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {result.extraDisposableGownsNeeded.toLocaleString()} disposable gowns × (purchase price + waste cost)
+                          {result.extraDisposableGownsNeeded.toLocaleString()} disposable gowns needed
                         </p>
                       </div>
                     )}
@@ -664,53 +665,8 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
             ))}
         </div>
 
-        {/* Summary Comparison */}
-        {results.length > 1 && (
-          <Card className="bg-gray-50">
-            <CardHeader>
-              <CardTitle className="text-lg">Investment Comparison Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Lowest Total Expenses:</span>
-                  <span className="text-black font-bold">
-                    {
-                      results.reduce((min, current) => (current.totalExpenses < min.totalExpenses ? current : min))
-                        .gownName
-                    }{" "}
-                    (€{Math.min(...results.map((r) => r.totalExpenses)).toLocaleString()})
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Lowest CAPEX:</span>
-                  <span className="text-black font-bold">
-                    {results.reduce((min, current) => (current.capex < min.capex ? current : min)).gownName} (€
-                    {Math.min(...results.map((r) => r.capex)).toLocaleString()})
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Lowest OPEX:</span>
-                  <span className="text-black font-bold">
-                    {results.reduce((min, current) => (current.opex < min.opex ? current : min)).gownName} (€
-                    {Math.min(...results.map((r) => r.opex)).toLocaleString()})
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Lowest CO₂ Emissions:</span>
-                  <span className="text-black font-bold">
-                    {
-                      results.reduce((min, current) =>
-                        current.co2Breakdown.totalEmissions < min.co2Breakdown.totalEmissions ? current : min,
-                      ).gownName
-                    }{" "}
-                    ({Math.min(...results.map((r) => r.co2Breakdown.totalEmissions)).toLocaleString()} kg)
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Investment Performance Chart */}
+        {results.length > 1 && <InvestmentComparisonChart results={results} selectedGowns={selectedGowns} />}
       </CardContent>
     </Card>
   )
