@@ -23,49 +23,18 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { EmissionDonutChart, type EmissionBreakdown } from "./InvestmentEmissionsDonughtChart"
 import InvestmentComparisonChart from "./InvestmentComparisonChart"
-
-interface InvestmentCalculatorProps {
-  selectedGowns: Gown[]
-}
-
-interface InvestmentResult {
-  gownId: string
-  gownName: string
-  isReusable: boolean
-  // User inputs
-  numberOfGownsToInvest: number
-  planningHorizon: number
-  annualGownUse: number
-  lossPercentage: number
-  // Backend calculations
-  maxGownUsesWithReduction: number
-  totalUsesOverHorizon: number
-  actualUsesForOpex: number // Add this new field
-  extraDisposableGownsNeeded: number
-  // Financial results
-  capex: number
-  opex: number
-  extraDisposableCost: number
-  totalExpenses: number
-  // Emissions results with breakdown
-  co2Breakdown: EmissionBreakdown
-  waterBreakdown: EmissionBreakdown
-  energyBreakdown: EmissionBreakdown
-  // Additional metrics
-  utilizationRate: number
-  costPerUse: number
-}
+import { InvestmentCalculatorProps, InvestmentResult } from "@/app/interfaces/InvestmentCalculator"
 
 export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCalculatorProps) {
   // Investment mode: 'gowns' or 'budget'
   const [investmentMode, setInvestmentMode] = useState<"gowns" | "budget">("gowns")
 
   // User inputs
-  const [numberOfGownsToInvest, setNumberOfGownsToInvest] = useState<number>(8000)
-  const [investmentBudget, setInvestmentBudget] = useState<number>(400000) // Default budget
-  const [planningHorizon, setPlanningHorizon] = useState<number>(5)
-  const [annualGownUse, setAnnualGownUse] = useState<number>(36500)
-  const [lossPercentage, setLossPercentage] = useState<number>(5)
+  const [numberOfGownsToInvest, setNumberOfGownsToInvest] = useState<number>(0)
+  const [investmentBudget, setInvestmentBudget] = useState<number>() // Default budget
+  const [planningHorizon, setPlanningHorizon] = useState<number>()
+  const [annualGownUse, setAnnualGownUse] = useState<number>()
+  const [lossPercentage, setLossPercentage] = useState<number>()
 
   const [results, setResults] = useState<InvestmentResult[]>([])
   const [sortBy, setSortBy] = useState<"total" | "capex" | "opex" | "emissions">("total")
@@ -102,7 +71,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
         lossPercentage,
         maxGownUsesWithReduction: 0,
         totalUsesOverHorizon,
-        actualUsesForOpex: 0, // Add this initialization
+        actualUsesForOpex: 0,  // Add this initialization
         extraDisposableGownsNeeded: 0,
         capex: 0,
         opex: 0,
@@ -266,7 +235,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
           <div className="rounded-full bg-blue-100 p-2">
             <Calculator className="h-5 w-5 text-blue-600" />
           </div>
-          <CardTitle className="text-xl font-bold">Investment Analysis (CAPEX/OPEX)</CardTitle>
+          <CardTitle className="text-xl font-bold">Cost Comparison Analysis (CAPEX/OPEX)</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -289,7 +258,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
               <TabsContent value="gowns" className="mt-4">
                 <div className="space-y-2">
                   <Label htmlFor="gowns-investment" className="text-black font-medium">
-                    Number of reusable gowns to buy (CAPEX)
+                  Units purchased
                   </Label>
                   <Input
                     id="gowns-investment"
@@ -343,7 +312,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               <div className="space-y-2">
                 <Label htmlFor="planning-horizon" className="text-black font-medium">
-                  Planning horizon (in years)
+                Investment period (years)
                 </Label>
                 <Input
                   id="planning-horizon"
@@ -357,7 +326,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
               </div>
               <div className="space-y-2">
                 <Label htmlFor="annual-use" className="text-black font-medium">
-                  Number of annual gown uses
+                Annual usage (expected)
                 </Label>
                 <Input
                   id="annual-use"
@@ -486,7 +455,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                   <th className="text-right py-2 font-medium">Gowns Purchased</th>
                   <th className="text-right py-2 font-medium">Max Uses ({lossPercentage}% reduction)</th>
                   <th className="text-right py-2 font-medium">Extra Disposable Needed</th>
-                  <th className="text-right py-2 font-medium">Utilization Rate</th>
+                  {/* <th className="text-right py-2 font-medium">Utilization Rate</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -500,7 +469,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                       {result.isReusable ? result.maxGownUsesWithReduction.toLocaleString() : "0"}
                     </td>
                     <td className="text-right py-2">{result.extraDisposableGownsNeeded.toLocaleString()}</td>
-                    <td className="text-right py-2">{result.utilizationRate.toFixed(1)}%</td>
+                    {/* <td className="text-right py-2">{result.utilizationRate.toFixed(1)}%</td> */}
                   </tr>
                 ))}
               </tbody>
@@ -510,7 +479,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
 
         {/* Results */}
         <div className="space-y-4">
-          <h3 className="font-semibold text-lg mb-4 text-black px-4">Investment cost</h3>
+          <h3 className="font-semibold text-lg mb-4 text-black px-4">Investment versus Operational cost</h3>
 
           {results
             .sort((a, b) => {
@@ -546,7 +515,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Building className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-medium">CAPEX</span>
+                        <span className="text-sm font-medium">Total investment cost</span>
                       </div>
                       <p className="text-2xl font-bold text-blue-600">€{result.capex.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
@@ -559,7 +528,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Cog className="h-4 w-4 text-orange-600" />
-                        <span className="text-sm font-medium">OPEX</span>
+                        <span className="text-sm font-medium">Total Operational cost</span>
                       </div>
                       <p className="text-2xl font-bold text-orange-600">€{result.opex.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
@@ -623,7 +592,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                   </div>
 
                   {/* Capacity Analysis */}
-                  {result.isReusable && (
+                  {/* {result.isReusable && (
                     <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                       <h4 className="font-medium mb-2">Capacity Analysis</h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -645,7 +614,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Capacity Warning */}
                   {result.isReusable && result.extraDisposableGownsNeeded > 0 && (
@@ -666,7 +635,7 @@ export default function GownInvestmentCalculator({ selectedGowns }: InvestmentCa
         </div>
 
         {/* Investment Performance Chart */}
-        {results.length > 1 && <InvestmentComparisonChart results={results} selectedGowns={selectedGowns} />}
+        {/* {results.length > 1 && <InvestmentComparisonChart results={results} selectedGowns={selectedGowns} />} */}
       </CardContent>
     </Card>
   )

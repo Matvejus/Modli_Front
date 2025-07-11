@@ -159,6 +159,16 @@ export default function GownsPage() {
                     </p>
                   </div>
                 </div>
+                <div className="flex gap-4 items-start">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
+                    4
+                  </div>
+                  <div>
+                    <p className="font-medium">
+                    Below the gown comparison results, you can perform an <strong>investment</strong> versus <strong>operational cost</strong> analysis by entering the number of gowns (to be) purchased, the investment period (in years), and the expected annual usage.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
