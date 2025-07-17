@@ -269,7 +269,23 @@ export default function GownDetail({ params }: GownDetailProps) {
         {gown.reusable && (
           <Card>
             <CardHeader>
-              <CardTitle>Laundry cost (€/gown/wash)</CardTitle>
+              <CardTitle>Laundry cost (€/gown/wash)
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                      <span className="sr-only">More information</span>
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>
+                    When leasing isolation gowns, enter the pay-per-use costs in this field and leave the purchase cost field blank
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </CardTitle>
             </CardHeader>
             <CardContent>
               <Input
