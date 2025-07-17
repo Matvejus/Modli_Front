@@ -17,8 +17,8 @@ import Navigation from "../navigation/navigation";
                     height={100}
                 />
             </Link>
+            <Navigation/>
             </div>
-
         </header>
         
     );

@@ -47,9 +47,7 @@ export default function GownCertificatesTable({ gowns }: GownCertificatesTablePr
                       typeof cert === 'object' ? cert.name === certName : cert === certName
                     ) ? (
                       <Check className="text-green-500" aria-label={`${gown.name} has ${certName} certificate`} />
-                    ) : (
-                      <X className="text-red-500" aria-label={`${gown.name} does not have ${certName} certificate`} />
-                    )}
+                    ) : null}
                   </TableCell>
                 ))}
               </TableRow>

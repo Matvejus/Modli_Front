@@ -1,7 +1,8 @@
 "use client"
 
 import { calculateDepreciationSchedule, calculateDisposableScheduleWithGownData } from "@/lib/InvestmentCalculations"
-
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Info, ChevronDown, Pencil } from "lucide-react"
 interface InvestmentResult {
   gownId: string
   gownName: string
@@ -32,8 +33,40 @@ export default function InvestmentDepreciationTable({ result, gown }: Investment
           <thead>
             <tr className="border-b">
               <th className="text-left py-2 font-medium">Year</th>
-              <th className="text-right py-2 font-medium">Book Value Reusable Gown</th>
-              <th className="text-right py-2 font-medium">Annual Depreciation</th>
+              <th className="text-right py-2 font-medium">Book Value Reusable Gown
+              <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <span className="sr-only">More information</span>
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                      the value of an asset on a company’s balance sheet after accounting for depreciation
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </th>
+              <th className="text-right py-2 font-medium">Annual Depreciation
+              <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <span className="sr-only">More information</span>
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>
+                      the amount of an asset’s value that is “used up” each year, recorded as an expense on the company’s income statement. Straight line depreciation is assumed.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </th>
               <th className="text-right py-2 font-medium">Operational Costs Reusable Gown</th>
             </tr>
           </thead>
