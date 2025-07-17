@@ -2,14 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-// import { Button } from "@/components/ui/button"
 import GownList from "@/components/dashboard/Api/GownList"
-// import OptimizationSpecifications from '@/components/dashboard/Api/OptimizationSpecifications'
-// import ClusteredBarChart from '@/components/dashboard/Api/clustered-bar-impacts'
-// import UsageChart from '@/components/dashboard/Api/GownUsage'
-// import GownImpactsStacked from '@/components/dashboard/Api/stacked-bar-impacts'
 import VariablesAndSourcesModal from "@/components/modals/variables_sources"
-// import GownTotalUsage from '@/components/dashboard/Api/GownTotalUsage'
 import GownComparisonTable from "@/components/dashboard/Api/GownComparison/EmissionsTable"
 import EconomicImpacts from "@/components/dashboard/Api/GownComparison/EconomicImpacts"
 import GownHygieneComparison from "@/components/dashboard/Api/GownComparison/HygineComparison"
@@ -17,13 +11,10 @@ import GownCertificatesTable from "@/components/dashboard/Api/GownComparison/Cer
 import EnergyImpacts from "@/components/dashboard/Api/GownComparison/EnergyImpact"
 import WaterImpacts from "@/components/dashboard/Api/GownComparison/WaterImpact"
 import CO2Impacts from "@/components/dashboard/Api/GownComparison/CO2Impact"
-import type { Gown } from "../interfaces/Gown"
-import { Recycle, Trash2, LineChart, Home } from "lucide-react"
-import GownInvestmentCalculator from "@/components/dashboard/Api/GownComparison/InvestmentCalculator"
 import XLSXdownload from "@/components/dashboard/Api/GownComparison/XLSXdownload"
-import Link from "next/link"
-
-
+import type { Gown } from "../interfaces/Gown"
+import { Recycle, Trash2, LineChart } from "lucide-react"
+import GownInvestmentCalculator from "@/components/dashboard/Api/GownComparison/InvestmentCalculator"
 
 export default function GownsPage() {
   const [reusableGowns, setReusableGowns] = useState<Gown[]>([])
@@ -33,15 +24,21 @@ export default function GownsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  // Investment calculator parameters - track these to pass to Excel export
+  const [investmentParams, setInvestmentParams] = useState({
+    numberOfGownsToInvest: 0,
+    planningHorizon: 0,
+    annualGownUse: 0,
+  })
+
   const fetchGowns = async () => {
     try {
       const response = await fetch(`api/emissions/gown-list/`, {
-        credentials: "include", // Add this line
+        credentials: "include",
       })
       if (!response.ok) throw new Error("Failed to fetch data")
       const data = await response.json()
 
-      // Map data to match the Gown structure and include emission_impacts directly
       const formattedData: Gown[] = data.map((gown: Gown) => ({
         ...gown,
         emission_impacts: gown.emission_impacts,
@@ -63,7 +60,7 @@ export default function GownsPage() {
   useEffect(() => {
     if (selectedGowns.length > 0) {
       fetch(`/api/emissions/selected-gowns-emissions?ids=${selectedGowns.join(",")}`, {
-        credentials: "include", // Ensure cookies are sent
+        credentials: "include",
       })
         .then((response) => {
           if (!response.ok) {
@@ -77,18 +74,14 @@ export default function GownsPage() {
       setSelectedGownData([])
     }
   }, [selectedGowns])
-  console.log(selectedGowns)
 
   const handleGownSelection = (gownId: string) => {
     setSelectedGowns((prev) => {
       if (prev.includes(gownId)) {
-        // If the gown is already selected, remove it
         return prev.filter((id) => id !== gownId)
       } else if (prev.length < 3) {
-        // Add the gown only if the total selected is less than 3
         return [...prev, gownId]
       } else {
-        // If 3 gowns are already selected, prevent adding more
         alert("You can only select up to 3 gowns.")
         return prev
       }
@@ -98,13 +91,6 @@ export default function GownsPage() {
   return (
     <div className="container mx-auto pt-16 p-4 max-w-7xl relative z-20">
       <Card className="mb-3 relative z-30 border-none bg-white shadow-xl">
-        {/* Home link at top left */}
-        <div className="absolute top-10 left-[90px] flex flex-col items-center gap-1">
-          <Link href="/" className="transition-colors hover:text-foreground/80 flex flex-col items-center">
-            <Home className="w-6 h-6" />
-            <span className="text-xs font-bold mt-1">Home</span>
-          </Link>
-        </div>
         <CardHeader>
           <div className="flex items-center justify-center gap-2 mt-2 mb-2">
             <div className="rounded-full bg-green-100 p-2">
@@ -124,8 +110,6 @@ export default function GownsPage() {
             </div>
             <div className="bg-green-50 p-6 rounded-lg mb-4">
               <div className="flex flex-col space-y-8">
-                {" "}
-                {/* Changed from gap-6 to space-y-8 for more vertical spacing */}
                 <div className="flex gap-4 items-start">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full border bg-[#F99177] text-white flex items-center justify-center font-bold hover:bg-black hover:text-white transition-colors">
                     1
@@ -165,7 +149,7 @@ export default function GownsPage() {
                   </div>
                   <div>
                     <p className="font-medium">
-                    Below the gown comparison results, you can perform an <strong>investment</strong> versus <strong>operational cost</strong> analysis by entering the number of gowns (to be) purchased, the investment period (in years), and the expected annual usage.
+                    Below the gown comparison results, you can perform an investment versus operational cost analysis by entering the number of gowns (to be) purchased, the investment period (in years), and the expected annual usage
                     </p>
                   </div>
                 </div>
@@ -213,7 +197,11 @@ export default function GownsPage() {
 
       {selectedGownData.length > 0 && (
         <div className="pt-3 relative z-30">
-          <XLSXdownload selectedGownData={selectedGownData} selectedGowns={selectedGowns} />
+          <XLSXdownload
+            selectedGownData={selectedGownData}
+            selectedGowns={selectedGowns}
+            investmentParameters={investmentParams}
+          />
 
           <div className="mb-3">
             <GownComparisonTable gowns={selectedGownData} />
@@ -229,9 +217,6 @@ export default function GownsPage() {
             <div className="col-span-3">
               <EconomicImpacts gowns={selectedGownData} />
             </div>
-            {/* <div className="col-span-1">
-              <SocialImpacts gowns={selectedGownData} />
-            </div> */}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
@@ -240,7 +225,7 @@ export default function GownsPage() {
           </div>
 
           <div className="mb-3">
-            <GownInvestmentCalculator selectedGowns={selectedGownData} />
+            <GownInvestmentCalculator selectedGowns={selectedGownData} onParametersChange={setInvestmentParams} />
           </div>
 
         </div>
