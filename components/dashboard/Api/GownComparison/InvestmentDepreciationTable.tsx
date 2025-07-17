@@ -28,30 +28,22 @@ export default function InvestmentDepreciationTable({ result, gown }: Investment
 
     return (
       <div className="overflow-x-auto">
-        <table className="w-full text-sm border-collapse border border-gray-300">
+        <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-3 text-left font-medium">Year</th>
-              <th className="border border-gray-300 px-4 py-3 text-right font-medium">Book Value Reusable Gown</th>
-              <th className="border border-gray-300 px-4 py-3 text-right font-medium">Annual Depreciation</th>
-              <th className="border border-gray-300 px-4 py-3 text-right font-medium">
-                Operational Costs Reusable Gown
-              </th>
+            <tr className="border-b">
+              <th className="text-left py-2 font-medium">Year</th>
+              <th className="text-right py-2 font-medium">Book Value Reusable Gown</th>
+              <th className="text-right py-2 font-medium">Annual Depreciation</th>
+              <th className="text-right py-2 font-medium">Operational Costs Reusable Gown</th>
             </tr>
           </thead>
           <tbody>
             {depreciationSchedule.map((row) => (
-              <tr key={row.year} className="hover:bg-gray-50">
-                <td className="border border-gray-300 px-4 py-3 font-medium">Year {row.year}</td>
-                <td className="border border-gray-300 px-4 py-3 text-right">
-                  {Math.round(row.bookValue).toLocaleString()}
-                </td>
-                <td className="border border-gray-300 px-4 py-3 text-right">
-                  {Math.round(row.annualDepreciation).toLocaleString()}
-                </td>
-                <td className="border border-gray-300 px-4 py-3 text-right">
-                  {Math.round(row.operationalCosts).toLocaleString()}
-                </td>
+              <tr key={row.year} className="border-b">
+                <td className="py-2 font-medium">Year {row.year}</td>
+                <td className="text-right py-2">{Math.round(row.bookValue).toLocaleString()}</td>
+                <td className="text-right py-2">{Math.round(row.annualDepreciation).toLocaleString()}</td>
+                <td className="text-right py-2">{Math.round(row.operationalCosts).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
@@ -64,28 +56,22 @@ export default function InvestmentDepreciationTable({ result, gown }: Investment
 
     return (
       <div className="overflow-x-auto">
-        <table className="w-full text-sm border-collapse border border-gray-300">
+        <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 px-4 py-3 text-left font-medium">Year</th>
-              <th className="border border-gray-300 px-4 py-3 text-right font-medium">Purchase Costs</th>
-              <th className="border border-gray-300 px-4 py-3 text-right font-medium">Waste Costs</th>
-              <th className="border border-gray-300 px-4 py-3 text-right font-medium">Total Annual Costs</th>
+            <tr className="border-b">
+              <th className="text-left py-2 font-medium">Year</th>
+              <th className="text-right py-2 font-medium">Purchase Costs</th>
+              <th className="text-right py-2 font-medium">Waste Costs</th>
+              <th className="text-right py-2 font-medium">Total Annual Costs</th>
             </tr>
           </thead>
           <tbody>
             {disposableSchedule.map((row) => (
-              <tr key={row.year} className="hover:bg-gray-50">
-                <td className="border border-gray-300 px-4 py-3 font-medium">Year {row.year}</td>
-                <td className="border border-gray-300 px-4 py-3 text-right">
-                  {Math.round(row.purchaseCosts).toLocaleString()}
-                </td>
-                <td className="border border-gray-300 px-4 py-3 text-right">
-                  {Math.round(row.wasteCosts).toLocaleString()}
-                </td>
-                <td className="border border-gray-300 px-4 py-3 text-right font-medium">
-                  {Math.round(row.totalAnnualCosts).toLocaleString()}
-                </td>
+              <tr key={row.year} className="border-b">
+                <td className="py-2 font-medium">Year {row.year}</td>
+                <td className="text-right py-2">{Math.round(row.purchaseCosts).toLocaleString()}</td>
+                <td className="text-right py-2">{Math.round(row.wasteCosts).toLocaleString()}</td>
+                <td className="text-right py-2 font-medium">{Math.round(row.totalAnnualCosts).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>

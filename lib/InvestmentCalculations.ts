@@ -206,12 +206,15 @@ export function calculateDisposableSchedule(result: InvestmentResult) {
 export function calculateDisposableScheduleWithGownData(result: InvestmentResult, gown: any) {
   if (result.isReusable) return []
 
+  // Safety check: if gown is undefined, return empty array
+  if (!gown) return []
+
   const schedule = []
   const totalGownsNeeded = result.totalUsesOverHorizon
   const annualUsage = result.annualGownUse
 
-  // Use actual gown cost data
-  const purchaseCostPerGown = gown.cost
+  // Use actual gown cost data with fallback values
+  const purchaseCostPerGown = gown.cost || 0.81 // Fallback to default disposable cost
   const wasteCostPerGown = gown.waste_cost || 0
 
   const totalPurchaseCostYear1 = totalGownsNeeded * purchaseCostPerGown

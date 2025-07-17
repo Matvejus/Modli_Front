@@ -187,7 +187,7 @@ const XLSXdownload = ({
 
   return (
     <div className="mb-3 flex justify-end">
-      <Button onClick={downloadSelectedGownsAsXLSX} disabled={selectedGowns.length === 0}>
+      <Button onClick={downloadSelectedGownsAsXLSX} disabled={selectedGowns.length === 0} className="bg-white text-black">
         Export data
       </Button>
     </div>

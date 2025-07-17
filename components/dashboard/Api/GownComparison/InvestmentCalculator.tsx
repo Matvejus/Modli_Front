@@ -90,7 +90,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
           <div className="rounded-full bg-blue-100 p-2">
             <Calculator className="h-5 w-5 text-blue-600" />
           </div>
-          <CardTitle className="text-xl font-bold">Cost Comparison Analysis</CardTitle>
+          <CardTitle className="text-xl font-bold">Cost Comparison Analysis (CAPEX/OPEX)</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -236,7 +236,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
 
         {/* Backend Calculations Display */}
         <div className="p-4 rounded-lg">
-          {/* <h3 className="font-semibold text-lg mb-4 text-black">Maximum possible uses and utilization rate</h3> */}
+          <h3 className="font-semibold text-lg mb-4 text-black">Maximum possible uses and utilization rate</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -330,7 +330,11 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                         <span className="text-sm font-medium">Total Costs</span>
                       </div>
                       <p className="text-2xl font-bold text-green-600">€{result.totalExpenses.toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground">€{result.costPerUse.toFixed(2)} per use</p>
+                      <p className="text-xs text-muted-foreground">
+                        {result.isReusable
+                          ? `(Investment + Operational) over ${planningHorizon} years`
+                          : `Operational costs for ${result.totalUsesOverHorizon.toLocaleString()} gowns over ${planningHorizon} years`}
+                      </p>
                     </div>
                   </div>
 
