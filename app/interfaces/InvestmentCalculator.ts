@@ -1,7 +1,13 @@
-import { Gown } from "@/app/interfaces/Gown"
+import type { Gown } from "@/app/interfaces/Gown"
 
 export interface InvestmentCalculatorProps {
   selectedGowns: Gown[]
+}
+
+export interface EmissionBreakdown {
+  reusableEmissions: number
+  disposableEmissions: number
+  totalEmissions: number
 }
 
 export interface InvestmentResult {
