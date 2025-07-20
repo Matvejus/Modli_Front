@@ -95,9 +95,9 @@ export function calculateInvestmentResults(
             disposableGown.emission_impacts.Energy * disposableUses,
           )
         } else {
-          result.co2Breakdown.disposableEmissions = Math.floor(0.5 * disposableUses)
-          result.waterBreakdown.disposableEmissions = Math.floor(2.0 * disposableUses)
-          result.energyBreakdown.disposableEmissions = Math.floor(8.0 * disposableUses)
+          result.co2Breakdown.disposableEmissions = Math.floor(0.21 * disposableUses)
+          result.waterBreakdown.disposableEmissions = Math.floor(1.16 * disposableUses)
+          result.energyBreakdown.disposableEmissions = Math.floor(2.59 * disposableUses)
         }
       }
 

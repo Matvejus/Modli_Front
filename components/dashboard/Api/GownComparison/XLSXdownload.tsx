@@ -6,6 +6,7 @@ import type { Gown } from "@/app/interfaces/Gown"
 import {
   calculateInvestmentResults,
   calculateDepreciationSchedule,
+  calculateDisposableScheduleWithGownData,
   type InvestmentParameters,
 } from "@/lib/InvestmentCalculations"
 
@@ -54,16 +55,13 @@ const XLSXdownload = ({
     // Laundry cost (€/gown/wash)
     worksheetData.push([
       "Laundry cost (€/gown/wash)",
-      ...selectedGownData.map((gown) =>
-        gown.reusable && gown.laundry_cost ? gown.laundry_cost.toFixed(2) : "n/a",
-      ),
+      ...selectedGownData.map((gown) => (gown.reusable && gown.laundry_cost ? gown.laundry_cost.toFixed(2) : "n/a")),
     ])
 
     // Max. number of washes expected
     worksheetData.push([
-      "Max. number of washes expected", ...selectedGownData.map((gown) =>
-        gown.reusable? gown.washes : "n/a"
-     ),
+      "Max. number of washes expected",
+      ...selectedGownData.map((gown) => (gown.reusable ? gown.washes : "n/a")),
     ])
 
     // Perceived hygiene (1-5 Likert scale)
@@ -79,10 +77,7 @@ const XLSXdownload = ({
     ])
 
     // Residual value (€/gown)
-    worksheetData.push([
-      "Residual value (€/gown)",
-      ...selectedGownData.map((gown) => gown.residual_value.toFixed(2)),
-    ])
+    worksheetData.push(["Residual value (€/gown)", ...selectedGownData.map((gown) => gown.residual_value.toFixed(2))])
 
     // Waste cost (€/gown)
     worksheetData.push([
@@ -160,8 +155,6 @@ const XLSXdownload = ({
         let totalCostPerUse
         if (gown.reusable) {
           // For reusable: (purchase cost per use) + (laundry cost per use) + (waste cost per use) - (residual value per use)
-          // const wasteCostPerUse = wasteCost / (gown.washes || 1)
-          // const residualValuePerUse = residualValue / (gown.washes || 1)
           totalCostPerUse = purchaseCost + laundryCost + wasteCost - residualValue
         } else {
           // For disposable: purchase cost + waste cost (no laundry, no residual value)
@@ -211,29 +204,36 @@ const XLSXdownload = ({
 
       // Environmental Impact Section
       investmentWorksheetData.push(
-        ["Total Enviromental Impact", ...investmentResults.map((r) => r.gownName)],
-        ["Total CO₂ Emissions (kg CO₂-eq)", ...investmentResults.map((r) => r.co2Breakdown.totalEmissions.toLocaleString())],
+        ["Total Environmental Impact", ...investmentResults.map((r) => r.gownName)],
+        [
+          "Total CO₂ Emissions (kg CO₂-eq)",
+          ...investmentResults.map((r) => r.co2Breakdown.totalEmissions.toLocaleString()),
+        ],
         ["Total Water Usage (L)", ...investmentResults.map((r) => r.waterBreakdown.totalEmissions.toLocaleString())],
-        ["Total Energy Usage (MJ-eq)", ...investmentResults.map((r) => r.energyBreakdown.totalEmissions.toLocaleString())],
+        [
+          "Total Energy Usage (MJ-eq)",
+          ...investmentResults.map((r) => r.energyBreakdown.totalEmissions.toLocaleString()),
+        ],
         [""],
       )
 
-      // Depreciation Schedule for Reusable Gowns
-      const reusableResults = investmentResults.filter((r) => r.isReusable)
-      if (reusableResults.length > 0) {
-        investmentWorksheetData.push(["Cost Comparison Analysis"], [""])
+      // Cost Breakdown Tables for ALL Gowns (both reusable and disposable)
+      investmentWorksheetData.push(["Cost Breakdown Analysis"], [""])
 
-        reusableResults.forEach((result, index) => {
+      investmentResults.forEach((result, index) => {
+        const correspondingGown = selectedGownData.find((g) => g.id === result.gownId)
+
+        if (index > 0) {
+          investmentWorksheetData.push([""]) // Add space between gowns
+        }
+
+        investmentWorksheetData.push([`${result.gownName}`])
+
+        if (result.isReusable) {
+          // Reusable gown depreciation schedule
           const depreciationSchedule = calculateDepreciationSchedule(result)
 
-          if (index > 0) {
-            investmentWorksheetData.push([""]) // Add space between gowns
-          }
-
-          investmentWorksheetData.push(
-            [`${result.gownName}`],
-            ["Year", "Book Value (€)", "Annual Depreciation (€)", "Operational Costs (€)"],
-          )
+          investmentWorksheetData.push(["Year", "Book Value (€)", "Annual Depreciation (€)", "Operational Costs (€)"])
 
           depreciationSchedule.forEach((row) => {
             investmentWorksheetData.push([
@@ -243,10 +243,24 @@ const XLSXdownload = ({
               Math.round(row.operationalCosts).toLocaleString(),
             ])
           })
+        } else {
+          // Disposable gown yearly expense schedule
+          const disposableSchedule = calculateDisposableScheduleWithGownData(result, correspondingGown)
 
-          investmentWorksheetData.push([""]) // Empty row after each table
-        })
-      }
+          investmentWorksheetData.push(["Year", "Purchase Costs (€)", "Waste Costs (€)", "Total Annual Costs (€)"])
+
+          disposableSchedule.forEach((row) => {
+            investmentWorksheetData.push([
+              `Year ${row.year}`,
+              Math.round(row.purchaseCosts).toLocaleString(),
+              Math.round(row.wasteCosts).toLocaleString(),
+              Math.round(row.totalAnnualCosts).toLocaleString(),
+            ])
+          })
+        }
+
+        investmentWorksheetData.push([""]) // Empty row after each table
+      })
 
       const investmentWorksheet = XLSX.utils.aoa_to_sheet(investmentWorksheetData)
       XLSX.utils.book_append_sheet(workbook, investmentWorksheet, "Investment Analysis")
