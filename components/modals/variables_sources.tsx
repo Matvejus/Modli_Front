@@ -27,10 +27,10 @@ export default function VariablesAndSourcesModal() {
       <DialogContent className="max-w-[90vw] md:max-w-[80vw] lg:max-w-[1000px] max-h-[90vh] overflow-y-auto bg-white text-black border-2 border-gray-200 shadow-lg">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            MODLI's Sustainability Impact Assessment: Variables and Assumptions
+            Isolation Gown Impact Assessment: Variables, Sources and Assumptions
           </DialogTitle>
           <DialogDescription className="text-gray-600">
-            This document outlines the key variables, assumptions, and data sources used in the assessment.
+            This page outlines the key variables, assumptions, and data sources used in the assessment.
           </DialogDescription>
         </DialogHeader>
 

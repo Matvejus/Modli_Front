@@ -25,9 +25,9 @@ import {
 
 export default function GownInvestmentCalculator({ selectedGowns, onParametersChange }: InvestmentCalculatorProps) {
   // User inputs
-  const [numberOfGownsToInvest, setNumberOfGownsToInvest] = useState<number>(0)
-  const [planningHorizon, setPlanningHorizon] = useState<number>(0)
-  const [annualGownUse, setAnnualGownUse] = useState<number>(0)
+  const [numberOfGownsToInvest, setNumberOfGownsToInvest] = useState<number>()
+  const [planningHorizon, setPlanningHorizon] = useState<number>()
+  const [annualGownUse, setAnnualGownUse] = useState<number>()
 
   const [results, setResults] = useState<InvestmentResult[]>([])
   const [sortBy, setSortBy] = useState<"total" | "capex" | "opex" | "emissions">("total")
@@ -37,9 +37,9 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
     if (selectedGowns.length === 0) return
 
     const parameters: InvestmentParameters = {
-      numberOfGownsToInvest,
-      planningHorizon,
-      annualGownUse,
+      numberOfGownsToInvest: numberOfGownsToInvest ?? 0,
+      planningHorizon: planningHorizon ?? 0,
+      annualGownUse: annualGownUse ?? 0,
     }
 
     const calculatedResults = calculateInvestmentResults(selectedGowns, parameters)
@@ -55,9 +55,9 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
   useEffect(() => {
     if (onParametersChange) {
       onParametersChange({
-        numberOfGownsToInvest,
-        planningHorizon,
-        annualGownUse,
+        numberOfGownsToInvest: numberOfGownsToInvest ?? 0,
+        planningHorizon: planningHorizon ?? 0,
+        annualGownUse: annualGownUse ?? 0,
       })
     }
   }, [numberOfGownsToInvest, planningHorizon, annualGownUse, onParametersChange])
@@ -146,7 +146,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
         </div>
 
         {/* Sorting Controls */}
-        {results.length > 1 && (
+        {/* {results.length > 1 && (
           <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
             <span className="font-medium">Sort by:</span>
             <div className="flex gap-2">
@@ -235,7 +235,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
         )}
 
         {/* Backend Calculations Display */}
-        <div className="p-4 rounded-lg">
+        {/* <div className="p-4 rounded-lg">
           <h3 className="font-semibold text-lg mb-4 text-black">Maximum possible uses and utilization rate</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -263,7 +263,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
               </tbody>
             </table>
           </div>
-        </div>
+        </div> */}
 
         {/* Results */}
         <div className="space-y-4">
@@ -279,19 +279,21 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                     {result.gownName}
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        result.isReusable ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                        result.isReusable ? "bg-green-100 text-green-800" : ""
                       }`}
                     >
-                      {result.isReusable ? "Reusable" : "Disposable"}
+                      {result.isReusable ? "Reusable" : ""}
                     </span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className={`grid grid-cols-${result.extraDisposableCost > 0 ? "4" : "3"} gap-4 mb-4`}>
-                    <div className="space-y-2">
+                <div
+                    className={`grid grid-cols-${result.extraDisposableCost > 0 ? "4" : "3"} gap-4 mb-4 items-start`}
+                  >
+                    <div className="space-y-2 p-3 bg-blue-50 rounded-lg h-full">
                       <div className="flex items-center gap-2">
                         <Building className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-medium">Total investment cost</span>
+                        <span className="text-sm font-medium">Total Investment Cost</span>
                       </div>
                       <p className="text-2xl font-bold text-blue-600">€{result.capex.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
@@ -300,18 +302,20 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                           : "No initial investment"}
                       </p>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-3 bg-orange-50 rounded-lg h-full">
                       <div className="flex items-center gap-2">
                         <Cog className="h-4 w-4 text-orange-600" />
-                        <span className="text-sm font-medium">Total Operational cost</span>
+                        <span className="text-sm font-medium">Total Operational Cost</span>
                       </div>
                       <p className="text-2xl font-bold text-orange-600">€{result.opex.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
-                        {result.isReusable ? "(Laundry + Waste - Residual) × Actual Uses" : "Purchase + Waste costs"}
+                        {result.isReusable
+                          ? "(Laundry costs + Waste costs - Residual value) × Actual Uses"
+                          : "Purchase costs + Waste costs"}
                       </p>
                     </div>
                     {result.extraDisposableCost > 0 && (
-                      <div className="space-y-2">
+                      <div className="space-y-2 p-3 bg-red-50 rounded-lg h-full">
                         <div className="flex items-center gap-2">
                           <ShoppingCart className="h-4 w-4 text-red-600" />
                           <span className="text-sm font-medium">Extra Disposables</span>
@@ -324,7 +328,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                         </p>
                       </div>
                     )}
-                    <div className="space-y-2 bg-yellow-50 p-3 rounded-lg">
+                    <div className="space-y-2 p-3 bg-green-50 rounded-lg h-full">
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-green-600" />
                         <span className="text-sm font-medium">Total Costs</span>
@@ -332,8 +336,8 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                       <p className="text-2xl font-bold text-green-600">€{result.totalExpenses.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
                         {result.isReusable
-                          ? `(Investment + Operational) over ${planningHorizon} years`
-                          : `Operational costs for ${result.totalUsesOverHorizon.toLocaleString()} gowns over ${planningHorizon} years`}
+                          ? `(Investment costs + Operational costs) over ${planningHorizon} years`
+                          : `Total cost for ${result.totalUsesOverHorizon.toLocaleString()} gowns over ${planningHorizon} years`}
                       </p>
                     </div>
                   </div>
@@ -349,21 +353,21 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <EmissionDonutChart
                         breakdown={result.co2Breakdown}
-                        title="CO₂ Emissions"
+                        title="CO₂ Impact"
                         unit="kg CO₂-eq"
                         color="#10b981"
                         icon={Leaf}
                       />
                       <EmissionDonutChart
                         breakdown={result.waterBreakdown}
-                        title="Water Usage"
+                        title="Water Impact"
                         unit="L"
                         color="#3b82f6"
                         icon={Droplets}
                       />
                       <EmissionDonutChart
                         breakdown={result.energyBreakdown}
-                        title="Energy Usage"
+                        title="Energy Impact"
                         unit="MJ-eq"
                         color="#f59e0b"
                         icon={Zap}
