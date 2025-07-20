@@ -287,8 +287,10 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className={`grid grid-cols-${result.extraDisposableCost > 0 ? "4" : "3"} gap-4 mb-4`}>
-                    <div className="space-y-2">
+                <div
+                    className={`grid grid-cols-${result.extraDisposableCost > 0 ? "4" : "3"} gap-4 mb-4 items-start`}
+                  >
+                    <div className="space-y-2 p-3 bg-blue-50 rounded-lg h-full">
                       <div className="flex items-center gap-2">
                         <Building className="h-4 w-4 text-blue-600" />
                         <span className="text-sm font-medium">Total Investment Cost</span>
@@ -300,18 +302,20 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                           : "No initial investment"}
                       </p>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-3 bg-orange-50 rounded-lg h-full">
                       <div className="flex items-center gap-2">
                         <Cog className="h-4 w-4 text-orange-600" />
                         <span className="text-sm font-medium">Total Operational Cost</span>
                       </div>
                       <p className="text-2xl font-bold text-orange-600">€{result.opex.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
-                        {result.isReusable ? "(Laundry costs + Waste costs - Residual value) × Actual Uses" : "Purchase costs + Waste costs"}
+                        {result.isReusable
+                          ? "(Laundry costs + Waste costs - Residual value) × Actual Uses"
+                          : "Purchase costs + Waste costs"}
                       </p>
                     </div>
                     {result.extraDisposableCost > 0 && (
-                      <div className="space-y-2">
+                      <div className="space-y-2 p-3 bg-red-50 rounded-lg h-full">
                         <div className="flex items-center gap-2">
                           <ShoppingCart className="h-4 w-4 text-red-600" />
                           <span className="text-sm font-medium">Extra Disposables</span>
@@ -324,16 +328,16 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                         </p>
                       </div>
                     )}
-                    <div className="space-y-2 bg-yellow-50 p-3 rounded-lg">
+                    <div className="space-y-2 p-3 bg-green-50 rounded-lg h-full">
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium">Total Cost</span>
+                        <span className="text-sm font-medium">Total Costs</span>
                       </div>
                       <p className="text-2xl font-bold text-green-600">€{result.totalExpenses.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
                         {result.isReusable
                           ? `(Investment costs + Operational costs) over ${planningHorizon} years`
-                          : `Operational costs for ${result.totalUsesOverHorizon.toLocaleString()} gowns over ${planningHorizon} years`}
+                          : `Total cost for ${result.totalUsesOverHorizon.toLocaleString()} gowns over ${planningHorizon} years`}
                       </p>
                     </div>
                   </div>

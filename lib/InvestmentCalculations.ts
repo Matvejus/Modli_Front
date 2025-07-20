@@ -148,11 +148,13 @@ export function calculateDepreciationSchedule(result: InvestmentResult) {
   const annualOperationalCost = result.opex / result.planningHorizon
 
   for (let year = 1; year <= result.planningHorizon; year++) {
-    const bookValue = result.capex - annualDepreciation * (year - 1)
+    // Modified calculation: Book value should be investment cost minus (annual depreciation × year)
+    // This means Year 1 shows the book value AFTER the first year's depreciation
+    const bookValue = result.capex - annualDepreciation * year
 
     schedule.push({
       year,
-      bookValue: Math.max(0, bookValue),
+      bookValue: Math.max(0, bookValue), // Ensure book value doesn't go below 0
       annualDepreciation,
       operationalCosts: annualOperationalCost,
     })
