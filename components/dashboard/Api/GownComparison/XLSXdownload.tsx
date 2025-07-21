@@ -124,7 +124,7 @@ const XLSXdownload = ({
     worksheetData.push([
       "Laundry Costs (€ per 1 use)",
       ...selectedGownData.map((gown) =>
-        gown.emission_impacts.laundry_cost ? gown.emission_impacts.laundry_cost.toFixed(2) : "n/a",
+        gown.reusable ? gown.laundry_cost.toFixed(2) : "n/a",
       ),
     ])
 
@@ -195,7 +195,6 @@ const XLSXdownload = ({
       investmentWorksheetData.push(
         ["Cost Comparison Analysis", ...investmentResults.map((r) => r.gownName)],
         ["Gown Type", ...investmentResults.map((r) => (r.isReusable ? "Reusable" : "Disposable"))],
-        [""],
         ["Total Investment Cost (€)", ...investmentResults.map((r) => r.capex.toLocaleString())],
         ["Total Operational Cost (€)", ...investmentResults.map((r) => r.opex.toLocaleString())],
         ["Total Cost (€)", ...investmentResults.map((r) => r.totalExpenses.toLocaleString())],
