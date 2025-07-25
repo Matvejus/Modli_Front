@@ -90,7 +90,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
           <div className="rounded-full bg-blue-100 p-2">
             <Calculator className="h-5 w-5 text-blue-600" />
           </div>
-          <CardTitle className="text-xl font-bold">Cost Comparison Analysis (CAPEX/OPEX)</CardTitle>
+          <CardTitle className="text-xl font-bold">Cost Comparison Analysis</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -109,7 +109,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                 onChange={(e) => setNumberOfGownsToInvest(Number(e.target.value))}
                 className="border-black"
               />
-              <p className="text-xs text-muted-foreground">Specify the exact number of reusable gowns to purchase</p>
+              {/* <p className="text-xs text-muted-foreground">Specify the exact number of reusable gowns to purchase</p> */}
             </div>
 
             {/* Other Parameters */}
@@ -331,7 +331,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                     <div className="space-y-2 p-3 bg-green-50 rounded-lg h-full">
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium">Total Costs</span>
+                        <span className="text-sm font-medium">Total Cost</span>
                       </div>
                       <p className="text-2xl font-bold text-green-600">€{result.totalExpenses.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">

@@ -149,7 +149,7 @@ export default function GownsPage() {
                   </div>
                   <div>
                     <p className="font-medium">
-                    Below the gown comparison results, you can perform an <strong>investment versus operational cost analysis</strong> by entering the number of gowns (to be) purchased, the investment period (in years), and the expected annual usage
+                    Below the gown comparison results, you can perform an <strong>investment versus operational cost analysis</strong> by entering the number of gowns (to be) purchased, the investment period (in years), and the expected annual usage.
                     </p>
                   </div>
                 </div>
