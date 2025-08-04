@@ -147,10 +147,10 @@ const XLSXdownload = ({
       "TOTAL COST (€ per 1 use)",
       ...selectedGownData.map((gown) => {
         // Calculate total cost per use
-        const purchaseCost = gown.emission_impacts.purchase_cost
-        const laundryCost = gown.laundry_cost || 0
-        const wasteCost = gown.emission_impacts.waste || 0
-        const residualValue = gown.emission_impacts.residual_value || 0
+        const purchaseCost = Number.parseFloat((gown.emission_impacts.purchase_cost ?? 0).toFixed(2));
+        const laundryCost = Number.parseFloat((gown.laundry_cost ?? 0).toFixed(2));
+        const wasteCost = Number.parseFloat((gown.emission_impacts.waste ?? 0).toFixed(2));
+        const residualValue = Number.parseFloat((gown.emission_impacts.residual_value ?? 0).toFixed(2));
 
         let totalCostPerUse
         if (gown.reusable) {
