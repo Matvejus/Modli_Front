@@ -99,7 +99,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="gowns-investment" className="text-black font-medium">
-                Units purchased
+                Units purchased (resusable gowns)
               </Label>
               <Input
                 id="gowns-investment"
@@ -267,7 +267,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
 
         {/* Results */}
         <div className="space-y-4">
-          <h3 className="font-semibold text-lg mb-4 text-black px-4">Investment versus Operational cost</h3>
+          <h3 className="font-semibold text-lg mb-4 text-black px-4">Investment Cost versus Operational Cost</h3>
           {sortedResults.map((result) => {
             // Find the corresponding gown data for accurate table calculations
             const correspondingGown = selectedGowns.find((g) => g.id === result.gownId)
