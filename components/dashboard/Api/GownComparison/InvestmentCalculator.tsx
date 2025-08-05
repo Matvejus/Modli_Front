@@ -228,7 +228,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                   {/* Emissions Section with Donut Charts */}
                   <div className="mt-4 p-3 bg-green-50 rounded-lg">
                     <h4 className="font-medium mb-3 text-green-800">Total Environmental Impact</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-3">
                       <EmissionDonutChart
                         breakdown={result.co2Breakdown}
                         title="CO₂ Impact"
