@@ -152,7 +152,7 @@ const EconomicImpacts = ({ gowns }: EconomicImpactProps) => {
                   textAnchor="middle"
                   height={20}
                 />
-                <YAxis tick={{ fontSize: 12 }} width={60} label={{ value: "€", angle: -90, position: "insideLeft" }} />
+                <YAxis tick={{ fontSize: 12 }} width={50} label={{ value: "€", angle: 0, position: "insideLeft" }} />
                 <RechartsTooltip />
                 <Legend wrapperStyle={{ paddingTop: "20px" }} />
                 {gowns.map((gown, index) => (

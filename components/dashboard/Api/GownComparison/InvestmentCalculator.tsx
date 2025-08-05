@@ -145,126 +145,6 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
           </div>
         </div>
 
-        {/* Sorting Controls */}
-        {/* {results.length > 1 && (
-          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-            <span className="font-medium">Sort by:</span>
-            <div className="flex gap-2">
-              <Button
-                variant={sortBy === "total" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSortBy("total")}
-                className="flex items-center gap-1"
-              >
-                <DollarSign className="h-4 w-4" />
-                Total Expenses
-                {sortBy === "total" && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                    }}
-                    className="ml-1"
-                  >
-                    {sortOrder === "asc" ? "↑" : "↓"}
-                  </button>
-                )}
-              </Button>
-              <Button
-                variant={sortBy === "capex" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSortBy("capex")}
-                className="flex items-center gap-1"
-              >
-                <Building className="h-4 w-4" />
-                CAPEX
-                {sortBy === "capex" && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                    }}
-                    className="ml-1"
-                  >
-                    {sortOrder === "asc" ? "↑" : "↓"}
-                  </button>
-                )}
-              </Button>
-              <Button
-                variant={sortBy === "opex" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSortBy("opex")}
-                className="flex items-center gap-1"
-              >
-                <Cog className="h-4 w-4" />
-                OPEX
-                {sortBy === "opex" && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                    }}
-                    className="ml-1"
-                  >
-                    {sortOrder === "asc" ? "↑" : "↓"}
-                  </button>
-                )}
-              </Button>
-              <Button
-                variant={sortBy === "emissions" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSortBy("emissions")}
-                className="flex items-center gap-1"
-              >
-                <Leaf className="h-4 w-4" />
-                CO₂ Emissions
-                {sortBy === "emissions" && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                    }}
-                    className="ml-1"
-                  >
-                    {sortOrder === "asc" ? "↑" : "↓"}
-                  </button>
-                )}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Backend Calculations Display */}
-        {/* <div className="p-4 rounded-lg">
-          <h3 className="font-semibold text-lg mb-4 text-black">Maximum possible uses and utilization rate</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2 font-medium">Gown Type</th>
-                  <th className="text-right py-2 font-medium">Gowns Purchased</th>
-                  <th className="text-right py-2 font-medium">Max Uses</th>
-                  <th className="text-right py-2 font-medium">Extra Disposable Needed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.map((result) => (
-                  <tr key={result.gownId} className="border-b">
-                    <td className="py-2 font-medium">{result.gownName}</td>
-                    <td className="text-right py-2">
-                      {result.isReusable ? result.numberOfGownsToInvest.toLocaleString() : "n/a"}
-                    </td>
-                    <td className="text-right py-2">
-                      {result.isReusable ? result.maxGownUsesWithReduction.toLocaleString() : "0"}
-                    </td>
-                    <td className="text-right py-2">{result.extraDisposableGownsNeeded.toLocaleString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div> */}
-
         {/* Results */}
         <div className="space-y-4">
           <h3 className="font-semibold text-lg mb-4 text-black px-4">Investment Cost versus Operational Cost</h3>
@@ -287,9 +167,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                <div
-                    className={`grid grid-cols-${result.extraDisposableCost > 0 ? "4" : "3"} gap-4 mb-4 items-start`}
-                  >
+                <div className={`grid grid-cols-1 md:grid-cols-2 ${result.extraDisposableCost > 0 ? "lg:grid-cols-4" : "lg:grid-cols-3"} gap-4 mb-4 items-start`}>
                     <div className="space-y-2 p-3 bg-blue-50 rounded-lg h-full">
                       <div className="flex items-center gap-2">
                         <Building className="h-4 w-4 text-blue-600" />
@@ -298,7 +176,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                       <p className="text-2xl font-bold text-blue-600">€{result.capex.toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">
                         {result.isReusable
-                          ? `${result.numberOfGownsToInvest.toLocaleString()} gowns × €${correspondingGown?.cost.toFixed(2)}`
+                          ? `${result.numberOfGownsToInvest.toLocaleString()} gowns × €${correspondingGown?.cost.toFixed(0)}`
                           : "No initial investment"}
                       </p>
                     </div>
@@ -350,7 +228,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                   {/* Emissions Section with Donut Charts */}
                   <div className="mt-4 p-3 bg-green-50 rounded-lg">
                     <h4 className="font-medium mb-3 text-green-800">Total Environmental Impact</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-3">
                       <EmissionDonutChart
                         breakdown={result.co2Breakdown}
                         title="CO₂ Impact"

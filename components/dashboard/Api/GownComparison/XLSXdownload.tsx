@@ -158,7 +158,7 @@ const XLSXdownload = ({
           totalCostPerUse = purchaseCost + laundryCost + wasteCost - residualValue
         } else {
           // For disposable: purchase cost + waste cost (no laundry, no residual value)
-          totalCostPerUse = purchaseCost + wasteCost
+          totalCostPerUse = purchaseCost + wasteCost - residualValue
         }
 
         return totalCostPerUse.toFixed(2)

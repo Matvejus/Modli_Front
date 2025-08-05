@@ -219,7 +219,7 @@ export default function GownsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+          <div className="grid grid-cols-1 md:grid-rows-2 gap-3 mb-3">
             <GownHygieneComparison gowns={selectedGownData} />
             <GownCertificatesTable gowns={selectedGownData} />
           </div>
