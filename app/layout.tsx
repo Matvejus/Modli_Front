@@ -46,7 +46,7 @@ export default function RootLayout({ children }: {children: React.ReactNode}) {
               width={300}
               height={200}
             />
-            <DynamicTomorrowImage />
+            {/* <DynamicTomorrowImage /> */}
           <main className="bg-background-modli flex-1 overflow-y-auto p-8">
             <Header/>
             {children}
