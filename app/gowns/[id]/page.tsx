@@ -344,7 +344,6 @@ export default function GownDetail({ params }: GownDetailProps) {
             </CardContent>
           </Card>
         )}
-
         {gown.reusable && (
           <Card>
             <CardHeader>
