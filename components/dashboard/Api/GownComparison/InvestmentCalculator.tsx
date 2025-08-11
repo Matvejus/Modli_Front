@@ -99,14 +99,16 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="gowns-investment" className="text-black font-medium">
-                Units purchased (resusable gowns)
+                Units purchased (reusable gowns)
               </Label>
               <Input
                 id="gowns-investment"
                 type="number"
                 min="1"
-                value={numberOfGownsToInvest}
-                onChange={(e) => setNumberOfGownsToInvest(Number(e.target.value))}
+                value={numberOfGownsToInvest === undefined ? "" : numberOfGownsToInvest}
+                onChange={(e) =>
+                  setNumberOfGownsToInvest(e.target.value === "" ? undefined : Number(e.target.value))
+                }
                 className="border-black"
               />
               {/* <p className="text-xs text-muted-foreground">Specify the exact number of reusable gowns to purchase</p> */}
@@ -123,8 +125,10 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                   type="number"
                   min="1"
                   max="20"
-                  value={planningHorizon}
-                  onChange={(e) => setPlanningHorizon(Number(e.target.value))}
+                  value={planningHorizon === undefined ? "" : planningHorizon}
+                  onChange={(e) =>
+                    setPlanningHorizon(e.target.value === "" ? undefined : Number(e.target.value))
+                  }
                   className="border-black"
                 />
               </div>
@@ -136,8 +140,8 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                   id="annual-use"
                   type="number"
                   min="1"
-                  value={annualGownUse}
-                  onChange={(e) => setAnnualGownUse(Number(e.target.value))}
+                  value={annualGownUse === undefined ? "" : annualGownUse}
+                  onChange={(e) => setAnnualGownUse(e.target.value === "" ? undefined : Number(e.target.value))}
                   className="border-black"
                 />
               </div>
