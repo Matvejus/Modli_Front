@@ -8,7 +8,7 @@ import {
   calculateDepreciationSchedule,
   calculateDisposableScheduleWithGownData,
   type InvestmentParameters,
-} from "@/lib/investmentCalculations"
+} from "@/lib/InvestmentCalculations"
 
 interface XLSXdownloadProps {
   selectedGownData: Gown[]
