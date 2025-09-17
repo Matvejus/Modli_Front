@@ -139,7 +139,7 @@ export default function GownsPage() {
                   </div>
                   <div>
                     <p className="font-medium">
-                      To export the data, click the <strong>Export</strong> button.
+                      To download the comparison results, click the <strong>Export</strong> button.
                     </p>
                   </div>
                 </div>

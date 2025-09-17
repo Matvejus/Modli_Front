@@ -42,7 +42,9 @@ export default function LandingPage() {
                       This tool is developed for healthcare procurement professionals and others who want to gain insight into the
                       economic, social and environmental impact of different types of{" "}
                       <span className="font-semibold">isolation gowns</span> to make better informed purchasing
-                      decisions.
+                      decisions. 
+                      <br /> <br />
+                      <span className="italic text-slate-500">Please note that the tool is optimized for use on a laptop or desktop computer.</span>
                     </p>
                   </div>
                 </CardHeader>
