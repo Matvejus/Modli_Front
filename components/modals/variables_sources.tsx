@@ -21,7 +21,7 @@ export default function VariablesAndSourcesModal() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
-          <InfoCircledIcon className="mr-2 h-4 w-4" /> click here to view variables and sources used
+          <InfoCircledIcon className="mr-2 h-4 w-4 " /> <span className=" text-black"> Click here to view key variables, assumptions and data sources used in the comparison </span> 
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[90vw] md:max-w-[80vw] lg:max-w-[1000px] max-h-[90vh] overflow-y-auto bg-white text-black border-2 border-gray-200 shadow-lg">

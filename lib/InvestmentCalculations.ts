@@ -13,16 +13,42 @@ export interface EmissionBreakdown {
   totalEmissions: number
 }
 
-export function calculateInvestmentResults(
+// Function to fetch default disposable gown data from backend using existing endpoint
+async function fetchDefaultDisposableGown(): Promise<Gown | null> {
+  try {
+    const response = await fetch("/api/emissions/selected-gowns-emissions/?ids=7", {
+      credentials: "include",
+    })
+    if (!response.ok) {
+      throw new Error("Failed to fetch default disposable gown")
+    }
+    return await response.json()
+  } catch (error) {
+    console.error("Error fetching default disposable gown:", error)
+    return null
+  }
+}
+
+export async function calculateInvestmentResults(
   selectedGowns: Gown[],
   parameters: InvestmentParameters,
-): InvestmentResult[] {
+): Promise<InvestmentResult[]> {
   if (selectedGowns.length === 0) return []
 
   const { numberOfGownsToInvest, planningHorizon, annualGownUse } = parameters
   const totalUsesOverHorizon = annualGownUse * planningHorizon
   const lossPercentage = 0 // No loss assumed
   const reductionFactor = 1 // No reduction since no loss
+
+  // Check if we need to fetch default disposable gown data
+  const hasDisposableGown = selectedGowns.some((gown) => !gown.reusable)
+  let defaultDisposableGown: Gown | null = null
+
+  if (!hasDisposableGown) {
+    // Fetch default disposable gown data from backend using ID 7
+    defaultDisposableGown = await fetchDefaultDisposableGown()
+    console.log("defaultDisposableGown", defaultDisposableGown)
+  }
 
   return selectedGowns.map((gown) => {
     const actualGownsToInvest = gown.reusable ? numberOfGownsToInvest : 0
@@ -72,9 +98,26 @@ export function calculateInvestmentResults(
 
       // EXTRA DISPOSABLE COST
       if (result.extraDisposableGownsNeeded > 0) {
+        // First try to find a disposable gown in selected gowns
         const disposableGown = selectedGowns.find((g) => !g.reusable)
-        const disposableGownCost = disposableGown?.cost || 0.81
-        const disposableWasteCost = disposableGown?.waste_cost || 0
+
+        let disposableGownCost: number
+        let disposableWasteCost: number
+
+        if (disposableGown) {
+          // Use selected disposable gown data
+          disposableGownCost = disposableGown.cost
+          disposableWasteCost = disposableGown.waste_cost || 0
+        } else if (defaultDisposableGown) {
+          // Use fetched default disposable gown data (ID 7)
+          disposableGownCost = defaultDisposableGown.cost
+          disposableWasteCost = defaultDisposableGown.waste_cost || 0
+        } else {
+          // Fallback to hardcoded values only if backend fetch failed
+          disposableGownCost = 0.81
+          disposableWasteCost = 0
+        }
+
         result.extraDisposableCost = result.extraDisposableGownsNeeded * (disposableGownCost + disposableWasteCost)
       }
 
@@ -87,14 +130,29 @@ export function calculateInvestmentResults(
       result.energyBreakdown.reusableEmissions = Math.floor(gown.emission_impacts.Energy * reusableUses)
 
       if (disposableUses > 0) {
+        // First try to find a disposable gown in selected gowns
         const disposableGown = selectedGowns.find((g) => !g.reusable)
+
         if (disposableGown) {
+          // Use selected disposable gown emissions data
           result.co2Breakdown.disposableEmissions = Math.floor(disposableGown.emission_impacts.CO2 * disposableUses)
           result.waterBreakdown.disposableEmissions = Math.floor(disposableGown.emission_impacts.Water * disposableUses)
           result.energyBreakdown.disposableEmissions = Math.floor(
             disposableGown.emission_impacts.Energy * disposableUses,
           )
+        } else if (defaultDisposableGown) {
+          // Use fetched default disposable gown emissions data (ID 7)
+          result.co2Breakdown.disposableEmissions = Math.floor(
+            defaultDisposableGown.emission_impacts.CO2 * disposableUses,
+          )
+          result.waterBreakdown.disposableEmissions = Math.floor(
+            defaultDisposableGown.emission_impacts.Water * disposableUses,
+          )
+          result.energyBreakdown.disposableEmissions = Math.floor(
+            defaultDisposableGown.emission_impacts.Energy * disposableUses,
+          )
         } else {
+          // Fallback to hardcoded values only if backend fetch failed
           result.co2Breakdown.disposableEmissions = Math.floor(0.21 * disposableUses)
           result.waterBreakdown.disposableEmissions = Math.floor(1.16 * disposableUses)
           result.energyBreakdown.disposableEmissions = Math.floor(2.59 * disposableUses)
