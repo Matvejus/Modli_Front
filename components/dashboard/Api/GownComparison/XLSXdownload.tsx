@@ -8,7 +8,7 @@ import {
   calculateDepreciationSchedule,
   calculateDisposableScheduleWithGownData,
   type InvestmentParameters,
-} from "@/lib/InvestmentCalculations"
+} from "@/lib/investmentCalculations"
 
 interface XLSXdownloadProps {
   selectedGownData: Gown[]
@@ -26,7 +26,7 @@ const XLSXdownload = ({
     annualGownUse: 36500,
   },
 }: XLSXdownloadProps) => {
-  const downloadSelectedGownsAsXLSX = () => {
+  const downloadSelectedGownsAsXLSX = async () => {
     if (selectedGownData.length === 0) {
       alert("Please select at least one gown to download data.")
       return
@@ -50,12 +50,17 @@ const XLSXdownload = ({
     worksheetData.push(["Reusable", ...selectedGownData.map((gown) => (gown.reusable ? "Yes" : "No"))])
 
     // Purchase cost (€ per gown)
-    worksheetData.push(["Purchase cost (€ per gown)", ...selectedGownData.map((gown) => gown.cost.toFixed(2))])
+    worksheetData.push([
+      "Purchase cost (€ per gown)",
+      ...selectedGownData.map((gown) => Number.parseFloat(gown.cost.toFixed(2))),
+    ])
 
     // Laundry cost (€/gown/wash)
     worksheetData.push([
       "Laundry cost (€/gown/wash)",
-      ...selectedGownData.map((gown) => (gown.reusable && gown.laundry_cost ? gown.laundry_cost.toFixed(2) : "n/a")),
+      ...selectedGownData.map((gown) =>
+        gown.reusable && gown.laundry_cost ? Number.parseFloat(gown.laundry_cost.toFixed(2)) : "n/a",
+      ),
     ])
 
     // Max. number of washes expected
@@ -77,12 +82,15 @@ const XLSXdownload = ({
     ])
 
     // Residual value (€/gown)
-    worksheetData.push(["Residual value (€/gown)", ...selectedGownData.map((gown) => gown.residual_value.toFixed(2))])
+    worksheetData.push([
+      "Residual value (€/gown)",
+      ...selectedGownData.map((gown) => Number.parseFloat(gown.residual_value.toFixed(2))),
+    ])
 
     // Waste cost (€/gown)
     worksheetData.push([
       "Waste cost (€/gown)",
-      ...selectedGownData.map((gown) => (gown.waste_cost ? gown.waste_cost.toFixed(2) : "n/a")),
+      ...selectedGownData.map((gown) => (gown.waste_cost ? Number.parseFloat(gown.waste_cost.toFixed(2)) : "n/a")),
     ])
 
     // Social Certifications
@@ -99,45 +107,45 @@ const XLSXdownload = ({
     // CO₂ Impact (CO₂-eq per 1 use)
     worksheetData.push([
       "CO₂ Impact (CO₂-eq per 1 use)",
-      ...selectedGownData.map((gown) => gown.emission_impacts.CO2.toFixed(2)),
+      ...selectedGownData.map((gown) => Number.parseFloat(gown.emission_impacts.CO2.toFixed(2))),
     ])
 
     // Energy Impact (MJ-eq per 1 use)
     worksheetData.push([
       "Energy Impact (MJ-eq per 1 use)",
-      ...selectedGownData.map((gown) => gown.emission_impacts.Energy.toFixed(2)),
+      ...selectedGownData.map((gown) => Number.parseFloat(gown.emission_impacts.Energy.toFixed(2))),
     ])
 
     // Water Impact (L per 1 use)
     worksheetData.push([
       "Water Impact (L per 1 use)",
-      ...selectedGownData.map((gown) => gown.emission_impacts.Water.toFixed(2)),
+      ...selectedGownData.map((gown) => Number.parseFloat(gown.emission_impacts.Water.toFixed(2))),
     ])
 
     // Purchase cost (€ per 1 use)
     worksheetData.push([
       "Purchase cost (€ per 1 use)",
-      ...selectedGownData.map((gown) => gown.emission_impacts.purchase_cost.toFixed(2)),
+      ...selectedGownData.map((gown) => Number.parseFloat(gown.emission_impacts.purchase_cost.toFixed(2))),
     ])
 
     // Laundry Costs (€ per gown per use)
     worksheetData.push([
       "Laundry Costs (€ per 1 use)",
-      ...selectedGownData.map((gown) =>
-        gown.reusable ? gown.laundry_cost.toFixed(2) : "n/a",
-      ),
+      ...selectedGownData.map((gown) => (gown.reusable ? Number.parseFloat(gown.laundry_cost.toFixed(2)) : "n/a")),
     ])
 
     // Waste Costs (€ per gown)
     worksheetData.push([
       "Waste Costs (€ per 1 use)",
-      ...selectedGownData.map((gown) => (gown.emission_impacts.waste ? gown.emission_impacts.waste.toFixed(4) : "n/a")),
+      ...selectedGownData.map((gown) =>
+        gown.emission_impacts.waste ? Number.parseFloat(gown.emission_impacts.waste.toFixed(4)) : "n/a",
+      ),
     ])
 
     // Residual Value (€ per gown)
     worksheetData.push([
       "Residual Value (€ per 1 use)",
-      ...selectedGownData.map((gown) => gown.emission_impacts.residual_value.toFixed(4)),
+      ...selectedGownData.map((gown) => Number.parseFloat(gown.emission_impacts.residual_value.toFixed(4))),
     ])
 
     worksheetData.push([]) // Empty row
@@ -147,10 +155,10 @@ const XLSXdownload = ({
       "TOTAL COST (€ per 1 use)",
       ...selectedGownData.map((gown) => {
         // Calculate total cost per use
-        const purchaseCost = Number.parseFloat((gown.emission_impacts.purchase_cost ?? 0).toFixed(2));
-        const laundryCost = Number.parseFloat((gown.laundry_cost ?? 0).toFixed(2));
-        const wasteCost = Number.parseFloat((gown.emission_impacts.waste ?? 0).toFixed(2));
-        const residualValue = Number.parseFloat((gown.emission_impacts.residual_value ?? 0).toFixed(2));
+        const purchaseCost = gown.emission_impacts.purchase_cost ?? 0
+        const laundryCost = gown.laundry_cost ?? 0
+        const wasteCost = gown.emission_impacts.waste ?? 0
+        const residualValue = gown.emission_impacts.residual_value ?? 0
 
         let totalCostPerUse
         if (gown.reusable) {
@@ -161,7 +169,7 @@ const XLSXdownload = ({
           totalCostPerUse = purchaseCost + wasteCost - residualValue
         }
 
-        return totalCostPerUse.toFixed(2)
+        return Number.parseFloat(totalCostPerUse.toFixed(2))
       }),
     ])
 
@@ -177,7 +185,7 @@ const XLSXdownload = ({
     XLSX.utils.book_append_sheet(workbook, worksheet, "Gown Comparison")
 
     // WORKSHEET 2: Investment Analysis
-    const investmentResults = calculateInvestmentResults(selectedGownData, investmentParameters)
+    const investmentResults = await calculateInvestmentResults(selectedGownData, investmentParameters)
 
     if (investmentResults.length > 0) {
       const investmentWorksheetData = []
@@ -185,9 +193,9 @@ const XLSXdownload = ({
       // Investment Parameters Section
       investmentWorksheetData.push(
         ["User Input", "Value"],
-        ["Units purchased", investmentParameters.numberOfGownsToInvest.toLocaleString()],
-        ["Investment period (years)", investmentParameters.planningHorizon.toString()],
-        ["Annual usage (expected)", investmentParameters.annualGownUse.toLocaleString()],
+        ["Units purchased", investmentParameters.numberOfGownsToInvest],
+        ["Investment period (years)", investmentParameters.planningHorizon],
+        ["Annual usage (expected)", investmentParameters.annualGownUse],
         [""], // Empty row
       )
 
@@ -195,24 +203,19 @@ const XLSXdownload = ({
       investmentWorksheetData.push(
         ["Cost Comparison Analysis", ...investmentResults.map((r) => r.gownName)],
         ["Gown Type", ...investmentResults.map((r) => (r.isReusable ? "Reusable" : "Disposable"))],
-        ["Total Investment Cost (€)", ...investmentResults.map((r) => r.capex.toLocaleString())],
-        ["Total Operational Cost (€)", ...investmentResults.map((r) => r.opex.toLocaleString())],
-        ["Total Cost (€)", ...investmentResults.map((r) => r.totalExpenses.toLocaleString())],
+        [""],
+        ["Total Investment Cost (€)", ...investmentResults.map((r) => r.capex)],
+        ["Total Operational Cost (€)", ...investmentResults.map((r) => r.opex)],
+        ["Total Cost (€)", ...investmentResults.map((r) => r.totalExpenses)],
         [""],
       )
 
       // Environmental Impact Section
       investmentWorksheetData.push(
         ["Total Environmental Impact", ...investmentResults.map((r) => r.gownName)],
-        [
-          "Total CO₂ Emissions (kg CO₂-eq)",
-          ...investmentResults.map((r) => r.co2Breakdown.totalEmissions.toLocaleString()),
-        ],
-        ["Total Water Usage (L)", ...investmentResults.map((r) => r.waterBreakdown.totalEmissions.toLocaleString())],
-        [
-          "Total Energy Usage (MJ-eq)",
-          ...investmentResults.map((r) => r.energyBreakdown.totalEmissions.toLocaleString()),
-        ],
+        ["Total CO₂ Emissions (kg CO₂-eq)", ...investmentResults.map((r) => r.co2Breakdown.totalEmissions)],
+        ["Total Water Usage (L)", ...investmentResults.map((r) => r.waterBreakdown.totalEmissions)],
+        ["Total Energy Usage (MJ-eq)", ...investmentResults.map((r) => r.energyBreakdown.totalEmissions)],
         [""],
       )
 
@@ -237,9 +240,9 @@ const XLSXdownload = ({
           depreciationSchedule.forEach((row) => {
             investmentWorksheetData.push([
               `Year ${row.year}`,
-              Math.round(row.bookValue).toLocaleString(),
-              Math.round(row.annualDepreciation).toLocaleString(),
-              Math.round(row.operationalCosts).toLocaleString(),
+              Math.round(row.bookValue),
+              Math.round(row.annualDepreciation),
+              Math.round(row.operationalCosts),
             ])
           })
         } else {
@@ -251,9 +254,9 @@ const XLSXdownload = ({
           disposableSchedule.forEach((row) => {
             investmentWorksheetData.push([
               `Year ${row.year}`,
-              Math.round(row.purchaseCosts).toLocaleString(),
-              Math.round(row.wasteCosts).toLocaleString(),
-              Math.round(row.totalAnnualCosts).toLocaleString(),
+              Math.round(row.purchaseCosts),
+              Math.round(row.wasteCosts),
+              Math.round(row.totalAnnualCosts),
             ])
           })
         }
