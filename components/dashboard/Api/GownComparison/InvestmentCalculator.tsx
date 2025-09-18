@@ -184,7 +184,7 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
                 ) : (
                   <>
                     <Calculator className="h-4 w-4 mr-2" />
-                    Calculate Investment
+                    Calculate Cost
                   </>
                 )}
               </Button>
@@ -192,19 +192,11 @@ export default function GownInvestmentCalculator({ selectedGowns, onParametersCh
 
             {!canCalculate && (
               <p className="text-sm text-muted-foreground text-center">
-                Please fill in all required fields to calculate investment results.
+                Please fill in all required fields to perform the cost comparison analysis.
               </p>
             )}
           </div>
         </div>
-
-        {/* Show message if no calculations have been performed yet */}
-        {!hasCalculated && !isCalculating && (
-          <div className="text-center p-8 text-muted-foreground">
-            <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Enter your investment parameters above and click "Calculate Investment" to see the analysis.</p>
-          </div>
-        )}
 
         {/* Results */}
         {hasCalculated && results.length > 0 && (
