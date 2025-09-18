@@ -16,13 +16,20 @@ export interface EmissionBreakdown {
 // Function to fetch default disposable gown data from backend using existing endpoint
 async function fetchDefaultDisposableGown(): Promise<Gown | null> {
   try {
-    const response = await fetch("/api/emissions/selected-gowns-emissions/?ids=7", {
+    const response = await fetch("/api/emissions/selected-gowns-emissions?ids=7", {
       credentials: "include",
     })
     if (!response.ok) {
       throw new Error("Failed to fetch default disposable gown")
     }
-    return await response.json()
+    const data = await response.json()
+
+    // Handle case where API returns an array instead of a single object
+    if (Array.isArray(data)) {
+      return data.length > 0 ? data[0] : null
+    }
+
+    return data
   } catch (error) {
     console.error("Error fetching default disposable gown:", error)
     return null
@@ -47,7 +54,7 @@ export async function calculateInvestmentResults(
   if (!hasDisposableGown) {
     // Fetch default disposable gown data from backend using ID 7
     defaultDisposableGown = await fetchDefaultDisposableGown()
-    console.log("defaultDisposableGown", defaultDisposableGown)
+    console.log(`fetched disposable gown: ${defaultDisposableGown}`)
   }
 
   return selectedGowns.map((gown) => {
