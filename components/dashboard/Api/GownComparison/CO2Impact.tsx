@@ -50,8 +50,8 @@ const CO2Impacts = ({ gowns }: CO2ImpactsProps) => {
               />
               <YAxis 
                 tick={{ fontSize: 12 }} 
-                width={50}
-                label={{ value: 'CO₂-eq', angle: -90, position: 'insideLeft' }}
+                width={65}
+                label={{ value: 'kg CO₂-eq', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip />
               <Legend wrapperStyle={{ paddingTop: '20px' }} />

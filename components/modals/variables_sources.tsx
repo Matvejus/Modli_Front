@@ -246,7 +246,7 @@ export default function VariablesAndSourcesModal() {
                     <TableCell>10.000km by boat</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>100% Polypropelene (disposable)</TableCell>
+                    <TableCell>100% Polypropylene (disposable)</TableCell>
                     <TableCell>Market mix</TableCell>
                     <TableCell>Market mix</TableCell>
                     <TableCell>10.000km by boat</TableCell>
